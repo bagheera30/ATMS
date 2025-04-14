@@ -6,6 +6,7 @@ docker/
 
 # File .txt (semua file dengan ekstensi .txt di seluruh direktori)
 *.txt
+package-lock.json
 
 # File konfigurasi dan log
 .env
