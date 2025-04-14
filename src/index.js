@@ -1,8 +1,8 @@
-import swaggerUi from "swagger-ui-express";
-import fs from "fs";
-import YAML from "yaml";
-import path from "path";
-import chokidar from "chokidar";
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
+const YAML = require("yaml");
+const path = require("path");
+const chokidar = require("chokidar");
 const express = require("express");
 
 const cors = require("cors");
@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-const dot = require("dotenv").config();
+require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
@@ -41,13 +41,16 @@ chokidar.watch(swaggerFilePath).on("all", (event, path) => {
     swaggerDocument = loadSwaggerFile();
   }
 });
+
 app.get("/", (req, res) => {
   res.send(
     "Hello, untuk menggunakan api jika mencari produk maka harus /user,/transaksi"
   );
 });
+
 // app.use("/user", require("./user/user.controller"))
 app.use("/auth", require("./auth/auth.controller"));
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
