@@ -13,16 +13,24 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 
-// Gunakan path absolut untuk file swagger
-// const swaggerFilePath = path.join(__dirname, "doc", "swagger.yaml");
-
 try {
   const swaggerFilePath = path.join(__dirname, "doc", "swagger.yaml");
   const swaggerFile = fs.readFileSync(swaggerFilePath, "utf8");
   const swaggerDocument = YAML.parse(swaggerFile);
 
-  // Swagger UI
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  // Swagger UI with proper options
+  const options = {
+    explorer: true,
+    swaggerOptions: {
+      validatorUrl: null, // Disable validator if not needed
+    },
+  };
+
+  app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument, options)
+  );
   app.use("/auth", require("./auth/auth.controller"));
 
   app.listen(port, () => {
@@ -31,5 +39,5 @@ try {
 } catch (error) {
   console.error("Error loading Swagger file:", error);
   console.log("Pastikan file doc/swagger.yaml ada di direktori proyek Anda");
-  process.exit(1); // Keluar dari proses jika file tidak ditemukan
+  process.exit(1);
 }
