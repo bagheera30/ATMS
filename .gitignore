@@ -1,0 +1,28 @@
+# Node_modules (hasil instalasi npm)
+node_modules/
+
+# Folder Docker
+docker/
+
+# File .txt (semua file dengan ekstensi .txt di seluruh direktori)
+*.txt
+
+# File konfigurasi dan log
+.env
+npm-debug.log
+npm-debug.log.*
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+pnpm-debug-*.log
+
+# Folder hasil build/test
+coverage/
+dist/
+build/
+
+# File sistem operasi
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.ehthumbs
