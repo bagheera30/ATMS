@@ -29,7 +29,7 @@ function loadSwaggerFile() {
 let swaggerDocument = loadSwaggerFile();
 
 // Endpoint untuk Swagger UI
-app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
+app.use("/", swaggerUi.serve, (req, res, next) => {
   // Setup Swagger UI dengan dokumen terbaru
   swaggerUi.setup(swaggerDocument)(req, res, next);
 });
@@ -42,9 +42,9 @@ chokidar.watch(swaggerFilePath).on("all", (event, path) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
+// });
 
 // app.use("/user", require("./user/user.controller"))
 app.use("/auth", require("./auth/auth.controller"));
