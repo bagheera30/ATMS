@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Auth Service API
-  description: API for user authentication and registration
+  title: ATMS API
+  description: API documentation
   version: 1.0.0
 servers:
   - url: https://api-atms.vercel.app

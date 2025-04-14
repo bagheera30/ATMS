@@ -28,11 +28,13 @@ function loadSwaggerFile() {
 
 let swaggerDocument = loadSwaggerFile();
 
-// Serve Swagger UI assets from the correct path
-app.use("/api-docs", swaggerUi.serveFiles(swaggerDocument));
-app.get("/api-docs", swaggerUi.setup(swaggerDocument));
+// Endpoint untuk Swagger UI
+app.use("/", swaggerUi.serve, (req, res, next) => {
+  // Setup Swagger UI dengan dokumen terbaru
+  swaggerUi.setup(swaggerDocument)(req, res, next);
+});
 
-
+// Pantau perubahan pada file YAML
 chokidar.watch(swaggerFilePath).on("all", (event, path) => {
   if (event === "change") {
     console.log("Swagger file changed, reloading...");
@@ -40,6 +42,11 @@ chokidar.watch(swaggerFilePath).on("all", (event, path) => {
   }
 });
 
+// app.get("/", (req, res) => {
+//   res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
+// });
+
+// app.use("/user", require("./user/user.controller"))
 app.use("/auth", require("./auth/auth.controller"));
 
 app.listen(port, () => {
