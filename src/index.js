@@ -32,10 +32,7 @@ let swaggerDocument = loadSwaggerFile();
 app.use("/api-docs", swaggerUi.serveFiles(swaggerDocument));
 app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
-// Or alternatively:
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Pantau perubahan pada file YAML
 chokidar.watch(swaggerFilePath).on("all", (event, path) => {
   if (event === "change") {
     console.log("Swagger file changed, reloading...");
