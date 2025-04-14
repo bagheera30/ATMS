@@ -3,17 +3,20 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\"  exit 1"
   },
   "author": "rizki & shielda",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "chokidar": "^4.0.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "neo4j-driver": "^5.28.1",
+    "nodemailer": "^6.10.1",
     "nodemon": "^3.1.9",
     "path": "^0.12.7",
     "swagger-ui-express": "^5.0.1",
@@ -22,6 +25,8 @@
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "eslint": "^9.24.0",
-    "globals": "^16.0.0"
+    "globals": "^16.0.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.0"
   }
 }

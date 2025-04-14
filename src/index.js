@@ -10,8 +10,9 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+const dot = require("dotenv").config();
 
-const port = Bun.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
 
 // Fungsi untuk memuat file Swagger YAML
@@ -45,7 +46,8 @@ app.get("/", (req, res) => {
     "Hello, untuk menggunakan api jika mencari produk maka harus /user,/transaksi"
   );
 });
-app.use("/user", require("./user/user.controller"));
+// app.use("/user", require("./user/user.controller"))
+app.use("/auth", require("./auth/auth.controller"));
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
