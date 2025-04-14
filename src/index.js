@@ -43,9 +43,7 @@ chokidar.watch(swaggerFilePath).on("all", (event, path) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(
-    "Hello, untuk menggunakan api jika mencari produk maka harus /user,/transaksi"
-  );
+  res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
 });
 
 // app.use("/user", require("./user/user.controller"))
