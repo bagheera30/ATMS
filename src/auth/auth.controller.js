@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
         // Menggunakan 401 Unauthorized
         code: 1,
         status: false,
-        message: "User  not found or incorrect credentials",
+        message: user.message,
       });
     }
     res.status(200).json({
