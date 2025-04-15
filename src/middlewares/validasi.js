@@ -8,9 +8,8 @@ const validateCreateUser = [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
   body("dateOfBirth")
-    .isISO8601()
-    .withMessage("Date of Birth must be a valid date in YYYY-MM-DD format")
-    .toDate(), // Mengonversi string ke objek Date
+    .isString()
+    .withMessage("Date of Birth must be a valid date in YYYY-MM-DD format"),
   body("phoneNumber").isString().withMessage("Phone number must be a string"),
 ];
 

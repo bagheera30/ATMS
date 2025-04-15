@@ -10,6 +10,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+const JWT_SECRET = process.env.JWT_SECRET;
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;

@@ -58,8 +58,7 @@ const validasiUsername = async (username) => {
     await session.close();
   }
 };
-const findToken = async (token) => {
-  console.log("Received token:", token); // Log the received token
+const findToken = async (token) => {// Log the received token
   const session = neo.session();
   try {
     const result = await session.run(
@@ -71,7 +70,6 @@ const findToken = async (token) => {
       }
     );
 
-    console.log(result.records);
     // Check if records are returned
     if (result.records.length === 0) {
       console.log("No user found with the provided OTP.");
@@ -87,30 +85,49 @@ const findToken = async (token) => {
     await session.close(); // Ensure the session is closed
   }
 };
-const authtetication = async (username, password) => {
+const authentication = async (username) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User {username: $username, password: $password})
-        RETURN {
-            code: 0,
-            status: true,
-            message: 'success',
-        }`,
+      `MATCH (u:User  {email: $username})
+      RETURN CASE 
+          WHEN u.status = 'unlocked' THEN {
+              code: 0,
+              status: true,
+              message: 'success',
+              user: u
+          }
+          ELSE {
+              code: 1,
+              status: false,
+              message: 'User  is locked or status is not unlock'
+          }
+      END AS result`,
       {
         username: username,
-        password: password,
       }
     );
-    return result;
+
+    // Mengambil hasil dari kueri
+    const response =
+      result.records.length > 0
+        ? result.records[0].get("result")
+        : {
+            code: 1,
+            status: false,
+            message: "User  not found or incorrect credentials",
+          };
+
+    return response;
   } catch (error) {
+    console.error("Error during authentication:", error);
     return {
       code: 0,
       status: false,
-      message: "email or password is incorrect",
+      message: "An error occurred during authentication",
     };
   } finally {
     await session.close();
   }
 };
-module.exports = { createUser, authtetication, findToken, validasiUsername };
+module.exports = { createUser, authentication, findToken, validasiUsername };

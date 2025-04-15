@@ -38,6 +38,36 @@ router.post("/register", validateCreateUser, async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await authService.login(email, password);
+
+    if (user === "User  is locked or status is not unlock") {
+      return res.status(401).json({
+        // Menggunakan 401 Unauthorized
+        code: 1,
+        status: false,
+        message: "User  not found or incorrect credentials",
+      });
+    }
+    res.status(200).json({
+      // Menggunakan 200 OK
+      code: 0,
+      status: true,
+      message: "User  logged in successfully",
+      token: user.token,
+    });
+  } catch (error) {
+    res.status(400).json({
+      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
 // Endpoint untuk verifikasi OTP
 router.get("/verifOtp/:otp", async (req, res) => {
   try {

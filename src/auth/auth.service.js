@@ -1,6 +1,7 @@
 const authRepository = require("./auth.repository");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 class authService {
   async createUser(data) {
     const username = data.username;
@@ -67,7 +68,7 @@ class authService {
     if (!otp) {
       throw new Error("Please input otp");
     }
-    console.log(typeof otp);
+
     const intotp = parseInt(otp);
     try {
       const vrfotp = await authRepository.findToken(intotp);
@@ -81,9 +82,53 @@ class authService {
       throw new Error("Please complete the form");
     }
     try {
-      const user = await authRepository.authtetication(email, password);
+      // Panggil repository untuk mendapatkan data pengguna dari Neo4j
+      const authResult = await authRepository.authentication(email);
+
+      // Cek apakah pengguna ditemukan atau statusnya tidak valid
+      if (!authResult.status) {
+        const message = authResult.message;
+        return message;
+      }
+
+      // Ambil data pengguna dari hasil query
+      const user = authResult.user.properties;
+
+      // Verifikasi kata sandi menggunakan bcrypt
+      const isPasswordValid = await bcrypt.compare(password, user.password); // Corrected here
+
+      if (!isPasswordValid) {
+        return {
+          code: 1,
+          status: false,
+          message: "Incorrect password",
+        };
+      }
+
+      // Jika autentikasi berhasil, buat token JWT
+      const token = jwt.sign(
+        { userId: user.id, username: user.username, role: user.role }, // Payload token
+        process.env.JWT_SECRET || "default_secret", // Use environment variable or default secret
+        { expiresIn: "1h" } // Token berlaku selama 1 jam
+      );
+
+      return {
+        code: 0,
+        status: true,
+        message: "Authentication successful",
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+        },
+      };
     } catch (error) {
-      throw new Error(`cannot user: ${error.message}`);
+      console.error("Error during authentication:", error);
+      return {
+        code: 1,
+        status: false,
+        message: "An error occurred during authentication",
+      };
     }
   }
 }
