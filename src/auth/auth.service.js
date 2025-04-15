@@ -12,6 +12,10 @@ class authService {
       throw new Error("please complete the form1");
     }
     try {
+      const takenusername = await authRepository.validasiUsername(username);
+      if (takenusername) {
+        throw new Error("username is already");
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = {
         ...data,
@@ -63,10 +67,10 @@ class authService {
     if (!otp) {
       throw new Error("Please input otp");
     }
-    console.log(otp);
+    console.log(typeof otp);
+    const intotp = parseInt(otp);
     try {
-      const votp = otp;
-      const vrfotp = await authRepository.findToken(votp);
+      const vrfotp = await authRepository.findToken(intotp);
       return vrfotp;
     } catch (error) {
       throw new Error(`cannot OTP: ${error.message}`);
