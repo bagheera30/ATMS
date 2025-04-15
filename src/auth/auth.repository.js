@@ -40,11 +40,11 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
   }
 };
 
-const validasiUsername = async (username) => {
+const validasiEmail = async (username) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User {username: $username})
+      `MATCH (u:User {email: $username})
         RETURN u`,
       {
         username: username,
@@ -52,7 +52,7 @@ const validasiUsername = async (username) => {
     );
     return result.records.length > 0 ? result.records[0].get("u") : null;
   } catch (error) {
-    console.error("Error validating username:", error);
+    console.error("Error validating email:", error);
     return false; // Jika terjadi kesalahan, anggap username valid
   } finally {
     await session.close();
@@ -130,4 +130,4 @@ const authentication = async (username) => {
     await session.close();
   }
 };
-module.exports = { createUser, authentication, findToken, validasiUsername };
+module.exports = { createUser, authentication, findToken, validasiEmail };

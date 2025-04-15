@@ -13,9 +13,9 @@ class authService {
       throw new Error("please complete the form1");
     }
     try {
-      const takenusername = await authRepository.validasiUsername(username);
+      const takenusername = await authRepository.validasiEmail(email);
       if (takenusername) {
-        throw new Error("username is already");
+        throw new Error("email is already");
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = {
@@ -25,6 +25,12 @@ class authService {
 
       const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
       const newUser = await authRepository.createUser({ user }, otp);
+
+      console.log(newUser);
+      if (!newUser.status) {
+        const message = authResult.message;
+        return message;
+      }
       const nm = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
