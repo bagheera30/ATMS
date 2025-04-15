@@ -1,39 +1,53 @@
 const db = require("../db/db");
 const neo = db.getInstance();
 
-const createUser = async (data) => {
+const createUser = async (data, otp) => {
   const session = neo.session();
+  console.log(data);
+  console.log(otp);
   try {
     const result = await session.run(
-      `CREATE (u:User_Telu {
+      `CREATE (u:User  {
           uuid: apoc.create.uuid(),
           username: $username,
           email: $email,
           dateOfBirth: $dateOfBirth,
           phoneNumber: $phoneNumber,
-          status:"locked",
+          status: "locked",
           password: $password,
           createdBy: $username,
           createAt: timestamp(),
           modifiedBy: "", 
           modifiedAt: timestamp(),
-          otp:$otp,
+          otp: $otp
       })
-      RETURN { code: 0, status: true, message: 'create user success' } AS result`,
+RETURN { code: 0, status: true, message: 'create user success' } AS result`,
       {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        dateOfBirth: data.dateOfBirth,
-        phoneNumber: data.phoneNumber,
-        otp: data.otp,
+        username: data.user.username,
+        email: data.user.email,
+        password: data.user.password,
+        dateOfBirth: data.user.dateOfBirth,
+        phoneNumber: data.user.phoneNumber,
+        otp,
       }
     );
-    return result;
+    console.log(result.records[0].get("result"));
+    // Return only the records
+    return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
+    console.error("Error creating user:", error);
+    return null; // Return null or handle the error as needed
   } finally {
     await session.close();
   }
+};
+const findToken = async (token) => {
+  console.log("Received token:", token.token); // Tambahkan log ini
+  const session = neo.session();
+  const result = await session.run(`MATCH (u:User{otp: $token}) RETURN u`, {
+    token: token.token,
+  });
+  return result.records.length > 0 ? result.records[0].get("u") : null;
 };
 const authtetication = async (username, password) => {
   const session = neo.session();

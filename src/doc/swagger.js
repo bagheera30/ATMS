@@ -1,90 +1,21 @@
-const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "ATMS API",
-    description: "API documentation",
-    version: "1.0.0",
-  },
-  servers: [
-    {
-      url: "https://api-atms.vercel.app",
-      description: "Production server",
+const swaggerJsDoc = require("swagger-jsdoc");
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Express API with Swagger",
+      version: "1.0.0",
+      description: "API documentation for Express application",
     },
-  ],
-  tags: [
-    {
-      name: "Authentication",
-      description: "User registration and authentication",
-    },
-  ],
-  paths: {
-    "/auth/register": {
-      post: {
-        tags: ["Authentication"],
-        summary: "Register a new user",
-        description: "Creates a new user account with the provided information",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  username: {
-                    type: "string",
-                    example: "johndoe",
-                    description: "Unique username for the new account",
-                  },
-                  email: {
-                    type: "string",
-                    format: "email",
-                    example: "john.doe@example.com",
-                    description: "User's email address",
-                  },
-                  password: {
-                    type: "string",
-                    format: "password",
-                    example: "SecurePassword123!",
-                    description: "Account password (will be hashed)",
-                  },
-                  dateOfBirth: {
-                    type: "string",
-                    format: "date",
-                    example: "1990-01-01",
-                    description: "User's date of birth (YYYY-MM-DD)",
-                  },
-                  phoneNumber: {
-                    type: "string",
-                    example: "+1234567890",
-                    description: "User's phone number",
-                  },
-                },
-                required: ["username", "email", "password"],
-              },
-            },
-          },
-        },
-        responses: {
-          200: {
-            description: "User successfully registered",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    id: {
-                      type: "string",
-                      example: "123e4567-e89b-12d3-a456-426614174000", // Example UUID
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+    servers: [
+      {
+        url: "http://localhost:3000", // Ganti dengan URL hosting setelah deploy
       },
-    },
+    ],
   },
+  apis: ["./index.js"], // Lokasi file yang berisi definisi endpoint
 };
 
-module.exports = swaggerDefinition;
+const specs = swaggerJsDoc(options);
+module.exports = specs;

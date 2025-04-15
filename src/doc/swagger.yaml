@@ -6,6 +6,8 @@ info:
 servers:
   - url: https://api-atms.vercel.app
     description: Production server
+  - url: http://localhost:3000
+    description: Development server
 tags:
   - name: Authentication
     description: User registration and authentication
