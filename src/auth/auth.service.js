@@ -23,7 +23,7 @@ class authService {
         password: hashedPassword,
       };
 
-      const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
+      const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
       const newUser = await authRepository.createUser({ user }, otp);
 
       console.log(newUser);
@@ -101,7 +101,7 @@ class authService {
       const user = authResult.user.properties;
 
       // Verifikasi kata sandi menggunakan bcrypt
-      const isPasswordValid = await bcrypt.compare(password, user.password); // Corrected here
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
         return {
