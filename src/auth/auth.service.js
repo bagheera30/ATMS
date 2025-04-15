@@ -31,7 +31,7 @@ class authService {
       });
       const mailOptions = {
         from: process.env.EMAIL_VERIF, // Email pengirim
-        to: email, 
+        to: email,
         subject: "Kode OTP Verifikasi", // Subjek email
         html: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
     <img src="https://img.freepik.com/free-psd/phone-icon-design_23-2151311652.jpg?t=st=1740712456~exp=1740716056~hmac=edbd775bf2f8b086629ddbb8440face843343bf69929cb8a4137e9c3aa1c2848&w=900" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
@@ -51,13 +51,8 @@ class authService {
   </div>`,
       };
 
-      await nm.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.error("Gagal mengirim email OTP:", error);
-        } else {
-          console.log("Email OTP terkirim:", info.response);
-        }
-      });
+      await nm.sendMail(mailOptions);
+      console.log("Email OTP terkirim");
       return newUser;
     } catch (error) {
       throw new Error(`Error creating user: ${error.message}`);

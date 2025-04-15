@@ -3,8 +3,7 @@ const neo = db.getInstance();
 
 const createUser = async (data, otp) => {
   const session = neo.session();
-  console.log(data);
-  console.log(otp);
+ 
   try {
     const result = await session.run(
       `CREATE (u:User  {
