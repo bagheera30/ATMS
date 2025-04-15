@@ -20,7 +20,6 @@ class authService {
 
       const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
       const newUser = await authRepository.createUser({ user }, otp);
-      console.log("newUser ", newUser);
       const nm = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -50,16 +49,30 @@ class authService {
   </div>`,
       };
 
-      // nm.sendMail(mailOptions, function (error, info) {
-      //   if (error) {
-      //     console.error("Gagal mengirim email OTP:", error);
-      //   } else {
-      //     console.log("Email OTP terkirim:", info.response);
-      //   }
-      // });
+      nm.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.error("Gagal mengirim email OTP:", error);
+        } else {
+          console.log("Email OTP terkirim:", info.response);
+        }
+      });
       return newUser;
     } catch (error) {
       throw new Error(`Error creating user: ${error.message}`);
+    }
+  }
+
+  async VerifOtp(otp) {
+    if (!otp) {
+      throw new Error("Please input otp");
+    }
+    console.log(otp);
+    try {
+      const votp = otp;
+      const vrfotp = await authRepository.findToken(votp);
+      return vrfotp;
+    } catch (error) {
+      throw new Error(`cannot OTP: ${error.message}`);
     }
   }
   async login(email, password) {

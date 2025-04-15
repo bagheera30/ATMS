@@ -31,7 +31,6 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
         otp,
       }
     );
-    console.log(result.records[0].get("result"));
     // Return only the records
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
@@ -42,12 +41,18 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
   }
 };
 const findToken = async (token) => {
-  console.log("Received token:", token.token); // Tambahkan log ini
+  console.log("Received token:", token); // Tambahkan log ini
   const session = neo.session();
-  const result = await session.run(`MATCH (u:User{otp: $token}) RETURN u`, {
-    token: token.token,
-  });
-  return result.records.length > 0 ? result.records[0].get("u") : null;
+  const result = await session.run(
+    `MATCH (u:User{otp:$token}) SET u.status = "unlocked" 
+  RETURN { code: 0, status: true, message: 'success OTP' } AS result
+    "`,
+    {
+      token: token,
+    }
+  );
+  console.log(result.records[0].get("result"));
+  return result.records.length > 0 ? result.records[0].get("result") : null;
 };
 const authtetication = async (username, password) => {
   const session = neo.session();
@@ -75,4 +80,4 @@ const authtetication = async (username, password) => {
     await session.close();
   }
 };
-module.exports = { createUser, authtetication };
+module.exports = { createUser, authtetication, findToken };
