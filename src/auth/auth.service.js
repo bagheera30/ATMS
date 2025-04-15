@@ -21,7 +21,9 @@ class authService {
       const otp = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
       const newUser = await authRepository.createUser({ user }, otp);
       const nm = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
         auth: {
           user: process.env.EMAIL_VERIF,
           pass: process.env.PASSWORD_EMAIL,
@@ -29,7 +31,7 @@ class authService {
       });
       const mailOptions = {
         from: process.env.EMAIL_VERIF, // Email pengirim
-        to: email, // Email penerima
+        to: email, 
         subject: "Kode OTP Verifikasi", // Subjek email
         html: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
     <img src="https://img.freepik.com/free-psd/phone-icon-design_23-2151311652.jpg?t=st=1740712456~exp=1740716056~hmac=edbd775bf2f8b086629ddbb8440face843343bf69929cb8a4137e9c3aa1c2848&w=900" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
@@ -49,7 +51,7 @@ class authService {
   </div>`,
       };
 
-      nm.sendMail(mailOptions, function (error, info) {
+      await nm.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.error("Gagal mengirim email OTP:", error);
         } else {
