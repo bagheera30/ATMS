@@ -8,8 +8,8 @@ class authService {
     const email = data.email;
     const password = data.password;
     const dateOfBirth = data.dateOfBirth;
-    const phoneNumber = data.phoneNumber;
-    if (!username || !email || !password || !dateOfBirth || !phoneNumber) {
+
+    if (!username || !email || !password || !dateOfBirth) {
       throw new Error("please complete the form1");
     }
     try {
@@ -90,7 +90,6 @@ class authService {
     try {
       // Panggil repository untuk mendapatkan data pengguna dari Neo4j
       const authResult = await authRepository.authentication(email);
-
 
       // Cek apakah pengguna ditemukan atau statusnya tidak valid
       if (!authResult.status) {

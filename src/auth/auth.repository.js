@@ -36,7 +36,7 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
         email: data.user.email,
         password: data.user.password,
         dateOfBirth: data.user.dateOfBirth,
-        phoneNumber: data.user.phoneNumber,
+        phoneNumber: data.user.phoneNumber || "",
         otp,
       }
     );
@@ -74,7 +74,7 @@ const findToken = async (token) => {
   try {
     const result = await session.run(
       `MATCH (u:User  {otp: $token}) 
-       SET u.status = "unlocked" 
+       SET u.status = "unlocked",u.otp=null
        RETURN { code: 0, status: true, message: 'success OTP' } AS result`,
       {
         token: token,

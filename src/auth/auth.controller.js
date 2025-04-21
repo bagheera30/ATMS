@@ -4,7 +4,6 @@ const authService = require("./auth.service");
 const { validateCreateUser } = require("../middlewares/validasi");
 const { validationResult } = require("express-validator");
 
-// Endpoint untuk mendaftar pengguna baru
 router.post("/register", validateCreateUser, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -23,9 +22,6 @@ router.post("/register", validateCreateUser, async (req, res) => {
     const user = await authService.createUser(data);
     res.status(201).json({
       // Menggunakan 201 Created
-      code: 0,
-      status: true,
-      message: "User  created successfully",
       user,
     });
   } catch (error) {
@@ -90,10 +86,6 @@ router.get("/verifOtp/:otp", async (req, res) => {
     }
 
     res.status(200).json({
-      // Menggunakan 200 OK untuk respons yang berhasil
-      code: 0,
-      status: true,
-      message: "OTP verified successfully",
       user,
     });
   } catch (error) {
