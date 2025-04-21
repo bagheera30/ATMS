@@ -10,7 +10,6 @@ const validateCreateUser = [
   body("dateOfBirth")
     .isString()
     .withMessage("Date of Birth must be a valid date in YYYY-MM-DD format"),
-  body("phoneNumber").isString().withMessage("Phone number must be a string"),
 ];
 
 module.exports = { validateCreateUser };
