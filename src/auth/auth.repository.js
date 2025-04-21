@@ -3,10 +3,20 @@ const neo = db.getInstance();
 
 const createUser = async (data, otp) => {
   const session = neo.session();
+  console.log(data);
 
   try {
     const result = await session.run(
-      `CREATE (u:User  {
+      `CREATE (r:Role{
+          uuid: apoc.create.uuid(),
+          RoleName: "user",
+          status: "inactive",
+          createdBy: $username,
+          createAt: timestamp(),
+          modifiedBy: "", 
+          modifiedAt: timestamp()
+      })
+      CREATE (u:User  {
           uuid: apoc.create.uuid(),
           username: $username,
           email: $email,
@@ -19,7 +29,7 @@ const createUser = async (data, otp) => {
           modifiedBy: "", 
           modifiedAt: timestamp(),
           otp: $otp
-      })
+      })-[:HAS_ROLE]->(r)
 RETURN { code: 0, status: true, message: 'create user success' } AS result`,
       {
         username: data.user.username,
@@ -58,7 +68,8 @@ const validasiEmail = async (username) => {
     await session.close();
   }
 };
-const findToken = async (token) => {// Log the received token
+const findToken = async (token) => {
+  // Log the received token
   const session = neo.session();
   try {
     const result = await session.run(
@@ -89,13 +100,14 @@ const authentication = async (username) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User  {email: $username})
+      `MATCH (u:User  {email: $username})-[:HAS_ROLE]->(r:Role)
       RETURN CASE 
           WHEN u.status = 'unlocked' THEN {
               code: 0,
               status: true,
               message: 'success',
-              user: u
+              user: u,
+              role: r
           }
           ELSE {
               code: 1,

@@ -91,11 +91,13 @@ class authService {
       // Panggil repository untuk mendapatkan data pengguna dari Neo4j
       const authResult = await authRepository.authentication(email);
 
+
       // Cek apakah pengguna ditemukan atau statusnya tidak valid
       if (!authResult.status) {
         const message = authResult.message;
         return message;
       }
+      const role = authResult.role.properties.RoleName;
 
       // Ambil data pengguna dari hasil query
       const user = authResult.user.properties;
@@ -113,7 +115,7 @@ class authService {
 
       // Jika autentikasi berhasil, buat token JWT
       const token = jwt.sign(
-        { userId: user.id, username: user.username, role: user.role }, // Payload token
+        { userId: user.id, username: user.username, role: role }, // Payload token
         process.env.JWT_SECRET || "default_secret", // Use environment variable or default secret
         { expiresIn: "1h" } // Token berlaku selama 1 jam
       );

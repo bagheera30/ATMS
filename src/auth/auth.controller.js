@@ -67,7 +67,6 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
       code: 2,
       status: false,
       message: error.message,
