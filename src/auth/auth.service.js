@@ -4,12 +4,13 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 class authService {
   async createUser(data) {
-    const username = data.username;
+    const namaLengkap = data.namaLengkap;
     const email = data.email;
     const password = data.password;
     const dateOfBirth = data.dateOfBirth;
+    const jabatan = data.jabatan;
 
-    if (!username || !email || !password || !dateOfBirth) {
+    if (!namaLengkap || !email || !password || !dateOfBirth || !jabatan) {
       throw new Error("please complete the form1");
     }
     try {
