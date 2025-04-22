@@ -27,7 +27,6 @@ class authService {
       const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
       const newUser = await authRepository.createUser({ user }, otp);
 
-      console.log(newUser);
       if (!newUser.status) {
         const message = authResult.message;
         return message;

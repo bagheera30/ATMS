@@ -6,6 +6,7 @@ const { validationResult } = require("express-validator");
 
 router.post("/register", validateCreateUser, async (req, res) => {
   const errors = validationResult(req);
+  
   if (!errors.isEmpty()) {
     return res.status(400).json({
       code: 1,
