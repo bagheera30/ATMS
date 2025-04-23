@@ -11,7 +11,6 @@ const createUser = async (data, otp) => {
           uuid: apoc.create.uuid(),
           RoleName: "user",
           status: "inactive",
-          "jabatan": $jabatan,
           createdBy: $username,
           createAt: timestamp(),
           modifiedBy: "", 
@@ -24,6 +23,7 @@ const createUser = async (data, otp) => {
           dateOfBirth: $dateOfBirth,
           phoneNumber: $phoneNumber,
           status: "locked",
+          jabatan:$jabatan
           password: $password,
           createdBy: $username,
           createAt: timestamp(),
