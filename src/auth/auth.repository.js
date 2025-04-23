@@ -33,7 +33,7 @@ const createUser = async (data, otp) => {
       })-[:HAS_ROLE]->(r)
 RETURN { code: 0, status: true, message: 'create user success' } AS result`,
       {
-        username: data.user.username,
+        username: data.user.namaLengkap,
         email: data.user.email,
         password: data.user.password,
         dateOfBirth: data.user.dateOfBirth,
