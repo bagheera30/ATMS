@@ -23,7 +23,7 @@ const createUser = async (data, otp) => {
           dateOfBirth: $dateOfBirth,
           phoneNumber: $phoneNumber,
           status: "locked",
-          jabatan:$jabatan
+          jabatan:$jabatan,
           password: $password,
           createdBy: $username,
           createAt: timestamp(),
