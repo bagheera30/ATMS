@@ -24,7 +24,8 @@ class authService {
         password: hashedPassword,
       };
 
-      const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+      // const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+      const otp = 55555;
       const newUser = await authRepository.createUser({ user }, otp);
 
       if (!newUser.status) {
