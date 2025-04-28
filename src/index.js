@@ -47,9 +47,8 @@ app.get("/", (req, res) => {
   res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
 });
 
-// app.use("/user", require("./user/user.controller"))
 app.use("/auth", require("./auth/auth.controller"));
-// app.use("/user", require("./user/user.controller"));
+app.use("/user", require("./user/user.controller"));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
