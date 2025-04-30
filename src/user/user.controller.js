@@ -8,7 +8,13 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
     res.status(200).json({
       user,
     });
-  } catch {}
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
 });
 
 module.exports = router;
