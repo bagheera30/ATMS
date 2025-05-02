@@ -6,7 +6,7 @@ const { validationResult } = require("express-validator");
 
 router.post("/register", validateCreateUser, async (req, res) => {
   const errors = validationResult(req);
-  
+
   if (!errors.isEmpty()) {
     return res.status(400).json({
       code: 1,
@@ -39,13 +39,14 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await authService.login(email, password);
-    console.log(user.message);
+    // console.log(user.message);
+    console.log(user);
     if (user === "User  is locked or status is not unlock") {
       return res.status(401).json({
         // Menggunakan 401 Unauthorized
         code: 1,
         status: false,
-        message: "User  not found or incorrect credentials",
+        message: "User  not unlock please contack manager or admin",
       });
     } else if (user.message === "Incorrect password") {
       return res.status(401).json({
@@ -54,12 +55,20 @@ router.post("/login", async (req, res) => {
         status: false,
         message: user.message,
       });
+    } else if (user === "User  not found or incorrect credentials") {
+      return res.status(401).json({
+        // Menggunakan 401 Unauthorized
+        code: 1,
+        status: false,
+        message: user,
+      });
     }
+    console.log(user);  
     res.status(200).json({
       // Menggunakan 200 OK
       code: 0,
       status: true,
-      message: "User  logged in successfully",
+      message: user.message,
       token: user.token,
     });
   } catch (error) {

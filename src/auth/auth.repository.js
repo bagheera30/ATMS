@@ -78,7 +78,7 @@ const findToken = async (token) => {
   try {
     const result = await session.run(
       `MATCH (u:User  {otp: $token}) 
-       SET u.status = "unlocked",u.otp=null
+       SET u.otp=null,u.status="unlocked"
        RETURN { code: 0, status: true, message: 'success OTP' } AS result`,
       {
         token: token,
