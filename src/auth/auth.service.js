@@ -91,14 +91,15 @@ class authService {
     try {
       // Panggil repository untuk mendapatkan data pengguna dari Neo4j
       const authResult = await authRepository.authentication(email);
-      
+
       // Cek apakah pengguna ditemukan atau statusnya tidak valid
       if (!authResult.status) {
         const message = authResult.message;
         return message;
       }
-      const role = authResult.role.properties.RoleName;
 
+      const rolename = authResult.roles.map((node) => node.properties.RoleName);
+      const role = rolename.toString();
       // Ambil data pengguna dari hasil query
       const user = authResult.user.properties;
 
@@ -112,10 +113,9 @@ class authService {
           message: "Incorrect password",
         };
       }
-
       // Jika autentikasi berhasil, buat token JWT
       const token = jwt.sign(
-        { userId: user.id, username: user.username, role: role }, // Payload token
+        { userId: user.uuid, username: user.username, roles: role }, // Payload token
         process.env.JWT_SECRET || "default_secret", // Use environment variable or default secret
         { expiresIn: "1h" } // Token berlaku selama 1 jam
       );

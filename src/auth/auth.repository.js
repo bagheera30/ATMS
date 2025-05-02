@@ -3,7 +3,6 @@ const neo = db.getInstance();
 
 const createUser = async (data, otp) => {
   const session = neo.session();
-  console.log(data);
 
   try {
     const result = await session.run(
@@ -91,7 +90,6 @@ const findToken = async (token) => {
       return null; // or handle it as needed
     }
 
-    console.log(result.records[0].get("result"));
     return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
@@ -104,21 +102,22 @@ const authentication = async (username) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User  {email: $username})-[:HAS_ROLE]->(r:Role)
-      RETURN CASE 
-          WHEN u.status = 'unlocked' THEN {
-              code: 0,
-              status: true,
-              message: 'success',
-              user: u,
-              role: r
-          }
-          ELSE {
-              code: 1,
-              status: false,
-              message: 'User  is locked or status is not unlock'
-          }
-      END AS result`,
+      `MATCH (u:User {email: $username})-[:HAS_ROLE]->(r:Role)
+WITH u, collect(r) AS roles
+RETURN CASE 
+    WHEN u.status = 'unlocked' THEN {
+        code: 0,
+        status: true,
+        message: 'success',
+        user: u,
+        roles: roles
+    }
+    ELSE {
+        code: 1,
+        status: false,
+        message: 'User is locked or status is not unlocked'
+    }
+END AS result`,
       {
         username: username,
       }
