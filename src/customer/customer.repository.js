@@ -6,8 +6,7 @@ const cretaecustomer = async (data, username) => {
   try {
     const result = await session.run(
       `MATCH (u:User { username: $username })
-
-CREATE (c:Customer {
+      CREATE (c:Customer {
     uuid: apoc.create.uuid(),
     name: $name,
     address: $address,
@@ -50,16 +49,18 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
 const getAll = async () => {
   const session = neo.session();
   try {
-    const result =
-      await session.run(`MATCH (c:Customer)-[HAS_STATUS]->(s:Status) RETURN {
+    const result = await session.run(`MATCH (c:Customer) RETURN {
         uuid:c.uuid,
         name:c.name,
         address:c.address,
         city:c.city,
         country:c.country,
-        status:s.status
+        status:[(c)-[:HAS_STATUS]->(s:Status)|s.status][0]
       }as result`);
-    return result.records.length > 0 ? result.records[0].get("result") : null;
+
+    return result.records.length > 0
+      ? result.records.map((record) => record.get("result"))
+      : null;
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
@@ -77,7 +78,7 @@ const getByid = async (uiid) => {
         address:c.address,
         city:c.city,
         country:c.country,
-        status:s.status
+        status:[(c)-[HAS_STATUS]->(s:Status)|s.status][0]
       }as result`,
       {
         uuid: uiid,

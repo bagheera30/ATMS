@@ -1,45 +1,58 @@
 const jwt = require("jsonwebtoken");
 
-// Middleware untuk autentikasi berdasarkan role dan pengecekan expired token
-const authMiddleware = (allowedRoles) => {
+const authMiddleware = (allowedRoles = []) => {
   return (req, res, next) => {
-    // Ambil token dari header Authorization
     const authHeader = req.headers.authorization;
 
-    // Periksa apakah header Authorization ada dan mengandung token
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
         .status(401)
-        .json({ message: "Access denied. No token provided." });
+        .json({ message: "Unauthorized: No token provided." });
     }
 
-    // Ekstrak token dari header
     const token = authHeader.split(" ")[1];
 
     try {
-      // Verifikasi token menggunakan secret key
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-      if (decoded.iat > currentTimeInSeconds) {
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      // Cek token expired (otomatis dilakukan oleh jwt.verify, tapi tambahkan pengecekan manual)
+      if (decoded.exp && decoded.exp < currentTime) {
+        return res
+          .status(401)
+          .json({ message: "Token expired. Please log in again." });
+      }
+
+      if (decoded.iat > currentTime) {
         return res.status(401).json({
           message: "Token issued in the future. Please log in again.",
         });
       }
-      console.log(decoded.role);
-      // Periksa apakah role pengguna sesuai dengan role yang diizinkan
-      if (!allowedRoles.includes(decoded.role)) {
+
+      // Normalisasi roles menjadi array
+      let userRoles = [];
+      if (typeof decoded.roles === "string") {
+        userRoles = decoded.roles.split(",").map((r) => r.trim());
+      } else if (Array.isArray(decoded.roles)) {
+        userRoles = decoded.roles.map((r) => r.toString().trim());
+      } else {
         return res
           .status(403)
-          .json({ message: "Forbidden. Insufficient permissions." });
+          .json({ message: "Forbidden: Invalid role format." });
+      }
+      // Cek izin
+      if (
+        allowedRoles.length > 0 &&
+        !userRoles.some((role) => allowedRoles.includes(role))
+      ) {
+        return res
+          .status(403)
+          .json({ message: "Forbidden: Insufficient permissions." });
       }
 
-      // Tambahkan data pengguna ke objek request untuk digunakan di route selanjutnya
       req.user = decoded;
-
-      // Lanjutkan ke middleware/route berikutnya
       next();
     } catch (error) {
-      // Tangani kesalahan verifikasi token
       if (error.name === "TokenExpiredError") {
         return res
           .status(401)
@@ -50,10 +63,9 @@ const authMiddleware = (allowedRoles) => {
           .status(401)
           .json({ message: "Invalid token. Please log in again." });
       }
-      return res.status(500).json({
-        message: "An unexpected error occurred.",
-        error: error.message,
-      });
+      return res
+        .status(500)
+        .json({ message: "Internal server error.", error: error.message });
     }
   };
 };

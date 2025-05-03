@@ -18,11 +18,9 @@ class CustomerService {
     } else if (!name || !address || !city || !country) {
       throw new Error("please complete the form");
     }
-    console.log("test", username);
 
     try {
       const user = await cretaecustomer(data, username);
-      console.log("test", user);
       return user;
     } catch (error) {
       throw error;
@@ -32,7 +30,6 @@ class CustomerService {
   async getAll() {
     try {
       const user = await getAll();
-      console.log(user);
       return user;
     } catch (error) {
       throw error;

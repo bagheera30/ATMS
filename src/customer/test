@@ -1,0 +1,8 @@
+MATCH (c:Customer)where LOWER (c.name)+LOWER(c.address) CONTAIN  RETURN {
+        uuid:c.uuid,
+        name:c.name,
+        address:c.address,
+        city:c.city,
+        country:c.country,
+        status: [(c)-[HAS_STATUS]->(s:status)|s.status][0] 
+      }as result
