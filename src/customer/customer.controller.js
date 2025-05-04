@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const user = await getAll();
+    console.log(req.query.search);
+    const user = await getAll(req.query.search);
     res.status(200).json({
       user,
     });
@@ -73,8 +74,8 @@ router.patch("/:id", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.delete("/:id", authMiddleware(["manager"]), async (req, res) => {
-  const id = req.params.id;
+router.delete("/", authMiddleware(["manager"]), async (req, res) => {
+  const id = req.query.search;
   try {
     const user = await deleteCustomer(id);
     res.status(200).json({

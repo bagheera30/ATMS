@@ -1,0 +1,131 @@
+const db = require("../db/db");
+const neo = db.getInstance();
+
+const upsertWorkgroup = async (uuid, username, name, status) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MERGE (wg:Workgroup {uuid: $uuid})
+       ON CREATE SET 
+           wg.uuid = randomUUID(),
+           wg.name = $name,
+           wg.createdAt = timestamp(),
+           wg.createdBy = $username
+       ON MATCH SET 
+           wg.name = $name,
+           wg.modifiedAt = timestamp(),
+           wg.modifiedBy = $username
+       
+       MERGE (wg)-[r:HAS_STATUS]->(st:Status)
+       ON CREATE SET
+           st.status = $status,
+           st.createdAt = timestamp()
+       ON MATCH SET
+           st.status=$status,
+           st.modifiedAt = timestamp()
+       RETURN {
+           name: wg.name,
+           status: st.status
+       } as result`,
+      {
+        uuid: uuid || "",
+        name,
+        username,
+        status: status,
+      }
+    );
+    return result.records.map((record) => record.get("result"));
+  } finally {
+    await session.close();
+  }
+};
+const getAll = async () => {
+  const session = neo.session();
+  const result = await session.run(`MATCH (n:Workgroup)
+    RETURN {
+      uuid: n.uuid,
+      name: n.name,
+      status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+      } as result`);
+
+  return result.records.map((record) => record.get("result"));
+};
+const searchWorkgroup = async (search) => {
+  const session = neo.session();
+  const result = await session.run(
+    `MATCH (n:Workgroup)where n.uuid= $search
+    RETURN {
+      uuid: n.uuid,
+      name: n.name,
+      status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+      } as result`,
+    { search }
+  );
+  return result.records.length > 0 ? result.records[0].get("result") : null;
+};
+const deleteWorkgroup = async (uuid) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup {uuid: $uuid})
+      OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
+      WITH n, count(r) AS userCount
+      CALL {
+          WITH n, userCount
+          WHERE userCount = 0
+          DELETE n
+          RETURN "Success" AS response
+        UNION
+        WITH userCount
+        WHERE userCount > 0
+        RETURN "Failed" AS response
+      }
+      RETURN response`,
+      { uuid }
+    );
+
+    return result.records.length > 0
+      ? result.records[0].get("result")
+      : { code: -1, status: false, message: "Unexpected error" };
+  } finally {
+    await session.close();
+  }
+};
+
+const addmember = async (username, uuid) => {
+  const session = neo.session();
+  const result = await session.run(
+    `MATCH (n:Workgroup) where n.uuid= $uuid
+    MATCH (u:User)where u.uuid= $username
+    MERGE (n)-[:HAS_WORKGROUP]->(u)
+    RETURN {
+      name_group: n.name,
+      user: u.namaLengkap
+      } as result`,
+    { uuid, username }
+  );
+  return result.records.length > 0 ? result.records[0].get("result") : null;
+};
+const removemember = async (username, uuid) => {
+  const session = neo.session();
+  const result = await session.run(
+    `MATCH (n:Workgroup) where n.uuid= $uuid
+    MATCH (u:User)where u.uuid= $username
+      MATCH (n)-[r:HAS_WORKGROUP]->(u)
+    DELETE r
+    RETURN {
+      name_group: n.name,
+      user: u.namaLengkap
+      } as result`,
+    { uuid, username }
+  );
+  return result.records.length > 0 ? result.records[0].get("result") : null;
+};
+module.exports = {
+  upsertWorkgroup,
+  getAll,
+  searchWorkgroup,
+  deleteWorkgroup,
+  addmember,
+  removemember,
+};

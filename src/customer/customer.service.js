@@ -27,9 +27,9 @@ class CustomerService {
     }
   }
 
-  async getAll() {
+  async getAll(search) {
     try {
-      const user = await getAll();
+      const user = await getAll(search);
       return user;
     } catch (error) {
       throw error;
@@ -57,12 +57,12 @@ class CustomerService {
     }
   }
 
-  async deleteCustomer(uuid) {
-    if (!uuid) {
-      throw new Error("please complete the form");
+  async deleteCustomer(search) {
+    if (!search) {
+      throw new Error("please complete the query");
     }
     try {
-      const user = await deleteCustomer(uuid);
+      const user = await deleteCustomer(search);
       return user;
     } catch (error) {
       throw error;

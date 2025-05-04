@@ -50,6 +50,7 @@ app.get("/", (req, res) => {
 app.use("/auth", require("./auth/auth.controller"));
 app.use("/user", require("./user/user.controller"));
 app.use("/customers", require("./customer/customer.controller"));
+app.use("/workgroup", require("./workgroup/workgroup.controlle"));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
