@@ -55,7 +55,7 @@ const searchWorkgroup = async (search) => {
   const result = await session.run(
     `MATCH (n:Workgroup)where n.uuid= $search
     RETURN {
-      uuid: n.uuid,
+      user: [(n)-[:HAS_WORKGROUP]->(u:User)|u.namaLengkap][0],
       name: n.name,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
       } as result`,
@@ -68,24 +68,41 @@ const deleteWorkgroup = async (uuid) => {
   try {
     const result = await session.run(
       `MATCH (n:Workgroup {uuid: $uuid})
-      OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
-      WITH n, count(r) AS userCount
-      CALL {
-          WITH n, userCount
-          WHERE userCount = 0
-          DELETE n
-          RETURN "Success" AS response
-        UNION
-        WITH userCount
-        WHERE userCount > 0
-        RETURN "Failed" AS response
-      }
-      RETURN response`,
+OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
+WITH n, count(userRel) AS userCount
+// Find all relationships from the Workgroup (not just HAS_WORKGROUP)
+OPTIONAL MATCH (n)-[r]->(any)
+WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
+CALL {
+    WITH n, userCount
+    RETURN 
+        CASE 
+            WHEN userCount = 0 THEN "Delete"
+            ELSE "Keep"
+        END AS action
+}
+WITH n, userCount, allRels, allNodes, action
+WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
+FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
+    DELETE rel
+)
+// Delete any nodes that were connected (except Users which we checked earlier)
+FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
+    DELETE node
+)
+FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
+    DELETE n
+)
+RETURN 
+    CASE 
+        WHEN action = "Delete" THEN "Success" 
+        ELSE "Failed: Workgroup has users" 
+    END AS response`,
       { uuid }
     );
-
+    console.log(result.records[0].get("response"));
     return result.records.length > 0
-      ? result.records[0].get("result")
+      ? result.records[0].get("response")
       : { code: -1, status: false, message: "Unexpected error" };
   } finally {
     await session.close();

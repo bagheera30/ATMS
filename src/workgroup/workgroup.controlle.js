@@ -52,9 +52,9 @@ router.post("/", authMiddleware(["manager"]), async (req, res) => {
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const user = await getAllWorkgroup();
+    const workgroup = await getAllWorkgroup();
     res.status(200).json({
-      user,
+      workgroup,
     });
   } catch (error) {
     res.status(400).json({
@@ -67,9 +67,9 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
 router.get("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   const uuid = req.params.uuid;
   try {
-    const user = await getByid(uuid);
+    const workgroup = await getByid(uuid);
     res.status(200).json({
-      user,
+      workgroup,
     });
   } catch (error) {
     res.status(400).json({
@@ -85,6 +85,8 @@ router.delete("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   try {
     const user = await deleteWorkgroup(id);
     res.status(200).json({
+      code: 1,
+      status: true,
       user,
     });
   } catch (error) {

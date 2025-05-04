@@ -40,6 +40,7 @@ class WorkgroupService {
   async deleteWorkgroup(id) {
     try {
       const user = await deleteWorkgroup(id);
+      console.log(user);
       return user;
     } catch (error) {
       throw error;
