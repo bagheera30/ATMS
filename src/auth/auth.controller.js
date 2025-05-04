@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await authService.login(email, password);
 
-    if (user === "User  is locked or status is not unlock") {
+    if (user === "User is locked or status is not unlocked") {
       return res.status(401).json({
         // Menggunakan 401 Unauthorized
         code: 1,
