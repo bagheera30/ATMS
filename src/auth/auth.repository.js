@@ -7,7 +7,7 @@ const createUser = async (data, otp) => {
   try {
     const result = await session.run(
       `CREATE (r:Role{
-          uuid: apoc.create.uuid(),
+          uuid: randomUUID(),
           RoleName: "user",
           status: "inactive",
           createdBy: $username,
@@ -16,7 +16,7 @@ const createUser = async (data, otp) => {
           modifiedAt: timestamp()
       })
       CREATE (u:User  {
-          uuid: apoc.create.uuid(),
+          uuid: randomUUID(),
           username:$username,
           namaLengkap: $namaLengkap,
           email: $email,
