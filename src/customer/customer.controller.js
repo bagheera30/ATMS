@@ -74,8 +74,8 @@ router.patch("/:id", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.delete("/", authMiddleware(["manager"]), async (req, res) => {
-  const id = req.query.search;
+router.delete("/:id", authMiddleware(["manager"]), async (req, res) => {
+  const id = req.params.id;
   try {
     const user = await deleteCustomer(id);
     res.status(200).json({
