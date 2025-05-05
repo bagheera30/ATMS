@@ -6,19 +6,24 @@ const findUserAll = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (u:User {username: $username})-[:HAS_ROLE]->(r:Role)
-      RETURN {
-        username: u.username,
-        email: u.email,
-        TanggalLahir: u.dateOfBirth,
-        \`No.Hp\`: u.phoneNumber,
-        Role: r.RoleName
-      } AS result
+      MATCH (u:User {username: 'test'})-[:HAS_ROLE]->(r:Role)
+WITH u, collect(r.RoleName) AS roles
+RETURN {
+  id: elementId(u),
+  username: u.username,
+  email: u.email,
+  TanggalLahir: u.dateOfBirth,
+  \`No.Hp\`: u.phoneNumber,
+  Role: roles
+} AS result
+
+
       `,
       {
         username: username,
       }
     );
+    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
