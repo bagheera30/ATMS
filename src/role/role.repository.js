@@ -114,7 +114,7 @@ const addmember = async (username, RoleName) => {
   const result = await session.run(
     `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS $RoleName
     MATCH (u:User)where u.uuid CONTAINS $username
-    MERGE (u)-[:HAS_Role]->(n)
+    MERGE (u)-[:HAS_ROLE]->(n)
     RETURN {
       name_Role: n.RoleName,
       user: u.namaLengkap

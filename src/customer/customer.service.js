@@ -29,7 +29,8 @@ class CustomerService {
 
   async getAll(search) {
     try {
-      const user = await getAll(search);
+      const lower = search.toLowerCase();
+      const user = await getAll(lower);
       return user;
     } catch (error) {
       throw error;
