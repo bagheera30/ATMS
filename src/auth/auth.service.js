@@ -91,7 +91,7 @@ class authService {
     try {
       // Panggil repository untuk mendapatkan data pengguna dari Neo4j
       const authResult = await authRepository.authentication(email);
-      console.log(authResult);
+
       // Cek apakah pengguna ditemukan atau statusnya tidak valid
       if (!authResult.status) {
         const message = authResult.message;

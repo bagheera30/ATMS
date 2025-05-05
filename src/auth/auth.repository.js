@@ -9,11 +9,19 @@ const createUser = async (data, otp) => {
       `CREATE (r:Role{
           uuid: randomUUID(),
           RoleName: "user",
-          status: "inactive",
           createdBy: $username,
-          createAt: timestamp(),
-          modifiedBy: "", 
-          modifiedAt: timestamp()
+          createAt: timestamp()
+      })-[:HAS_STATUS]->(sr:Status{
+        uuid: randomUUID(),
+        status: "inactive",
+        createdBy: $username,
+        createAt: timestamp()
+      })
+      create(su:Status{
+        uuid: randomUUID(),
+        status: "locked",
+        createdBy: $username,
+        createAt: timestamp()
       })
       CREATE (u:User  {
           uuid: randomUUID(),
@@ -22,7 +30,6 @@ const createUser = async (data, otp) => {
           email: $email,
           dateOfBirth: $dateOfBirth,
           phoneNumber: $phoneNumber,
-          status: "locked",
           jabatan:$jabatan,
           password: $password,
           createdBy: $username,
@@ -31,6 +38,7 @@ const createUser = async (data, otp) => {
           modifiedAt: timestamp(),
           otp: $otp
       })-[:HAS_ROLE]->(r)
+      create (u)-[:HAS_STATUS]->(su)
 RETURN { code: 0, status: true, message: 'create user success' } AS result`,
       {
         username: data.user.username,
@@ -76,8 +84,8 @@ const findToken = async (token) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User  {otp: $token}) 
-       SET u.otp=null,u.status="unlocked"
+      `MATCH (u:User  {otp: $token})-[:HAS_STATUS]->(s:Status)
+       SET u.otp=null,s.status="unlocked",s.modifiedAt=timestamp()
        RETURN { code: 0, status: true, message: 'success OTP' } AS result`,
       {
         token: token,
@@ -103,9 +111,10 @@ const authentication = async (username) => {
   try {
     const result = await session.run(
       `MATCH (u:User {email: $username})-[:HAS_ROLE]->(r:Role)
-WITH u, collect(r) AS roles
+      OPTIONAL MATCH (u)-[:HAS_STATUS]->(s:Status)
+WITH u, collect(r) AS roles,s
 RETURN CASE 
-    WHEN u.status = 'unlocked' THEN {
+    WHEN s.status = 'unlocked' THEN {
         code: 0,
         status: true,
         message: 'success',
