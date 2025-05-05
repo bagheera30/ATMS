@@ -79,6 +79,8 @@ router.delete("/:id", authMiddleware(["manager"]), async (req, res) => {
   try {
     const user = await deleteCustomer(id);
     res.status(200).json({
+      code: 1,
+      status: true,
       user,
     });
   } catch (error) {
