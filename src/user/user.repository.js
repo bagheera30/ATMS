@@ -6,7 +6,7 @@ const findUserAll = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (u:User {username: 'test'})-[:HAS_ROLE]->(r:Role)
+      MATCH (u:User {username: $username})-[:HAS_ROLE]->(r:Role)
 WITH u, collect(r.RoleName) AS roles
 RETURN {
   id: elementId(u),
