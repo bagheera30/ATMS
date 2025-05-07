@@ -1,4 +1,4 @@
-const { getallVendor, deleteVendor, updsert } = require("./vendor.repository");
+const { getallVendor, deleteVendor, updsert, getByIdvendor } = require("./vendor.repository");
 
 class VendorService {
   async getall() {
@@ -11,7 +11,7 @@ class VendorService {
   }
   async getVendorById(id) {
     try {
-      const user = await this.getVendorById(id);
+      const user = await getByIdvendor(id);
       return user;
     } catch (error) {
       throw error;

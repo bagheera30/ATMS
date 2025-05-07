@@ -12,9 +12,9 @@ class UserService {
   async getUserallByUsername(username) {
     try {
       const user = await findUserAllByUsername(username);
-      // if (Array.isArray(user.Role)) {
-      //   user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
-      // }
+      if (Array.isArray(user.Role)) {
+        user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
+      }
       if (!user) {
         return {
           code: 1,
