@@ -34,7 +34,7 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
         status: status || "inactive",
       }
     );
-    return result.records.map((record) => code(record.get("result")));
+    return result.records.map((record) => record.get("result"));
   } finally {
     await session.close();
   }
@@ -126,6 +126,7 @@ const addmember = async (username, RoleName) => {
       } as result`,
     { RoleName, username }
   );
+  console.log(result.records[0].get("result"));
   return result.records.length > 0 ? result.records[0].get("result") : null;
 };
 const removemember = async (username, uuid) => {

@@ -10,12 +10,14 @@ const {
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, name, status) {
     try {
+      console.log(uuid, username, name, status);
       if (!username) {
         throw new Error("username is required");
       } else if (!name) {
         throw new Error("please complete the form");
       }
       const user = await upsertWorkgroup(uuid, username, name, status);
+      console.log(user);
       return user;
     } catch (error) {
       throw error;
@@ -69,6 +71,7 @@ class WorkgroupService {
   }
   async adduserToWorkgroup(idUser, id) {
     try {
+      const lw=idUser.toLowerCase();
       const user = await addmember(idUser, id);
       return user;
     } catch (error) {

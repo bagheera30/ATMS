@@ -28,11 +28,10 @@ router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
 });
 router.post("/addUser", authMiddleware(["user"]), async (req, res) => {
   const id = req.query.RoleName;
-  console.log("id", id);
   const data = req.body;
   try {
     const user = await adduserToWorkgroup(data.uuid, id);
-    console.log(user);
+
     res.status(201).json({
       user,
     });
@@ -67,12 +66,16 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
 
 router.post("/", authMiddleware(["user"]), async (req, res) => {
   const data = req.body;
+  console.log(data.RoleName);
   const username = req.user.username;
+  console.log(req.user.roles);
   const name = data.RoleName;
   const status = data.status;
+  console.log("salah");
   const uuid = null;
   try {
     const user = await upsertWorkgroup(uuid, username, name, status);
+    console.log(user);
     res.status(201).json({
       user,
     });
@@ -86,15 +89,15 @@ router.post("/", authMiddleware(["user"]), async (req, res) => {
 });
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
-  const serch= req.query.RoleName;
+  const serch = req.query.RoleName;
   try {
     let workgroup;
-    if(serch){
+    if (serch) {
       workgroup = await getByid(serch);
-    }else{
+    } else {
       workgroup = await getAllWorkgroup();
     }
-    
+
     res.status(200).json({
       workgroup,
     });

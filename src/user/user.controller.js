@@ -3,18 +3,21 @@ const authMiddleware = require("../middlewares/autentication");
 const userService = require("./user.service");
 const router = express.Router();
 
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
   try {
     const search = req.query.username;
     let user;
+    console.log("user req: ", req.user.roles);
     console.log(search);
-
-    if (search) {
-      user = await userService.getUserallByUsername(search);
-      console.log(user);
+    if (req.user.roles === "user") {
+      user = await userService.getUserallByUsername(req.user.username);
+      console.log("user: ", user);
     } else {
-      user = await userService.getall();
-      console.log(user);
+      if (search) {
+        user = await userService.getUserallByUsername(search);
+      } else {
+        user = await userService.getall();
+      }
     }
 
     res.status(200).json({
@@ -32,12 +35,19 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.patch("/:id", authMiddleware(["manager"]), async (req, res) => {
+router.patch("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
   const data = req.body;
   const id = req.params.id;
+  const r=req.user.roles.split(",");
+  console.log(r);
   const username = req.user.username;
   try {
-    const user = await userService.updateUser(id, data);
+    const user = await userService.updateUser(
+      id,
+      data,
+      req.user.roles,
+      username
+    );
     res.status(201).json({
       user,
     });

@@ -7,6 +7,7 @@ const {
   deleteUser,
   findUserAllByUsername,
 } = require("./user.repository");
+const bcrypt = require("bcrypt");
 
 class UserService {
   async getUserallByUsername(username) {
@@ -56,32 +57,51 @@ class UserService {
   }
   async updateUser(uuid, data, role, fromedit) {
     try {
-      if (role === "user") {
-        const datas = await findUserById(uuid, data.username);
-        const pw = data.password;
-        const isPasswordValid = await bcrypt.compare(pw, datas.password);
-        if (isPasswordValid) {
-          return {
-            code: 1,
-            status: false,
-            message: "new password must not be the same as previous password",
-          };
-        }
-        const user = await updateUser(uuid, data);
+      // untuk change password
+      if (role.includes("manager")) {
+        const user = await userstatus(uuid, fromedit, data);
+        console.log(user);
         return {
           code: 0,
           status: true,
-          message: "success",
-          data: user,
+          message: "sucess",
+          user,
         };
-      } else if (role === "manager") {
-        return (user = await userstatus(uuid, fromedit, data));
       } else {
-        const datas = data.username;
-        return (user = await userUpdateRole(datas, fromedit, role));
+        if (!data.password) {
+          return {
+            code: 2,
+            status: false,
+            message: "Please complete the form",
+          };
+        } else {
+          const fn = await findUserById(uuid);
+          const pw = fn.password;
+          const isPasswordValid = await bcrypt.compare(data.password, pw);
+          if (!isPasswordValid) {
+            return {
+              code: 2,
+              status: false,
+              message: "Incorrect password",
+            };
+          }
+          data.password = await bcrypt.hash(data.password, 10);
+
+          const user = await updateUser(uuid, data, role, fromedit);
+          return {
+            code: 0,
+            status: true,
+            message: "sucess",
+            user,
+          };
+        }
       }
     } catch (error) {
-      throw error;
+      return {
+        code: 2,
+        status: false,
+        message: error.message,
+      };
     }
   }
   async deleteUser(uuid) {

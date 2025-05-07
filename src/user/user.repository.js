@@ -60,23 +60,23 @@ RETURN {
     await session.close(); // Pastikan sesi ditutup
   }
 };
-const findUserById = async (id, username) => {
+const findUserById = async (id) => {
   const session = neo.session();
   try {
     const result = await session.run(
       `
         MATCH (u:User)
-        WHERE u.uuid = $uuid OR u.username = $username
+        WHERE u.uuid = $uuid
         RETURN {
             username:u.username,
             email:u.email,
             TanggalLahir:u.dateOfBirth,
-            No.Hp:u.phoneNumber,
-            Role:r.RoleName,
+            \`No.Hp\`:u.phoneNumber,
+            Role:[(u)-[:HAS_ROLE]->(n:Role)|n.RoleName],
+            password:u.password
             }as result`,
       {
-        id: id || "",
-        username: username || "",
+        uuid: id || "",
       }
     );
     return result.records.length > 0 ? result.records[0].get("result") : null;
@@ -116,10 +116,11 @@ const userUpdateRole = async (username, fromedit, data) => {
 const userstatus = async (uuid, fromedit, data) => {
   const session = neo.session();
   try {
+    console.log(uuid, fromedit, data);
     const result = await session.run(
       `
       MATCH(u:User {uuid: $uuid})-[r:HAS_STATUS]->(s:Status)
-      SET s.status = $data, s.modifiedAt=timestamp(),s.modifiedBy=$fromedit
+      SET s.status = $data.status, s.modifiedAt=timestamp(),s.modifiedBy=$fromedit
       RETURN{
       username:u.username,
       status:s.status
@@ -131,6 +132,7 @@ const userstatus = async (uuid, fromedit, data) => {
         fromedit,
       }
     );
+    console.log("result", result.records);
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -144,13 +146,13 @@ const updateUser = async (uuid, data, dataform) => {
   try {
     const result = await session.run(
       `MATCH (u:User {uuid: $uuid})
-        SET u+=data,u.modifiedAt=timestamp(),u.modifiedBy=$dataform
+        SET u+=$data,u.modifiedAt=timestamp(),u.modifiedBy=$dataform
         RETURN {
             username:u.username,
             email:u.email,
             TanggalLahir:u.dateOfBirth,
-            No.Hp:u.phoneNumber,
-            Role:r.RoleName,
+            \`No.Hp\`:u.phoneNumber,
+            Role:[(u)-[:HAS_ROLE]->(n:Role)|n.RoleName]
             }as result`,
       {
         uuid,
@@ -158,6 +160,7 @@ const updateUser = async (uuid, data, dataform) => {
         dataform,
       }
     );
+    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
