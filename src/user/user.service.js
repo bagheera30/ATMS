@@ -12,11 +12,23 @@ class UserService {
   async getUserallByUsername(username) {
     try {
       const user = await findUserAllByUsername(username);
-      console.log(user.Role);
-      if (Array.isArray(user.Role)) {
-        user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
+      // if (Array.isArray(user.Role)) {
+      //   user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
+      // }
+      if (!user) {
+        return {
+          code: 1,
+          status: false,
+          message: "user not found",
+        };
       }
-      return user;
+      // console.log(user);
+      return {
+        code: 0,
+        status: true,
+        message: "sucess",
+        user,
+      };
     } catch (error) {
       throw error;
     }
@@ -25,6 +37,19 @@ class UserService {
     try {
       const user = await findUserById(id, username);
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getall() {
+    try {
+      const user = await findUserAll();
+      return {
+        code: 0,
+        status: true,
+        message: "sucess",
+        user,
+      };
     } catch (error) {
       throw error;
     }

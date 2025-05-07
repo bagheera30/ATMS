@@ -2,11 +2,26 @@ const express = require("express");
 const authMiddleware = require("../middlewares/autentication");
 const userService = require("./user.service");
 const router = express.Router();
+
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const user = await userService.getUserallByUsernamel(req.user.username);
+    const search = req.query.username;
+    let user;
+    console.log(search);
+
+    if (search) {
+      user = await userService.getUserallByUsername(search);
+      console.log(user);
+    } else {
+      user = await userService.getall();
+      console.log(user);
+    }
+
     res.status(200).json({
-      user,
+      code: user.code,
+      status: user.status,
+      message: user.message,
+      user: user.user,
     });
   } catch (error) {
     res.status(400).json({

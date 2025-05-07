@@ -16,14 +16,11 @@ RETURN {
   \`No.Hp\`: u.phoneNumber,
   Role: roles
 } AS result
-
-
       `,
       {
         username: username,
       }
     );
-    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -55,7 +52,7 @@ RETURN {
       }
     );
     console.log(result.records[0].get("result"));
-    return result.records.length > 0 ? result.records[0].get("result") : null;
+    return result.records.map((record) => record.get("result"));
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
