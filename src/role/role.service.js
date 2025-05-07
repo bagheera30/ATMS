@@ -24,7 +24,11 @@ class WorkgroupService {
   async getAllWorkgroup() {
     try {
       const user = await getAll();
-      return user;
+      const role = user.map((item) => ({
+        ...item,
+        user: item.user.toNumber(), // Ambil nilai integer dari objek
+      }));
+      return role ;
     } catch (error) {
       throw error;
     }

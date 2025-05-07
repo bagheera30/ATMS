@@ -1,4 +1,5 @@
 const db = require("../db/db");
+const { code } = require("../doc/format");
 const neo = db.getInstance();
 
 const upsertWorkgroup = async (uuid, username, name, status) => {
@@ -33,7 +34,7 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
         status: status || "inactive",
       }
     );
-    return result.records.map((record) => record.get("result"));
+    return result.records.map((record) => code(record.get("result")));
   } finally {
     await session.close();
   }
@@ -41,11 +42,16 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
 const getAll = async () => {
   const session = neo.session();
   const result = await session.run(`MATCH (n:Role)
-    RETURN {
-      uuid: c.uuid,
-      name: n.RoleName,
-      status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-      } as result`);
+OPTIONAL MATCH (u:User)-[r:HAS_ROLE]->(n)
+OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
+WITH n, count(DISTINCT r) AS userCount, s.status AS status
+RETURN {
+  uuid: n.uuid,
+  name: n.RoleName,
+  user: userCount,
+  status: status
+} AS result
+`);
 
   return result.records.map((record) => record.get("result"));
 };
