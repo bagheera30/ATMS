@@ -5,12 +5,13 @@ const {
   userstatus,
   findUserById,
   deleteUser,
+  findUserAllByUsername,
 } = require("./user.repository");
 
 class UserService {
-  async getUserall(username) {
+  async getUserallByUsername(username) {
     try {
-      const user = await findUserAll(username);
+      const user = await findUserAllByUsername(username);
       console.log(user.Role);
       if (Array.isArray(user.Role)) {
         user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"

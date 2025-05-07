@@ -1,7 +1,7 @@
 const db = require("../db/db");
 const neo = db.getInstance();
 
-const findUserAll = async (username) => {
+const findUserAllByUsername = async (username) => {
   const session = neo.session();
   try {
     const result = await session.run(
@@ -9,12 +9,43 @@ const findUserAll = async (username) => {
       MATCH (u:User {username: $username})-[:HAS_ROLE]->(r:Role)
 WITH u, collect(r.RoleName) AS roles
 RETURN {
-  id: elementId(u),
+  id: u.uuid,
   username: u.username,
   email: u.email,
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
   Role: roles
+} AS result
+
+
+      `,
+      {
+        username: username,
+      }
+    );
+    console.log(result.records[0].get("result"));
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close(); // Pastikan sesi ditutup
+  }
+};
+
+const findUserAll = async (username) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `
+      MATCH (u:User)
+RETURN {
+  id: u.uuid,
+  username: u.username,
+  email: u.email,
+  TanggalLahir: u.dateOfBirth,
+  \`No.Hp\`: u.phoneNumber,
+  Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName][0]
 } AS result
 
 
@@ -158,8 +189,9 @@ const deleteUser = async (uuid) => {
   }
 };
 module.exports = {
-  findUserAll,
+  findUserAllByUsername,
   userUpdateRole,
+  findUserAll,
   findUserById,
   updateUser,
   deleteUser,

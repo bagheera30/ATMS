@@ -4,7 +4,7 @@ const userService = require("./user.service");
 const router = express.Router();
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const user = await userService.getUserall(req.user.username);
+    const user = await userService.getUserallByUsernamel(req.user.username);
     res.status(200).json({
       user,
     });

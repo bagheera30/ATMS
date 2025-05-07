@@ -5,18 +5,17 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MERGE (wg:Role {uuid: $uuid})
-       ON CREATE SET 
-           wg.uuid = randomUUID(),
-           wg.RoleName = $name,
-           wg.createdAt = timestamp(),
-           wg.createdBy = $username
-       ON MATCH SET 
-           wg.RoleName = $name,
-           wg.modifiedAt = timestamp(),
-           wg.modifiedBy = $username
-       
-       MERGE (wg)-[r:HAS_STATUS]->(st:Status)
+      ` MERGE (n:Role {uuid: $uuid})
+       ON CREATE SET
+           n.uuid = randomUUID(),
+           n.RoleName = $name,
+           n.createdAt = timestamp(),
+           n.createdBy = $username
+       ON MATCH SET
+           n.RoleName = $name,
+           n.updatedAt = timestamp(),
+           n.updatedBy = $username
+       MERGE (n)-[r:HAS_STATUS]->(st:Status)
        ON CREATE SET
            st.status = $status,
            st.createdAt = timestamp()
@@ -24,7 +23,7 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
            st.status=$status,
            st.modifiedAt = timestamp()
        RETURN {
-           name: wg.RoleName,
+           name: n.RoleName,
            status: st.status
        } as result`,
       {
@@ -43,7 +42,7 @@ const getAll = async () => {
   const session = neo.session();
   const result = await session.run(`MATCH (n:Role)
     RETURN {
-      uuid: n.uuid,
+      uuid: c.uuid,
       name: n.RoleName,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
       } as result`);
@@ -67,7 +66,7 @@ const deleteWorkgroup = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (n:Role {uuid: $uuid})
+      `MATCH (n:Role )where n.uuid=$uuid
 OPTIONAL MATCH (u:User)-[userRel:HAS_ROLE]->(n)
 WITH n, count(userRel) AS userCount
 // Find all relationships from the Workgroup (not just HAS_WORKGROUP)

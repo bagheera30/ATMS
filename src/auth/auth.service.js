@@ -125,10 +125,6 @@ class authService {
         status: true,
         message: "Authentication successful",
         token,
-        user: {
-          id: user.uuid,
-          username: user.username,
-        },
       };
     } catch (error) {
       console.error("Error during authentication:", error);

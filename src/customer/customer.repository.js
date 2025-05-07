@@ -51,7 +51,7 @@ const getAll = async (search) => {
   try {
     const result = await session.run(
       `MATCH (c:Customer)where LOWER (c.name)+LOWER(c.address) CONTAINS $search  RETURN {
-        uuid:c.uuid,
+        id:c.uuid,
         name:c.name,
         address:c.address,
         city:c.city,
@@ -62,6 +62,7 @@ const getAll = async (search) => {
         search,
       }
     );
+    console.log(result.records.map((record) => record.get("result")));
 
     return result.records.length > 0
       ? result.records.map((record) => record.get("result"))
@@ -77,7 +78,7 @@ const getByid = async (uiid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (c:Customer {uuid: $uuid}) -[HAS_STATUS]->(s:Status) RETURN {
+      `MATCH (c:Customer)where c.uuid=$uuid RETURN {
         uuid:c.uuid,
         name:c.name,
         address:c.address,
@@ -102,7 +103,7 @@ const updateCustomer = async (uuid, data, username) => {
   try {
     const result = await session.run(
       `
-      MATCH (c:Customer {uuid: $uuid}) 
+      MATCH (c:Customer)where c.uuid=$uuid 
       SET c+=$data,
       c.modifiedAt=timestamp(),
       c.modifiedBy=$username 
@@ -126,7 +127,7 @@ const deleteCustomer = async (search) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (n:Customer {uuid: $uuid})
+      `MATCH (n:Customer)where n.uuid = $search
 OPTIONAL MATCH (n)-[userRel:HAS_Customer]->(u:Project)
 WITH n, count(userRel) AS userCount
 OPTIONAL MATCH (n)-[r]->(any)
@@ -157,10 +158,10 @@ RETURN
         ELSE "Failed: Customer has users" 
     END AS response`,
       {
-        uuid: search,
+        search,
       }
     );
-    console.log("delete",result.records[0].get("response"));
+    console.log("delete", result.records[0].get("response"));
     return result.records.length > 0 ? result.records[0].get("response") : null;
   } catch (error) {
     console.error("Error executing query:", error);
