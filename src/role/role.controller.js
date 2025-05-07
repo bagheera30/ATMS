@@ -86,8 +86,15 @@ router.post("/", authMiddleware(["user"]), async (req, res) => {
 });
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
+  const serch= req.query.RoleName;
   try {
-    const workgroup = await getAllWorkgroup();
+    let workgroup;
+    if(serch){
+      workgroup = await getByid(serch);
+    }else{
+      workgroup = await getAllWorkgroup();
+    }
+    
     res.status(200).json({
       workgroup,
     });

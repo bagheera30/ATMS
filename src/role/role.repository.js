@@ -58,9 +58,9 @@ RETURN {
 const searchWorkgroup = async (search) => {
   const session = neo.session();
   const result = await session.run(
-    `MATCH (n:Role)where LOWER(n.RoleName) CONTAINS $search
+    `MATCH (n:Role)where LOWER (n.RoleName) CONTAINS $search
     RETURN {
-      user: [(u:User)-[:HAS_WORKGROUP]->(n)|u.namaLengkap][0],
+      user: [(u:User)-[:HAS_ROLE]->(n)|u.username],
       name: n.RoleName,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
       } as result`,

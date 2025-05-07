@@ -28,7 +28,12 @@ class WorkgroupService {
         ...item,
         user: item.user.toNumber(), // Ambil nilai integer dari objek
       }));
-      return role ;
+      return {
+        code: 0,
+        status: true,
+        message: "sucess",
+        role,
+      };
     } catch (error) {
       throw error;
     }
@@ -36,7 +41,19 @@ class WorkgroupService {
   async getByid(id) {
     try {
       const user = await searchWorkgroup(id);
-      return user;
+      if (!user) {
+        return {
+          code: 1,
+          status: false,
+          message: "user not found",
+        };
+      }
+      return {
+        code: 0,
+        status: true,
+        message: "sucess",
+        user,
+      };
     } catch (error) {
       throw error;
     }
