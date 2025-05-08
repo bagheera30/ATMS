@@ -53,6 +53,7 @@ app.use("/customers", require("./customer/customer.controller"));
 app.use("/workgroup", require("./workgroup/workgroup.controlle"));
 app.use("/role", require("./role/role.controller"));
 app.use("/vendor", require("./vendor/vendor.controller"));
+app.use("/projekIntance", require("./projeck inteance/projekIntace.controller"));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
