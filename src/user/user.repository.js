@@ -42,6 +42,7 @@ RETURN {
   email: u.email,
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
+  posisi: u.jabatan,
   Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName][0]
 } AS result
 
@@ -72,6 +73,7 @@ const findUserById = async (id) => {
             email:u.email,
             TanggalLahir:u.dateOfBirth,
             \`No.Hp\`:u.phoneNumber,
+            posisi:u.jabatan,
             Role:[(u)-[:HAS_ROLE]->(n:Role)|n.RoleName],
             password:u.password
             }as result`,
