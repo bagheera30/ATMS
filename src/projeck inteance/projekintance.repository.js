@@ -1,7 +1,7 @@
 const db = require("../db/db");
 const neo = db.getInstance();
 
-const upsert = async (data, customer) => {
+const upsert = async (data, customer, username) => {
   const session = neo.session();
 
   try {
@@ -19,14 +19,22 @@ ON MATCH SET
     p.nama = $namaProjek,
     p.modifiedBy = $createdBy,
     p.modifiedAt = timestamp()
+  MERGE (p)-[r:HAS_STATUS]->(s:Status)
+  ON CREATE SET
+      s.status = $status,
+      s.createdAt = timestamp()
+  ON MATCH SET
+      s.status=$status,
+      s.modifiedAt = timestamp()
 MERGE (c)-[:HAS_CUSTOMER]->(p)
 RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
       {
         customer,
-        businessKey: data.businessKey,
-        namaProjek: data.namaProjek,
+        businessKey: data.businesskey,
+        namaProjek: data.name,
         customer: data.customer,
-        createdBy: data.createdBy,
+        createdBy: username,
+        status: data.status || "incative",
       }
     );
     return result.records.length > 0 ? result.records[0].get("result") : null;

@@ -14,7 +14,9 @@ router.post(
     try {
       const data = req.body;
       const file = req.file;
-      const user = await projekIntanceService.createProjek(data, file);
+      const username = req.user.username;
+      const user = await projekIntanceService.createProjek(data, file,username);
+
       res.status(201).json({
         user,
       });

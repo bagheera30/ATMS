@@ -35,7 +35,7 @@ class ProjekIntanceService {
     }
   }
 
-  async createProjek(data, file) {
+  async createProjek(data, file, username) {
     if (!data || !file) {
       throw new Error("Please complete the form and upload a BPMN file.");
     }
@@ -77,7 +77,6 @@ class ProjekIntanceService {
         }
       );
 
-
       const deployedProcesses = camunda.data;
       const processDefinitions = deployedProcesses.deployedProcessDefinitions;
       const processDefinitionKeys = Object.keys(processDefinitions);
@@ -100,13 +99,14 @@ class ProjekIntanceService {
         }
       );
 
-      // const customer = data.customer;
-      // const db = await upsert(data, customer);
+      const customer = data.customer;
+      const db = await upsert(data, customer, username);
 
       return {
         message: "Deployment and process instance started",
         deployment: deployedProcesses.deployedProcessDefinitions,
         processInstance: startResponse.data.definitionKey,
+        data: db,
       };
     } catch (error) {
       console.error("Error during deployment:", error.message);
@@ -115,6 +115,8 @@ class ProjekIntanceService {
         error: isMulterError ? error.message : "Deployment failed",
         details: error.message,
       };
+    } finally {
+      file.buffer = null;
     }
   }
 }
