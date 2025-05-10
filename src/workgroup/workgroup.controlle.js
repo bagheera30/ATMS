@@ -52,7 +52,8 @@ router.post("/", authMiddleware(["manager"]), async (req, res) => {
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const workgroup = await getAllWorkgroup();
+    const wg=req.query.search
+    const workgroup = await getAllWorkgroup(wg);
     res.status(200).json({
       workgroup,
     });

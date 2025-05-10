@@ -21,9 +21,10 @@ class WorkgroupService {
       throw error;
     }
   }
-  async getAllWorkgroup() {
+  async getAllWorkgroup(search) {
     try {
-      const user = await getAll();
+      const lower = search.toLowerCase();
+      const user = await getAll(lower);
       return user;
     } catch (error) {
       throw error;

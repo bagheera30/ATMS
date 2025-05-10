@@ -39,14 +39,19 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
     await session.close();
   }
 };
-const getAll = async () => {
+const getAll = async (search) => {
   const session = neo.session();
-  const result = await session.run(`MATCH (n:Workgroup)
+  const result = await session.run(
+    `MATCH (n:Workgroup) LOWER(n.name) CONTAINS $search
     RETURN {
       uuid: n.uuid,
       name: n.name,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-      } as result`);
+      } as result`,
+    {
+      search,
+    }
+  );
 
   return result.records.map((record) => record.get("result"));
 };
