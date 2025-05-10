@@ -15,7 +15,11 @@ router.post(
       const data = req.body;
       const file = req.file;
       const username = req.user.username;
-      const user = await projekIntanceService.createProjek(data, file,username);
+      const user = await projekIntanceService.createProjek(
+        data,
+        file,
+        username
+      );
 
       res.status(201).json({
         user,
@@ -29,5 +33,20 @@ router.post(
     }
   }
 );
+
+router.get("/", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const user = await projekIntanceService.getAll();
+    res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
 
 module.exports = router;

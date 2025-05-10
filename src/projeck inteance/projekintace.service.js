@@ -6,11 +6,59 @@ const {
   getProjek,
   createProjek,
   upsert,
+  getAllProjek,
 } = require("./projekintance.repository");
 const uploadToMinio = require("../lib/minioUpload");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {
+  async getAll() {
+    try {
+      const urlcamund = process.env.CAMUNDA_URL;
+      const data = await getAllProjek(); // asumsi ini async
+
+      const promises = data.map(async (item) => {
+        // Ambil process instance berdasarkan businessKey
+        const processInstanceRes = await axios.get(
+          `${urlcamund}/process-instance?businessKey=${item.businessKey}`
+        );
+
+        const processInstances = processInstanceRes.data || [];
+        const processInstanceId =
+          processInstances.length > 0 ? processInstances[0].id : null;
+
+        // Ambil task berdasarkan processInstanceId jika ada
+        let tasks = [];
+        if (processInstanceId) {
+          const taskRes = await axios.get(
+            `${urlcamund}/task?processInstanceId=${processInstanceId}`
+          );
+          tasks = taskRes.data || [];
+        }
+
+        return {
+          businessKey: item.businessKey,
+          nama: item.name,
+          customer: item.customer,
+          status: item.status,
+          processInstanceId: processInstanceId,
+          owner: tasks.length > 0 ? tasks[0].owner : null,
+          created:
+            tasks.length > 0
+              ? new Date(tasks[0].created).toISOString().split("T")[0]
+              : null,
+        };
+      });
+
+      const resultdata = await Promise.all(promises);
+
+      console.log(resultdata);
+      return resultdata;
+    } catch (error) {
+      console.error("Error in getAll():", error.message);
+      throw error;
+    }
+  }
   async getAllProjek(customer) {
     if (!customer) {
       throw new Error("please complete the form");
@@ -89,13 +137,10 @@ class ProjekIntanceService {
         processDefinitions[processDefinitionKeys[0]].id;
 
       // Start process instance
-      const contractNumber = "CN-12345"; // Sesuaikan sumber variabel ini
       const startResponse = await axios.post(
         `${urlcamund}/process-definition/${processDefinitionId}/start`,
         {
-          variables: {
-            contractNumber: { value: contractNumber, type: "String" },
-          },
+          businessKey: data.businesskey,
         }
       );
 

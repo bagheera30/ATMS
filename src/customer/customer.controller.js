@@ -11,7 +11,6 @@ const router = express.Router();
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    console.log(req.query.search);
     const user = await getAll(req.query.search);
     res.status(200).json({
       user,
