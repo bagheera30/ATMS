@@ -109,8 +109,8 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.get("/:uuid", authMiddleware(["manager"]), async (req, res) => {
-  const uuid = req.params.uuid;
+router.get("/", authMiddleware(["manager"]), async (req, res) => {
+  const uuid = req.query.search
   try {
     const workgroup = await getByid(uuid);
     res.status(200).json({

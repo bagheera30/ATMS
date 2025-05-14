@@ -60,7 +60,8 @@ const searchWorkgroup = async (search) => {
   const result = await session.run(
     `MATCH (n:Role)where LOWER (n.RoleName) CONTAINS $search
     RETURN {
-      user: [(u:User)-[:HAS_ROLE]->(n)|u.username],
+      userName: [(u:User)-[:HAS_ROLE]->(n)|u.username],
+      email: [(u:User)-[:HAS_ROLE]->(n)|u.email],
       name: n.RoleName,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
       } as result`,
