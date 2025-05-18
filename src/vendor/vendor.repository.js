@@ -11,6 +11,7 @@ const updsert = async (uuid, data, username) => {
            n.name = $data.name,
            n.address = $data.address,
            n.city = $data.city,
+           n.category=$data.category,
            n.country = $data.country,
            n.createdAt = timestamp(),
            n.createdBy = $username
@@ -18,6 +19,7 @@ const updsert = async (uuid, data, username) => {
            n.name = $data.name,
            n.address = $data.address,
            n.city = $data.city,
+           n.category=$data.category,
            n.country = $data.country,
            n.updatedAt = timestamp(),
            n.updatedBy = $username

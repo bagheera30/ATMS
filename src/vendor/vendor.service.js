@@ -1,4 +1,9 @@
-const { getallVendor, deleteVendor, updsert, getByIdvendor } = require("./vendor.repository");
+const {
+  getallVendor,
+  deleteVendor,
+  updsert,
+  getByIdvendor,
+} = require("./vendor.repository");
 
 class VendorService {
   async getall() {
@@ -29,7 +34,13 @@ class VendorService {
     try {
       if (!username) {
         throw new Error("username is required");
-      } else if (!data.name || !data.address || !data.city || !data.country) {
+      } else if (
+        !data.name ||
+        !data.address ||
+        !data.city ||
+        !data.country ||
+        !data.category
+      ) {
         throw new Error("please complete the form");
       }
       const user = await updsert(uuid, data, username);
