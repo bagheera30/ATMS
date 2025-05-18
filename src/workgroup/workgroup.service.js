@@ -12,7 +12,7 @@ class WorkgroupService {
     try {
       if (!username) {
         throw new Error("username is required");
-      } else if (!name || !status) {
+      } else if (!name) {
         throw new Error("please complete the form");
       }
       const user = await upsertWorkgroup(uuid, username, name, status);

@@ -31,7 +31,7 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
         uuid: uuid || "",
         name,
         username,
-        status: status,
+        status: status || "inactive",
       }
     );
     return result.records.map((record) => record.get("result"));
@@ -42,7 +42,7 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
 const getAll = async (search) => {
   const session = neo.session();
   const result = await session.run(
-    `MATCH (n:Workgroup) LOWER(n.name) CONTAINS $search
+    `MATCH (n:Workgroup)where LOWER(n.name) CONTAINS $search
     RETURN {
       uuid: n.uuid,
       name: n.name,
