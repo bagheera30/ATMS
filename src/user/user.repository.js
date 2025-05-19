@@ -32,7 +32,7 @@ RETURN {
   }
 };
 
-const findUserAll = async (username) => {
+const findUserAll = async () => {
   const session = neo.session();
   try {
     const result = await session.run(
