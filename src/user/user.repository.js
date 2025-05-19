@@ -11,7 +11,9 @@ WITH u, collect(r.RoleName) AS roles
 RETURN {
   id: u.uuid,
   username: u.username,
+  fullName: u.namaLengkap,
   email: u.email,
+  posisi: u.jabatan,
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
   Role: roles
