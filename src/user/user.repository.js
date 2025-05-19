@@ -15,7 +15,7 @@ RETURN {
   email: u.email,
   posisi: u.jabatan,
   TanggalLahir: u.dateOfBirth,
-  \`No.Hp\`: u.phoneNumber,
+  phoneNumber: u.phoneNumber,
   Role: roles
 } AS result
       `,

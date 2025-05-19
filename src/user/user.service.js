@@ -16,6 +16,7 @@ class UserService {
       if (Array.isArray(user.Role)) {
         user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
       }
+      console.log("test", user);
       if (!user) {
         return {
           code: 1,
