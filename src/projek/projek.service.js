@@ -35,7 +35,7 @@ class ProjekIntanceService {
           );
           tasks = taskRes.data || [];
         }
-
+        console.log("tast ", tasks);
         return {
           businessKey: item.businessKey,
           nama: item.name,
@@ -159,44 +159,44 @@ class ProjekIntanceService {
           },
         }
       );
-      
+
       const response = processDefinitionResponse.data;
-      con
+
       return response;
     } catch (error) {
       throw error;
     }
   }
-  async startIntance(data) {
+  async startIntance(data, username) {
     if (!data) {
       throw new Error("please complete the form");
     }
-    try {
-      // 1. Ambil definisi proses terbaru berdasarkan key
-      const processDefinitionResponse = await axios.get(
-        `${urlcamund}/process-definition`,
-        {
-          params: {
-            key: data.key,
-            latestVersion: true,
-          },
-        }
-      );
 
-      // 2. Verifikasi response
-      if (!processDefinitionResponse.data) {
-        throw new Error("Process definition tidak ditemukan");
-      }
-      const processDefinitionId = processDefinitionResponse.data.id;
+    const urlcamund = process.env.CAMUNDA_URL;
+    try {
       // Start process instance
       const startResponse = await axios.post(
-        `${urlcamund}/process-definition/${processDefinitionId}/start`,
+        `${urlcamund}/process-definition/key/${data.key}/start`,
         {
           businessKey: data.businesskey,
         }
       );
 
-      const customer = data.customer;
+      // Verifikasi response
+      if (startResponse.status >= 200 && startResponse.status < 300) {
+        console.log(
+          "Process instance started successfully:",
+          startResponse.data
+        );
+        const customer = data.customer;
+        await upsert(data, customer, username);
+
+        return startResponse.data; // Optional: return response data jika diperlukan
+      } else {
+        throw new Error(
+          `Failed to start process instance: ${startResponse.statusText}`
+        );
+      }
     } catch (error) {
       throw error;
     }

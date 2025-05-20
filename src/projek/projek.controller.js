@@ -51,9 +51,24 @@ router.post("/start", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/definition", authMiddleware(["manager"]), async (req, res) => {
   try {
     const data = await projekIntanceService.getdefinition();
+    res.status(200).json({
+      data,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+router.get("/", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const data = await projekIntanceService.getAll();
     res.status(200).json({
       data,
     });
