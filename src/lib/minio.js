@@ -13,4 +13,9 @@ async function uploadToMinio(fileBuffer, bucketName, objectName) {
   console.log(`File "${objectName}" uploaded to bucket "${bucketName}"`);
 }
 
+
+async function downloadFromMinio(params) {
+  
+}
+
 module.exports = uploadToMinio;
