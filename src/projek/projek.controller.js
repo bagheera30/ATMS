@@ -1,8 +1,6 @@
 const express = require("express");
 const projekIntanceService = require("./projek.service");
-const uploadToMinio = require("../lib/minioUpload");
 const upload = require("../lib/multerConfig");
-const { auth } = require("neo4j-driver");
 const authMiddleware = require("../middlewares/autentication");
 const router = express.Router();
 
@@ -20,9 +18,10 @@ router.post(
       res.status(201).json({
         code: 0,
         status: true,
-        message: "success",
+        message: "Project created successfully",
       });
     } catch (error) {
+      console.error(error); // Log the error for debugging
       res.status(400).json({
         code: 2,
         status: false,
@@ -37,12 +36,13 @@ router.post("/start", authMiddleware(["manager"]), async (req, res) => {
     const data = req.body;
     const username = req.user.username;
     await projekIntanceService.startIntance(data, username);
-    res.status(201).json({
+    res.status(200).json({
       code: 0,
       status: true,
-      message: "success",
+      message: "Project instance started successfully",
     });
   } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(400).json({
       code: 2,
       status: false,
@@ -55,9 +55,12 @@ router.get("/definition", authMiddleware(["manager"]), async (req, res) => {
   try {
     const data = await projekIntanceService.getdefinition();
     res.status(200).json({
+      code: 0,
+      status: true,
       data,
     });
   } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(400).json({
       code: 2,
       status: false,
@@ -70,9 +73,12 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
     const data = await projekIntanceService.getAll();
     res.status(200).json({
+      code: 0,
+      status: true,
       data,
     });
   } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(400).json({
       code: 2,
       status: false,
