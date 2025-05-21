@@ -6,7 +6,6 @@ const chokidar = require("chokidar");
 const express = require("express");
 
 const cors = require("cors");
-const overdue = require("./lib/overdu");
 
 const app = express();
 
@@ -17,8 +16,6 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
-// const ov = overdue("send_email_reminder_topic");
-// console.log(ov);
 
 // Fungsi untuk memuat file Swagger YAML
 function loadSwaggerFile() {
