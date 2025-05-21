@@ -6,17 +6,20 @@ const chokidar = require("chokidar");
 const express = require("express");
 
 const cors = require("cors");
-const { overdue } = require("./lib/overdu");
+const overdue = require("./lib/overdu");
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-const JWT_SECRET = process.env.JWT_SECRET;
+
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
-overdue("send_email_reminder_topic");
+// const ov = overdue("send_email_reminder_topic");
+// console.log(ov);
+
 // Fungsi untuk memuat file Swagger YAML
 function loadSwaggerFile() {
   try {

@@ -1,8 +1,10 @@
 const { Client } = require("camunda-external-task-client-js");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+
 const overdue = (topik) => {
-  const camunda_url = process.env.URL_CAMUNDA;
+  const camunda_url = process.env.CAMUNDA_URL;
+  console.log(camunda_url);
   const topic = topik || "send_email_reminder_topic";
 
   // Konfigurasi client dengan polling interval 5 detik (5000 ms)
@@ -30,18 +32,18 @@ const overdue = (topik) => {
 
       const mailOptions = {
         from: process.env.EMAIL_VERIF,
-        to: email,
+        to: "rizkialfian30103@gmail.com",
         subject: `[Overdue] ${data[0]?.name || "Notifikasi Camunda"}`,
         text: `Kepada Yth.,
-      
-  Task dengan detail berikut telah melewati batas waktu yang ditentukan:
-  - Nama Task: ${data[0]?.name || "Tidak tersedia"}
-  - ID Task: ${data[0]?.id || "Tidak tersedia"}
-  
-  Harap segera ditindaklanjuti.
-  
-  Hormat kami,
-  Sistem Notifikasi`,
+    
+Task dengan detail berikut telah melewati batas waktu yang ditentukan:
+- Nama Task: ${data[0]?.name || "Tidak tersedia"}
+- ID Task: ${data[0]?.id || "Tidak tersedia"}
+
+Harap segera ditindaklanjuti.
+
+Hormat kami,
+Sistem Notifikasi`,
       };
 
       await nm.sendMail(mailOptions);
@@ -59,4 +61,9 @@ const overdue = (topik) => {
     }
   });
 };
-module.exports = { overdue };
+
+// Tambahkan handler error untuk client
+
+console.log("Worker started and will poll every 5 seconds");
+
+module.exports = overdue;
