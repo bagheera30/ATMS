@@ -8,7 +8,7 @@ const {
   upsert,
   getAllProjek,
 } = require("./projek.repository");
-const uploadToMinio = require("../lib/minioUpload");
+const uploadToMinio = require("../lib/minio");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {

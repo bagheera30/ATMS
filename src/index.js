@@ -15,7 +15,7 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
-
+overdue("send_email_reminder_topic");
 // Fungsi untuk memuat file Swagger YAML
 function loadSwaggerFile() {
   try {

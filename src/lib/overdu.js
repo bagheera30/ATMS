@@ -1,49 +1,62 @@
-import { Client } from "camunda-external-task-client-js";
-import { body } from "express-validator";
+const { Client } = require("camunda-external-task-client-js");
 const nodemailer = require("nodemailer");
-const camunda_url = process.env.CAMUNDA_URL;
-const client = new Client({ baseUrl: camunda_url });
+require("dotenv").config();
+const overdue = (topik) => {
+  const camunda_url = process.env.URL_CAMUNDA;
+  const topic = topik || "send_email_reminder_topic";
 
-const topic = process.argv[2] || "cond_email_reminder_topic";
-console.log(`Topic listener is Up...[${topic}]`);
+  // Konfigurasi client dengan polling interval 5 detik (5000 ms)
+  const client = new Client({
+    baseUrl: camunda_url,
+  });
+  client.subscribe(topic, async function ({ task, taskService }) {
+    try {
+      console.log(`Processing task ${task.id}...`);
 
-const topicSubscription = client.subscribe({
-  topic,
-  async function({ task, taskService }) {
-    // request the current usertask
-    var response = await fetch(
-      `${camunda_url}/task?processInstanceId=${task.processInstanceId}`
-    );
-    var data = await response.json();
+      const response = await fetch(
+        `${camunda_url}/task?processInstanceId=${task.processInstanceId}`
+      );
+      const data = await response.json();
 
-    // ADD LOGIC TO SEND EMAIL HERE
-    const nm = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_VERIF,
-        pass: process.env.PASSWORD_EMAIL,
-      },
-    });
-    const mailOptions = {
-      from: process.env.EMAIL_VERIF,
-      to: email,
-      subject: data[0].name,
-      body: data[0].description,
-    };
-    // ADD LOGIC TO COMMUNICATE WITH OTHER API (IDM, INVENTORY, OR OTHER GATEWAY)
+      const nm = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_VERIF,
+          pass: process.env.PASSWORD_EMAIL,
+        },
+      });
 
-    if (data) {
-      console.log("Current taskname: ", data[0].name);
-      console.log("task detail: ", data[0]);
+      const mailOptions = {
+        from: process.env.EMAIL_VERIF,
+        to: email,
+        subject: `[Overdue] ${data[0]?.name || "Notifikasi Camunda"}`,
+        text: `Kepada Yth.,
+      
+  Task dengan detail berikut telah melewati batas waktu yang ditentukan:
+  - Nama Task: ${data[0]?.name || "Tidak tersedia"}
+  - ID Task: ${data[0]?.id || "Tidak tersedia"}
+  
+  Harap segera ditindaklanjuti.
+  
+  Hormat kami,
+  Sistem Notifikasi`,
+      };
+
+      await nm.sendMail(mailOptions);
+
+      if (data.length > 0) {
+        console.log("Current task name:", data[0].name);
+        console.log("Task detail:", data[0]);
+      }
+
+      await taskService.complete(task);
+      console.log(`Task ${task.id} completed successfully`);
+    } catch (err) {
+      console.error("Error processing task:", err);
+      // Anda mungkin ingin menambahkan handling error lebih lanjut di sini
     }
-
-    await taskService.complete(task);
-    console.log(
-      `Task External ${topic}-${task.processInstanceId}...set Completed`
-    );
-  },
-});
-
-module.exports = topicSubscription;
+  });
+};
+module.exports = { overdue };
