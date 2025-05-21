@@ -14,7 +14,7 @@ const { default: axios } = require("axios");
 class ProjekIntanceService {
   async getAll() {
     try {
-      const urlcamund = process.env.CAMUNDA_URL;
+      const urlcamund = process.env.URL_CAMUNDA;
       const data = await getAllProjek(); // asumsi ini async
 
       const promises = data.map(async (item) => {
@@ -96,7 +96,7 @@ class ProjekIntanceService {
       // Upload file ke MinIO
       await uploadToMinio(file.buffer, bucketName, objectName);
 
-      const urlcamund = process.env.CAMUNDA_URL;
+      const urlcamund = process.env.URL_CAMUNDA;
 
       // Buat FormData untuk kirim ke Camunda
       const formData = new FormData();
@@ -150,7 +150,7 @@ class ProjekIntanceService {
   }
   async getdefinition() {
     try {
-      const urlcamund = process.env.CAMUNDA_URL;
+      const urlcamund = process.env.URL_CAMUNDA;
       const processDefinitionResponse = await axios.get(
         `${urlcamund}/process-definition`,
         {
@@ -172,7 +172,7 @@ class ProjekIntanceService {
       throw new Error("please complete the form");
     }
 
-    const urlcamund = process.env.CAMUNDA_URL;
+    const urlcamund = process.env.URL_CAMUNDA;
     try {
       // Start process instance
       const startResponse = await axios.post(
