@@ -14,7 +14,7 @@
   ],
   "crons": [
     {
-      "path": "/src/lib/overdu.js",
+      "path": "./src/lib/overdu.js",
       "schedule": "*/1 * * * *"
     }
   ]
