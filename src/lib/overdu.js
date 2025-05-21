@@ -9,7 +9,8 @@ const overdue = (topik) => {
 
   // Konfigurasi client dengan polling interval 5 detik (5000 ms)
   const client = new Client({
-    baseUrl: camunda_url,
+    baseUrl: process.env.CAMUNDA_URL,
+    asyncResponseTimeout: 5000, // Sesuaikan dengan timeout Vercel
   });
   client.subscribe(topic, async function ({ task, taskService }) {
     try {
@@ -55,6 +56,9 @@ Sistem Notifikasi`,
 
       await taskService.complete(task);
       console.log(`Task ${task.id} completed successfully`);
+      setTimeout(() => {
+        res.status(200).json({ status: "processed" });
+      }, 9000);
     } catch (err) {
       console.error("Error processing task:", err);
       // Anda mungkin ingin menambahkan handling error lebih lanjut di sini
