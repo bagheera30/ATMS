@@ -1,12 +1,12 @@
 const express = require("express");
-const { gettasklist } = require("./task.service");
+const { gettasklist, getalltask } = require("./task.service");
 const authMiddleware = require("../middlewares/autentication");
 
 const router = express.Router();
 
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
   try {
-    const data = await gettasklist();
+    const data = await getalltask();
     res.status(200).json({
       code: 0,
       status: true,

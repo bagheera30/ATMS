@@ -16,44 +16,44 @@ class ProjekIntanceService {
     try {
       const urlcamund = process.env.URL_CAMUNDA;
       const data = await getAllProjek(); // asumsi ini async
-
+      console.log(data[0]);
       const promises = data.map(async (item) => {
         // Ambil process instance berdasarkan businessKey
         const processInstanceRes = await axios.get(
           `${urlcamund}/process-instance?businessKey=${item.businessKey}`
         );
+        console.log("test2", processInstanceRes.data);
 
         const processInstances = processInstanceRes.data || [];
-        const processInstanceId =
-          processInstances.length > 0 ? processInstances[0].id : null;
-
-        // Ambil task berdasarkan processInstanceId jika ada
-        let tasks = [];
-        if (processInstanceId) {
+        const processInstanceIds = processInstances.map(
+          (instance) => instance.id
+        );
+        const taskPromises = processInstanceIds.map(async (id) => {
           const taskRes = await axios.get(
-            `${urlcamund}/task?processInstanceId=${processInstanceId}`
+            `${urlcamund}/task?processInstanceId=${id}`
           );
-          tasks = taskRes.data || [];
-        }
-        console.log("tast ", tasks);
+          return taskRes.data || [];
+        });
+        const allTasks = await Promise.all(taskPromises);
+        console.log("tast ", allTasks);
         return {
           businessKey: item.businessKey,
           nama: item.name,
           customer: item.customer,
           status: item.status,
-          processInstanceId: processInstanceId,
-          owner: tasks.length > 0 ? tasks[0].owner : null,
-          created:
-            tasks.length > 0
-              ? new Date(tasks[0].created).toISOString().split("T")[0]
-              : null,
+          // processInstanceId: processInstanceIds,
+          // owner: allTasks.flat().length > 0 ? allTasks.flat()[0].owner : null,
+          // created:
+          //   allTasks.flat().length > 0
+          //     ? new Date(allTasks.flat()[0].created).toISOString().split("T")[0]
+          //     : null,
         };
       });
 
       const resultdata = await Promise.all(promises);
 
       console.log(resultdata);
-      return resultdata;
+      return data;
     } catch (error) {
       console.error("Error in getAll():", error.message);
       throw error;
@@ -76,6 +76,7 @@ class ProjekIntanceService {
       throw new Error("please complete the form");
     }
     try {
+      
       const user = await getProjek(uuid);
       return user;
     } catch (error) {
@@ -132,8 +133,6 @@ class ProjekIntanceService {
         throw new Error("No process definitions deployed");
       }
 
-      // const db = await upsert(data, customer, username);
-
       return {
         message: "Deployment and process instance started",
       };
@@ -184,12 +183,10 @@ class ProjekIntanceService {
 
       // Verifikasi response
       if (startResponse.status >= 200 && startResponse.status < 300) {
-        console.log(
-          "Process instance started successfully:",
-          startResponse.data
-        );
         const customer = data.customer;
-        await upsert(data, customer, username);
+        console.log(customer);
+        const startdata = await upsert(data, customer, username);
+        console.log(startdata);
 
         return startResponse.data; // Optional: return response data jika diperlukan
       } else {

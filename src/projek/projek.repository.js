@@ -9,6 +9,7 @@ const upsert = async (data, customer, username) => {
       `MATCH (c:Customer { uuid: $customer })
 MERGE (p:Projek { businessKey: $businessKey })
 ON CREATE SET 
+    p.businessKey = $businessKey,
     p.nama = $namaProjek,
     p.customer = c.name,
     p.createdBy = $createdBy,
@@ -16,6 +17,7 @@ ON CREATE SET
     p.modifiedBy = "",
     p.modifiedAt = timestamp()
 ON MATCH SET
+    p.businessKey = $businessKey,
     p.nama = $namaProjek,
     p.modifiedBy = $createdBy,
     p.modifiedAt = timestamp()
@@ -89,12 +91,7 @@ const getProjek = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (p:Projek {buninessKey:$uuid}) RETURN {
-        businessKey:p.businessKey,
-        nama:p.nama,
-        customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
-        status:s.status
-      }as result`,
+      `match(a:Atribut)-[:HAS_ATRIBUTE]->(p:Projek {businessKey:$uuid})return a as result`,
       {
         uuid,
       }

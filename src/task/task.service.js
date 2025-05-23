@@ -1,11 +1,40 @@
 const { param } = require("../projek/projek.controller");
-
+const { default: axios } = require("axios");
 class TaskService {
-  async gettasklist() {
-    const axios = require("axios"); // Jika menggunakan CommonJS
-    // atau
-    // import axios from 'axios'; // Jika menggunakan ES modules
+  async getalltask() {
+    try {
+      const urlcamund = process.env.URL_CAMUNDA;
+      const response = await axios.get(`${urlcamund}/task`);
+      const tasks = response.data;
 
+      // Filter hanya field yang dibutuhkan
+      const filteredTasks = tasks.map((task) => ({
+        name: task.name,
+        owner: task.owner,
+        assignee: task.assignee,
+        created: task.created,
+        followUp: task.followUp,
+        due_date: task.due,
+        delegation: task.delegationState,
+      }));
+
+      return filteredTasks;
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      if (error.response) {
+        // Jika error berasal dari response server
+        res.status(error.response.status).json({
+          error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
+        });
+      } else {
+        // Jika error berasal dari komunikasi dengan server
+        res.status(500).json({
+          error: "Failed to fetch tasks from Camunda. Status: 500",
+        });
+      }
+    }
+  }
+  async gettasklistinbox() {
     try {
       // Fetch all tasks from Camunda menggunakan Axios
       const response = await axios.get(`${process.env.CAMUNDA_URL}/task`);
@@ -39,6 +68,10 @@ class TaskService {
         res.status(500).json({ error: "Failed to fetch or filter tasks" });
       }
     }
+  }
+  async gettask(id) {
+    const response = await axios.get(`${process.env.CAMUNDA_URL}/task/${id}`);
+    return response.data;
   }
 }
 
