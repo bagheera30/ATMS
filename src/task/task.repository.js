@@ -85,4 +85,4 @@ const getcommen = async (taskname) => {
   }
 };
 
-module.exports = { upsert, command };
+module.exports = { upsert, command, getcommen };
