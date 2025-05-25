@@ -59,6 +59,7 @@ const getallVendor = async () => {
       address: n.address,
       city: n.city,
       country: n.country,
+      category: n.category,
       status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
       } as result`);
     return result.records.map((record) => record.get("result"));
