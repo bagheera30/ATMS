@@ -7,46 +7,22 @@ const {
   createProjek,
   upsert,
   getAllProjek,
+  getfile,
 } = require("./projek.repository");
 const uploadToMinio = require("../lib/minio");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {
-  async getAll() {
+  async getAll(search) {
     try {
-      const urlcamund = process.env.URL_CAMUNDA;
-      const data = await getAllProjek(); // asumsi ini async
+      const data = await getAllProjek(search);
       console.log(data[0]);
       const promises = data.map(async (item) => {
-        // Ambil process instance berdasarkan businessKey
-        const processInstanceRes = await axios.get(
-          `${urlcamund}/process-instance?businessKey=${item.businessKey}`
-        );
-        console.log("test2", processInstanceRes.data);
-
-        const processInstances = processInstanceRes.data || [];
-        const processInstanceIds = processInstances.map(
-          (instance) => instance.id
-        );
-        const taskPromises = processInstanceIds.map(async (id) => {
-          const taskRes = await axios.get(
-            `${urlcamund}/task?processInstanceId=${id}`
-          );
-          return taskRes.data || [];
-        });
-        const allTasks = await Promise.all(taskPromises);
-        console.log("tast ", allTasks);
         return {
           businessKey: item.businessKey,
           nama: item.name,
           customer: item.customer,
           status: item.status,
-          // processInstanceId: processInstanceIds,
-          // owner: allTasks.flat().length > 0 ? allTasks.flat()[0].owner : null,
-          // created:
-          //   allTasks.flat().length > 0
-          //     ? new Date(allTasks.flat()[0].created).toISOString().split("T")[0]
-          //     : null,
         };
       });
 
@@ -76,9 +52,35 @@ class ProjekIntanceService {
       throw new Error("please complete the form");
     }
     try {
-      
       const user = await getProjek(uuid);
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getDownload(uuid) {
+    if (!uuid) {
+      throw new Error("please complete the form");
+    }
+    try {
+      const user = await getfile(uuid);
+      const bucket = process.env.MINIO_BUCKET_NAME;
+      const value = user.value;
+      const file = await uploadToMinio.downloadFromMinio(bucket, value);
+      if (!file) {
+        console.error(`[DEBUG] File not found in MinIO`, {
+          bucket,
+          key: value,
+        });
+        throw new Error("File not found in storage");
+      }
+
+      console.log(`[DEBUG] Successfully retrieved file from MinIO`, {
+        size: file.size || "unknown",
+        type: file.type || "unknown",
+      });
+      return file;
     } catch (error) {
       throw error;
     }

@@ -47,15 +47,21 @@ RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
     await session.close(); // Ensure the session is closed
   }
 };
-const getAllProjek = async () => {
+const getAllProjek = async (search) => {
   const session = neo.session();
   try {
-    const result = await session.run(`MATCH (p:Projek) RETURN{
+    const result = await session.run(
+      `MATCH (p:Projek) where (p.businessKey)+(p.nama) CONTAINS $search
+      RETURN{
       name:p.nama,
       businessKey:p.businessKey,
       customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
       status:[(p)-[:HAS_STATUS]->(s:Status)|s.status][0]
-    }as result`);
+    }as result`,
+      {
+        search,
+      }
+    );
     return result.records.map((record) => record.get("result"));
   } catch (error) {
     console.error("Error executing query:", error);
@@ -105,6 +111,24 @@ const getProjek = async (uuid) => {
   }
 };
 
+const getfile = (uuid) => {
+  const session = neo.session();
+  try {
+    const result = session.run(
+      `match(a:Atribut)where a.uuid=$uuid return a as result`,
+      {
+        uuid,
+      }
+    );
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    session.close(); // Ensure the session is closed
+  }
+};
+
 const deleteProject = async (uuid) => {
   const session = neo.session();
   try {
@@ -131,4 +155,5 @@ module.exports = {
   getProjek,
   getAllProjek,
   deleteProject,
+  getfile,
 };

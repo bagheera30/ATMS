@@ -72,7 +72,7 @@ class WorkgroupService {
   async adduserToWorkgroup(idUser, id) {
     try {
       const lw=idUser.toLowerCase();
-      const user = await addmember(idUser, id);
+      const user = await addmember(ls, id);
       return user;
     } catch (error) {
       throw error;

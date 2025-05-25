@@ -13,9 +13,14 @@ async function uploadToMinio(fileBuffer, bucketName, objectName) {
   console.log(`File "${objectName}" uploaded to bucket "${bucketName}"`);
 }
 
-
-async function downloadFromMinio(params) {
-  
+async function downloadFromMinio({ bucketName, fileName }) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    minioClient
+      .getObject(bucketName, fileName)
+      .on("data", (chunk) => chunks.push(chunk))
+      .on("end", () => resolve(Buffer.concat(chunks)))
+      .on("error", (err) => reject(err));
+  });
 }
-
-module.exports = uploadToMinio;
+module.exports = { uploadToMinio, downloadFromMinio };
