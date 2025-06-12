@@ -31,7 +31,32 @@ RETURN {
     await session.close(); // Pastikan sesi ditutup
   }
 };
-
+const findUserOverdue = async (username) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `
+      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User {username: $username})
+OPTIONAL MATCH (wg)-[:HAS_WORKGROUP]->(u2:User)
+WHERE EXISTS((u2)-[:HAS_ROLE]->(:Role {RoleName: 'manager'}))
+RETURN {
+  userEmail:u.email,
+  managerEmail: CASE WHEN u2 IS NOT NULL THEN u2.email ELSE null END
+} AS result
+      `,
+      {
+        username: username,
+      }
+    );
+    console.log(result.records[0].get("result"));
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close(); // Pastikan sesi ditutup
+  }
+};
 const findUserAll = async () => {
   const session = neo.session();
   try {
@@ -200,4 +225,5 @@ module.exports = {
   updateUser,
   deleteUser,
   userstatus,
+  findUserOverdue,
 };

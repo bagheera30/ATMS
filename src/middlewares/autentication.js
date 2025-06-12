@@ -11,12 +11,21 @@ const authMiddleware = (allowedRoles = []) => {
     }
 
     const token = authHeader.split(" ")[1];
+    const adminToken = process.env.TOKEN_ADMIN;
 
     try {
+      // Check if the provided token matches the admin token
+      if (token === adminToken) {
+        // If it's an admin token, bypass all other checks
+        req.user = { roles: "admin" }; // Set admin role
+        return next();
+      }
+
+      // Normal JWT verification for non-admin tokens
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const currentTime = Math.floor(Date.now() / 1000);
 
-      // Cek token expired (otomatis dilakukan oleh jwt.verify, tapi tambahkan pengecekan manual)
+      // Check token expiration
       if (decoded.exp && decoded.exp < currentTime) {
         return res
           .status(401)
@@ -29,7 +38,7 @@ const authMiddleware = (allowedRoles = []) => {
         });
       }
 
-      // Normalisasi roles menjadi array
+      // Normalize roles to array
       let userRoles = [];
       if (typeof decoded.roles === "string") {
         userRoles = decoded.roles.split(",").map((r) => r.trim());
@@ -40,7 +49,8 @@ const authMiddleware = (allowedRoles = []) => {
           .status(403)
           .json({ message: "Forbidden: Invalid role format." });
       }
-      // Cek izin
+
+      // Check permissions
       if (
         allowedRoles.length > 0 &&
         !userRoles.some((role) => allowedRoles.includes(role))

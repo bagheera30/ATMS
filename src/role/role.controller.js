@@ -29,6 +29,7 @@ router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
 router.post("/addUser", authMiddleware(["user"]), async (req, res) => {
   const id = req.query.RoleName;
   const data = req.body;
+  console.log(data);
   try {
     const user = await adduserToWorkgroup(data.uuid, id);
 
@@ -110,7 +111,7 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 router.get("/", authMiddleware(["manager"]), async (req, res) => {
-  const uuid = req.query.search
+  const uuid = req.query.search;
   try {
     const workgroup = await getByid(uuid);
     res.status(200).json({

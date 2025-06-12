@@ -6,6 +6,7 @@ const {
   findUserById,
   deleteUser,
   findUserAllByUsername,
+  findUserOverdue,
 } = require("./user.repository");
 const bcrypt = require("bcrypt");
 
@@ -29,6 +30,23 @@ class UserService {
         code: 0,
         status: true,
         message: "sucess",
+        user,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getTaskOverdue(username) {
+    try {
+      const user = await findUserOverdue(username);
+      if (!user) {
+        return {
+          code: 1,
+          status: false,
+          message: "user not found",
+        };
+      }
+      return {
         user,
       };
     } catch (error) {
