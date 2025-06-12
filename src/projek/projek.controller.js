@@ -102,7 +102,6 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
 router.post("/dowload/uuid", async (req, res) => {
   const uuid = req.params.uuid;
   try {
-
     const file = await projekIntanceService.getDownload(uuid);
     res.status(200).json({
       code: 0,

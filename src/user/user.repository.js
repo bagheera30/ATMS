@@ -36,10 +36,10 @@ const findUserOverdue = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User {username: $username})
+      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(u.username)CONTAINS $username
 OPTIONAL MATCH (wg)-[:HAS_WORKGROUP]->(u2:User)
 WHERE EXISTS((u2)-[:HAS_ROLE]->(:Role {RoleName: 'manager'}))
-RETURN {
+RETURN DISTINCT{
   userEmail:u.email,
   managerEmail: CASE WHEN u2 IS NOT NULL THEN u2.email ELSE null END
 } AS result

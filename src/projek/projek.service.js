@@ -87,7 +87,7 @@ class ProjekIntanceService {
   }
 
   async createProjek(data, file, username) {
-    if (!data || !file) {
+    if (!data) {
       throw new Error("Please complete the form and upload a BPMN file.");
     }
 
