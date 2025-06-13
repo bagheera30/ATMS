@@ -21,6 +21,7 @@ router.post("/register", validateCreateUser, async (req, res) => {
   try {
     const data = req.body;
     const user = await authService.createUser(data);
+    console.log(user);
     res.status(201).json({
       // Menggunakan 201 Created
       user,
@@ -67,7 +68,7 @@ router.post("/login", async (req, res) => {
       code: 0,
       status: true,
       message: user.message,
-      token: user.token
+      token: user.token,
     });
   } catch (error) {
     res.status(400).json({

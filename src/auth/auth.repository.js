@@ -6,40 +6,71 @@ const createUser = async (data, otp) => {
 
   try {
     const result = await session.run(
-      `CREATE (r:Role{
-          uuid: randomUUID(),
-          RoleName: "user",
-          createdBy: $username,
-          createAt: timestamp()
-      })-[:HAS_STATUS]->(sr:Status{
+      `WITH 
+      $username AS username, 
+      $email AS email,
+      $namaLengkap AS namaLengkap,
+      $dateOfBirth AS dateOfBirth,
+      $phoneNumber AS phoneNumber,
+      $jabatan AS jabatan,
+      $password AS password
+
+      WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password,
+        EXISTS { (:User {username: username}) } AS username_exists,
+        EXISTS { (:User {email: email}) } AS email_exists
+
+      WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, username_exists, email_exists,
+        CASE 
+          WHEN username_exists AND email_exists THEN 'Username dan email sudah terdaftar'
+          WHEN username_exists THEN 'Username sudah terdaftar'
+          WHEN email_exists THEN 'Email sudah terdaftar'
+          ELSE NULL
+        END AS conflict_message,
+        NOT (username_exists OR email_exists) AS can_register
+
+    FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
+      CREATE (r:Role {
+        uuid: randomUUID(),
+        RoleName: "user",
+        createdBy: username,
+        createAt: timestamp()
+      })-[:HAS_STATUS]->(sr:Status {
         uuid: randomUUID(),
         status: "inactive",
-        createdBy: $username,
+        createdBy: username,
         createAt: timestamp()
       })
-      create(su:Status{
+      CREATE (su:Status {
         uuid: randomUUID(),
         status: "locked",
-        createdBy: $username,
+        createdBy: username,
         createAt: timestamp()
       })
-      CREATE (u:User  {
-          uuid: randomUUID(),
-          username:$username,
-          namaLengkap: $namaLengkap,
-          email: $email,
-          dateOfBirth: $dateOfBirth,
-          phoneNumber: $phoneNumber,
-          jabatan:$jabatan,
-          password: $password,
-          createdBy: $username,
-          createAt: timestamp(),
-          modifiedBy: "", 
-          modifiedAt: timestamp(),
-          otp: $otp
+      CREATE (u:User {
+        uuid: randomUUID(),
+        username: username,
+        namaLengkap: namaLengkap,
+        email: email,
+        dateOfBirth: dateOfBirth,
+        phoneNumber: phoneNumber,
+        jabatan: jabatan,
+        password: password,
+        createdBy: username,
+        createAt: timestamp(),
+        modifiedBy: "",
+        modifiedAt: timestamp(),
+        otp: $otp
       })-[:HAS_ROLE]->(r)
-      create (u)-[:HAS_STATUS]->(su)
-RETURN { code: 0, status: true, message: 'create user success' } AS result`,
+      CREATE (u)-[:HAS_STATUS]->(su)
+  )
+  RETURN 
+    CASE 
+      WHEN conflict_message IS NOT NULL THEN 
+        { code: 1, status: false, message: conflict_message }
+      ELSE 
+        { code: 0, status: true, message: 'create user success' }
+    END AS result
+  `,
       {
         username: data.user.username,
         namaLengkap: data.user.namaLengkap,
