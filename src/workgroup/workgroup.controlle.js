@@ -7,6 +7,7 @@ const {
   deleteWorkgroup,
   adduserToWorkgroup,
   deleteuserWorkgroup,
+  getManeger,
 } = require("./workgroup.service");
 
 const router = express.Router();
@@ -49,10 +50,18 @@ router.post("/", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   try {
-    const wg=req.query.search
-    const workgroup = await getAllWorkgroup(wg);
+    let workgroup;
+    const wg = req.query.search;
+    console.log(req.user.roles);
+    if (req.user.roles === "admin") {
+      workgroup = await getManeger(wg);
+    } else {
+      console.log("test2: ", wg);
+      workgroup = await getAllWorkgroup(wg);
+    }
+
     res.status(200).json({
       workgroup,
     });

@@ -1,4 +1,5 @@
 const db = require("../db/db");
+const { search } = require("./workgroup.controlle");
 const neo = db.getInstance();
 
 const upsertWorkgroup = async (uuid, username, name, status) => {
@@ -39,34 +40,72 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
     await session.close();
   }
 };
+
+const getmanager = async (search) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `
+      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(wg.name)CONTAINS $search
+      MATCH (u)-[:HAS_ROLE]->(r:Role) where r.RoleName='manager'
+      RETURN{
+      name:u.namaLengkap,
+      username:u.username,
+      email:u.email
+      }as result
+      `,
+      { search }
+    );
+    return result.records[0].get("result");
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
 const getAll = async (search) => {
   const session = neo.session();
-  const result = await session.run(
-    `MATCH (n:Workgroup)where LOWER(n.name) CONTAINS $search
-    RETURN {
-      uuid: n.uuid,
-      name: n.name,
-      status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-      } as result`,
-    {
-      search,
-    }
-  );
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup)where LOWER(n.name) CONTAINS $search
+      RETURN {
+        uuid: n.uuid,
+        name: n.name,
+        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+        } as result`,
+      {
+        search,
+      }
+    );
 
-  return result.records.map((record) => record.get("result"));
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
 };
 const searchWorkgroup = async (search) => {
   const session = neo.session();
-  const result = await session.run(
-    `MATCH (n:Workgroup)where n.uuid= $search
-    RETURN {
-      user: [(n)-[:HAS_WORKGROUP]->(u:User)|u.username],
-      name: n.name,
-      status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-      } as result`,
-    { search }
-  );
-  return result.records.length > 0 ? result.records[0].get("result") : null;
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup)where n.uuid= $search
+      RETURN {
+        user: [(n)-[:HAS_WORKGROUP]->(u:User)|u.username],
+        name: n.name,
+        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+        } as result`,
+      { search }
+    );
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
 };
 const deleteWorkgroup = async (uuid) => {
   const session = neo.session();
@@ -148,5 +187,6 @@ module.exports = {
   searchWorkgroup,
   deleteWorkgroup,
   addmember,
+  getmanager,
   removemember,
 };

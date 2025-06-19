@@ -46,7 +46,7 @@ RETURN DISTINCT{
 } AS result
       `,
       {
-        username: username,
+        username,
       }
     );
     console.log(result.records[0].get("result"));

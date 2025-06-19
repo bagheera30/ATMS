@@ -5,6 +5,7 @@ const {
   deleteWorkgroup,
   removemember,
   addmember,
+  getmanager,
 } = require("./workgroup.repository");
 
 class WorkgroupService {
@@ -24,8 +25,24 @@ class WorkgroupService {
   async getAllWorkgroup(search) {
     try {
       const lower = search.toLowerCase();
+      console.log("test1: ", lower);
       const user = await getAll(lower);
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getManeger(search) {
+    try {
+      const workgroup = await getmanager(search);
+      if (!workgroup) {
+        return {
+          code: 1,
+          status: false,
+          message: "manager not found",
+        };
+      }
+      return workgroup;
     } catch (error) {
       throw error;
     }
