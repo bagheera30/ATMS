@@ -34,6 +34,7 @@ RETURN {
 const findUserOverdue = async (username) => {
   const session = neo.session();
   try {
+    console.log("test1: ", username);
     const result = await session.run(
       `
       MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(u.username)CONTAINS $username
@@ -49,7 +50,7 @@ RETURN DISTINCT{
       }
     );
     console.log(result.records[0].get("result"));
-    return result.records.map((record) => record.get("result"));
+    return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
