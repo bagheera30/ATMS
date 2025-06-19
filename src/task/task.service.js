@@ -1,7 +1,7 @@
 const { param } = require("../projek/projek.controller");
 const { default: axios } = require("axios");
 const { upsert, upsertComment, getcommen } = require("./task.repository");
-const { Variables } = require("camunda-external-task-client-js");
+
 class TaskService {
   async getalltask() {
     try {

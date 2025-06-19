@@ -5,7 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "sonar": "npx sonarqube-scanner -Dsonar.login=sqp_c18e9781e241967e0e7208d4e18fdffa5b0475a2 -Dsonar.host.url=http://localhost:9002"
   },
   "author": "rizki & shielda",
   "license": "ISC",
@@ -38,6 +39,7 @@
     "globals": "^16.0.0",
     "jest": "^29.7.0",
     "prisma": "^6.6.0",
+    "sonarqube-scanner": "^4.3.0",
     "supertest": "^7.1.0"
   }
 }
