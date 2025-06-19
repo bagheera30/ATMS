@@ -38,30 +38,38 @@ const upsert = async (data, uuid, username) => {
   }
 };
 
-const command = async (uuid, data) => {
+const upsertComment = async (uuid, username, taskname, businesskey, data) => {
   const session = neo.session();
+  console.log(businesskey);
   try {
     const result = await session.run(
-      `MERGE(c:Comment{uuid:$uuid})
+      `MATCH(u:User)where u.uuid = $data.userid
+      MATCH(p:Projek) where p.businessKey = $businesskey
+      MERGE(c:Comment{uuid:$uuid})
             ON CREATE SET
                 c.uuid = randomUUID(),
                 c.deskripsi = $data.deskripsi,
-                c.user:$data.username,
-                c.task_name:$data.task_name,
-                c.createdBy = $data.username,
+                c.user=u.username,
+                c.task_name=$taskname,
+                c.createdBy = $username,
                 c.createdAt = timestamp()
             ON MATCH SET
                 c.deskripsi = $data.deskripsi,
-                c.user:$data.username,
-                c.task_name:$data.task_name,
+                c.user=u.username,
+                c.task_name=$taskname,
                 c.modifiedAt = timestamp(),
-                c.modifiedBy = $data.username
+                c.modifiedBy = $username
+      MERGE (c)-[:HAS_COMMENT]->(u)
+      MERGE (c)-[:HAS_COMMENT]->(p)
             RETURN {
-                code: 0, status: true, message: 'create user success' 
+            username:u.username
             } as result`,
       {
         uuid,
+        businesskey,
+        taskname,
         data,
+        username,
       }
     );
     return result.records.length > 0 ? result.records[0].get("result") : null;
@@ -74,15 +82,21 @@ const getcommen = async (taskname) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `match(c:Comment{task_name:$taskname})return{deskripsi:c.deskripsi,user:[(c)-[:HAS_USER]->(u:User)|u.namaLengkap]} as result`,
+      `match(c:Comment{task_name:$taskname})
+      return{
+      deskripsi:[(c)-[:HAS_COMMENT]->(u:User)|c.deskripsi],
+      user:[(c)-[:HAS_COMMENT]->(u:User)|u.namaLengkap]
+      } as result`,
       {
         taskname,
       }
     );
-    return result.records.length > 0 ? result.records[0].get("result") : null;
+    return result.records.length > 0
+      ? result.records.map((record) => record.get("result"))
+      : null;
   } finally {
     await session.close();
   }
 };
 
-module.exports = { upsert, command, getcommen };
+module.exports = { upsert, getcommen, upsertComment };

@@ -67,20 +67,19 @@ class ProjekIntanceService {
       const user = await getfile(uuid);
       const bucket = process.env.MINIO_BUCKET_NAME;
       const value = user.value;
-      const file = await uploadToMinio.downloadFromMinio(bucket, value);
-      if (!file) {
-        console.error(`[DEBUG] File not found in MinIO`, {
-          bucket,
-          key: value,
-        });
-        throw new Error("File not found in storage");
-      }
+      try {
+        // Set header untuk response
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`
+        );
 
-      console.log(`[DEBUG] Successfully retrieved file from MinIO`, {
-        size: file.size || "unknown",
-        type: file.type || "unknown",
-      });
-      return file;
+        // Panggil fungsi downloadFromMinio dan pipe ke response
+        await downloadFromMinio(bucket, filename, res);
+        return file;
+      } catch (error) {
+        throw error;
+      }
     } catch (error) {
       throw error;
     }

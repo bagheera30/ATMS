@@ -56,6 +56,7 @@ app.use("/role", require("./role/role.controller"));
 app.use("/vendor", require("./vendor/vendor.controller"));
 app.use("/projek", require("./projek/projek.controller"));
 app.use("/task", require("./task/task.contoller"));
+// app.use("/inbox", require("./inbox/inbox.controller"));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
