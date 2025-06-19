@@ -26,7 +26,7 @@ router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.post("/addUser", authMiddleware(["user"]), async (req, res) => {
+router.post("/addUser", authMiddleware(["manager"]), async (req, res) => {
   const id = req.query.RoleName;
   const data = req.body;
   console.log(data);
@@ -65,7 +65,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.post("/", authMiddleware(["user"]), async (req, res) => {
+router.post("/", authMiddleware(["manager"]), async (req, res) => {
   const data = req.body;
   console.log(data.RoleName);
   const username = req.user.username;
