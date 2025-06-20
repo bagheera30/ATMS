@@ -19,10 +19,10 @@ router.get(
         user = await userService.getTaskOverdue(search);
         console.log("user overdue: ", user);
       } else {
-        if (search) {
-          user = await userService.getUserallByUsername(search);
-        } else {
+        if (!search) {
           user = await userService.getall();
+        } else {
+          user = await userService.getUserallByUsername(search);
         }
       }
 

@@ -77,10 +77,7 @@ RETURN {
 } AS result
 
 
-      `,
-      {
-        username: username,
-      }
+      `
     );
     console.log(result.records[0].get("result"));
     return result.records.map((record) => record.get("result"));
