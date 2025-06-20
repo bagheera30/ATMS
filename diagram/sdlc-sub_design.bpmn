@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0wfbkti" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="Process_SDLC_Design" name="SDLC - Design" isExecutable="true" camunda:candidateStarterGroups="DESIGN_DEVELOPMENT_DIVISION" camunda:versionTag="1.0.0" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_17u95mh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_17u95mh" sourceRef="StartEvent_1" targetRef="Activity_1akpsqo" />
+    <bpmn:sequenceFlow id="Flow_0yqytw0" sourceRef="Activity_1akpsqo" targetRef="Gateway_039z786" />
+    <bpmn:sequenceFlow id="Flow_05gyzen" sourceRef="Activity_0agxqr9" targetRef="Gateway_1xgzdda" />
+    <bpmn:parallelGateway id="Gateway_1xgzdda">
+      <bpmn:incoming>Flow_05gyzen</bpmn:incoming>
+      <bpmn:incoming>Flow_1qidkah</bpmn:incoming>
+      <bpmn:incoming>Flow_0atxt4h</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ytgbut</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_1qidkah" sourceRef="Activity_17unesl" targetRef="Gateway_1xgzdda" />
+    <bpmn:sequenceFlow id="Flow_0atxt4h" sourceRef="Activity_1x8ozxw" targetRef="Gateway_1xgzdda" />
+    <bpmn:sequenceFlow id="Flow_1ytgbut" sourceRef="Gateway_1xgzdda" targetRef="Activity_00ybpx0" />
+    <bpmn:userTask id="Activity_00ybpx0" name="System Integration Design">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">System_Integration_Design</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="System_Integration_Design" label="System Integration Design" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ytgbut</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ogj5i2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_0agxqr9" name="Database Design">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Database_Modelling</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Database_Modelling" label="Database Modelling Document" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00gtl0v</bpmn:incoming>
+      <bpmn:outgoing>Flow_05gyzen</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_1x8ozxw" name="System Interface Design">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">System_Interface_Specification</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="System_Interface_Specification" label="System Interface Specification" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1wij16a</bpmn:incoming>
+      <bpmn:outgoing>Flow_0atxt4h</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_17unesl" name="User Interface Design">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">User_Interface_Prototypes</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="User_Interface_Prototypes" label="User Interface Prototypes" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ixhyk3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qidkah</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_1akpsqo" name="System Architecture Design">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">System_Architecture_Diagram</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="System_Architecture_Diagram" label="System Architecture Diagram" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_17u95mh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yqytw0</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_17irel5">
+      <bpmn:incoming>Flow_10ntawi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:parallelGateway id="Gateway_039z786">
+      <bpmn:incoming>Flow_0yqytw0</bpmn:incoming>
+      <bpmn:outgoing>Flow_00gtl0v</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ixhyk3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1wij16a</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_00gtl0v" sourceRef="Gateway_039z786" targetRef="Activity_0agxqr9" />
+    <bpmn:sequenceFlow id="Flow_0ixhyk3" sourceRef="Gateway_039z786" targetRef="Activity_17unesl" />
+    <bpmn:sequenceFlow id="Flow_1wij16a" sourceRef="Gateway_039z786" targetRef="Activity_1x8ozxw" />
+    <bpmn:sequenceFlow id="Flow_1ogj5i2" sourceRef="Activity_00ybpx0" targetRef="Activity_0agx7oy" />
+    <bpmn:sequenceFlow id="Flow_10ntawi" sourceRef="Activity_0agx7oy" targetRef="Event_17irel5" />
+    <bpmn:userTask id="Activity_0agx7oy" name="Test Plan Scenario">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Test_Plan_Document</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Test_Plan_Document" label="Test Plan Document" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ogj5i2</bpmn:incoming>
+      <bpmn:outgoing>Flow_10ntawi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:textAnnotation id="TextAnnotation_1jjxnfe">
+      <bpmn:text>System Interface Specification</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0k2djja" sourceRef="Activity_1x8ozxw" targetRef="TextAnnotation_1jjxnfe" />
+    <bpmn:textAnnotation id="TextAnnotation_06h3mb1">
+      <bpmn:text>User Interface Prototype</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_176tf0w" sourceRef="Activity_17unesl" targetRef="TextAnnotation_06h3mb1" />
+    <bpmn:textAnnotation id="TextAnnotation_1q3e4dr">
+      <bpmn:text>Schema and Data Modeling</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1rp7651" sourceRef="Activity_0agxqr9" targetRef="TextAnnotation_1q3e4dr" />
+    <bpmn:textAnnotation id="TextAnnotation_1qmo85d">
+      <bpmn:text>System Architecture Diagram</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_13x0itb" sourceRef="Activity_1akpsqo" targetRef="TextAnnotation_1qmo85d" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_SDLC_Design">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="132" y="299" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0swknkv_di" bpmnElement="Gateway_1xgzdda">
+        <dc:Bounds x="645" y="292" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1h53f7m_di" bpmnElement="Activity_00ybpx0">
+        <dc:Bounds x="750" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_02kn5vt_di" bpmnElement="Activity_0agxqr9">
+        <dc:Bounds x="490" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qdlx5q_di" bpmnElement="Activity_1x8ozxw">
+        <dc:Bounds x="490" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mreuy3_di" bpmnElement="Activity_17unesl">
+        <dc:Bounds x="490" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0o5gd5s_di" bpmnElement="Activity_1akpsqo">
+        <dc:Bounds x="230" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17irel5_di" bpmnElement="Event_17irel5">
+        <dc:Bounds x="1072" y="299" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1essoo4_di" bpmnElement="Gateway_039z786">
+        <dc:Bounds x="385" y="292" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1epkqpt_di" bpmnElement="Activity_0agx7oy">
+        <dc:Bounds x="910" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1jjxnfe_di" bpmnElement="TextAnnotation_1jjxnfe">
+        <dc:Bounds x="490" y="510" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_06h3mb1_di" bpmnElement="TextAnnotation_06h3mb1">
+        <dc:Bounds x="490" y="80" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1q3e4dr_di" bpmnElement="TextAnnotation_1q3e4dr">
+        <dc:Bounds x="270" y="450" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1qmo85d_di" bpmnElement="TextAnnotation_1qmo85d">
+        <dc:Bounds x="230" y="185" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_17u95mh_di" bpmnElement="Flow_17u95mh">
+        <di:waypoint x="168" y="317" />
+        <di:waypoint x="230" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yqytw0_di" bpmnElement="Flow_0yqytw0">
+        <di:waypoint x="330" y="317" />
+        <di:waypoint x="385" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05gyzen_di" bpmnElement="Flow_05gyzen">
+        <di:waypoint x="590" y="317" />
+        <di:waypoint x="645" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qidkah_di" bpmnElement="Flow_1qidkah">
+        <di:waypoint x="590" y="200" />
+        <di:waypoint x="670" y="200" />
+        <di:waypoint x="670" y="292" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0atxt4h_di" bpmnElement="Flow_0atxt4h">
+        <di:waypoint x="590" y="430" />
+        <di:waypoint x="670" y="430" />
+        <di:waypoint x="670" y="342" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ytgbut_di" bpmnElement="Flow_1ytgbut">
+        <di:waypoint x="695" y="317" />
+        <di:waypoint x="750" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00gtl0v_di" bpmnElement="Flow_00gtl0v">
+        <di:waypoint x="435" y="317" />
+        <di:waypoint x="490" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ixhyk3_di" bpmnElement="Flow_0ixhyk3">
+        <di:waypoint x="410" y="292" />
+        <di:waypoint x="410" y="200" />
+        <di:waypoint x="490" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wij16a_di" bpmnElement="Flow_1wij16a">
+        <di:waypoint x="410" y="342" />
+        <di:waypoint x="410" y="430" />
+        <di:waypoint x="490" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ogj5i2_di" bpmnElement="Flow_1ogj5i2">
+        <di:waypoint x="850" y="317" />
+        <di:waypoint x="910" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10ntawi_di" bpmnElement="Flow_10ntawi">
+        <di:waypoint x="1010" y="317" />
+        <di:waypoint x="1072" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0k2djja_di" bpmnElement="Association_0k2djja">
+        <di:waypoint x="540" y="470" />
+        <di:waypoint x="540" y="510" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_176tf0w_di" bpmnElement="Association_176tf0w">
+        <di:waypoint x="540" y="160" />
+        <di:waypoint x="540" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1rp7651_di" bpmnElement="Association_1rp7651">
+        <di:waypoint x="491" y="350" />
+        <di:waypoint x="342" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_13x0itb_di" bpmnElement="Association_13x0itb">
+        <di:waypoint x="280" y="277" />
+        <di:waypoint x="280" y="239" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

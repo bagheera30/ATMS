@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1oeg8v4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="Process_SDLC_Analysis" name="SDLC - Analysis" isExecutable="true" camunda:candidateStarterGroups="SYSTEM_ANALYST_DIVISION" camunda:versionTag="1.0.0" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0tmyhut</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0tmyhut" sourceRef="StartEvent_1" targetRef="Activity_114mdpl" />
+    <bpmn:sequenceFlow id="Flow_11v6t50" sourceRef="Activity_0ynwxgl" targetRef="Activity_12xnmp2" />
+    <bpmn:sequenceFlow id="Flow_0rxxrwo" sourceRef="Activity_114mdpl" targetRef="Activity_0ynwxgl" />
+    <bpmn:exclusiveGateway id="Gateway_0ed3621" name="Documents Approvals">
+      <bpmn:incoming>Flow_0889yd8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f1nx5j</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ptzaje</bpmn:outgoing>
+      <bpmn:outgoing>Flow_19fnk43</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0889yd8" sourceRef="Activity_12xnmp2" targetRef="Gateway_0ed3621" />
+    <bpmn:endEvent id="Event_0ij5r4x">
+      <bpmn:incoming>Flow_0f1nx5j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0f1nx5j" name="All Approved" sourceRef="Gateway_0ed3621" targetRef="Event_0ij5r4x">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!T1_Rejected &amp;&amp; !T2_Rejected}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ptzaje" name="T1 Rejected" sourceRef="Gateway_0ed3621" targetRef="Activity_114mdpl">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Check_Requirement_Specification_Report == "rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_19fnk43" name="T2 Rejected" sourceRef="Gateway_0ed3621" targetRef="Activity_0ynwxgl">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Check_System_Analyst_Report == "rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Activity_114mdpl" name="Capture Requirement (T1)">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Requirement_Specification_Report</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Requirement_Specification_Report" label="Requirement Specification Report" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0tmyhut</bpmn:incoming>
+      <bpmn:incoming>Flow_1ptzaje</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rxxrwo</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_0ynwxgl" name="Analyst System (T2)">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">System_Analyst_Report</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="System_Analyst_Report" label="System Analyst Report" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0rxxrwo</bpmn:incoming>
+      <bpmn:incoming>Flow_19fnk43</bpmn:incoming>
+      <bpmn:outgoing>Flow_11v6t50</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_12xnmp2" name="Document Approval">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Check_System_Analyst_Report" label="Check System Analyst Report" type="enum" defaultValue="rejected">
+            <camunda:value id="approved" name="APPROVED" />
+            <camunda:value id="rejected" name="REJECTED" />
+          </camunda:formField>
+          <camunda:formField id="Check_Requirement_Specification_Report" label="Check Requirement Specification Report" type="enum" defaultValue="rejected">
+            <camunda:value id="approved" name="APPROVED" />
+            <camunda:value id="rejected" name="REJECTED" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_11v6t50</bpmn:incoming>
+      <bpmn:outgoing>Flow_0889yd8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:textAnnotation id="TextAnnotation_0cenfxp">
+      <bpmn:text>Capture Requirement from Client and Release a "Requirement Specification Report"</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1l4kbhm" sourceRef="Activity_114mdpl" targetRef="TextAnnotation_0cenfxp" />
+    <bpmn:textAnnotation id="TextAnnotation_06b7yi1">
+      <bpmn:text>Determine System Requirement based on RSD Report to complete this task you have to attach document SAR</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_14c66bh" sourceRef="Activity_0ynwxgl" targetRef="TextAnnotation_06b7yi1" />
+    <bpmn:textAnnotation id="TextAnnotation_0hxraxn">
+      <bpmn:text>Validate previous two task, wether they release valid and proper document</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_098f31s" sourceRef="Activity_12xnmp2" targetRef="TextAnnotation_0hxraxn" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_SDLC_Analysis">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="199" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ed3621_di" bpmnElement="Gateway_0ed3621" isMarkerVisible="true">
+        <dc:Bounds x="755" y="192" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="752" y="246" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ij5r4x_di" bpmnElement="Event_0ij5r4x">
+        <dc:Bounds x="872" y="199" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06aadew_di" bpmnElement="Activity_114mdpl">
+        <dc:Bounds x="270" y="177" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nx22yk_di" bpmnElement="Activity_0ynwxgl">
+        <dc:Bounds x="430" y="177" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04it6je_di" bpmnElement="Activity_12xnmp2">
+        <dc:Bounds x="590" y="177" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0cenfxp_di" bpmnElement="TextAnnotation_0cenfxp">
+        <dc:Bounds x="250" y="300" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_06b7yi1_di" bpmnElement="TextAnnotation_06b7yi1">
+        <dc:Bounds x="410" y="440" width="180" height="90" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0hxraxn_di" bpmnElement="TextAnnotation_0hxraxn">
+        <dc:Bounds x="590" y="380" width="210" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0tmyhut_di" bpmnElement="Flow_0tmyhut">
+        <di:waypoint x="215" y="217" />
+        <di:waypoint x="270" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11v6t50_di" bpmnElement="Flow_11v6t50">
+        <di:waypoint x="530" y="217" />
+        <di:waypoint x="590" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rxxrwo_di" bpmnElement="Flow_0rxxrwo">
+        <di:waypoint x="370" y="217" />
+        <di:waypoint x="430" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0889yd8_di" bpmnElement="Flow_0889yd8">
+        <di:waypoint x="690" y="217" />
+        <di:waypoint x="755" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f1nx5j_di" bpmnElement="Flow_0f1nx5j">
+        <di:waypoint x="805" y="217" />
+        <di:waypoint x="872" y="217" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="808" y="199" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ptzaje_di" bpmnElement="Flow_1ptzaje">
+        <di:waypoint x="780" y="192" />
+        <di:waypoint x="780" y="100" />
+        <di:waypoint x="320" y="100" />
+        <di:waypoint x="320" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="522" y="82" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19fnk43_di" bpmnElement="Flow_19fnk43">
+        <di:waypoint x="780" y="242" />
+        <di:waypoint x="780" y="340" />
+        <di:waypoint x="480" y="340" />
+        <di:waypoint x="480" y="257" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="602" y="322" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1l4kbhm_di" bpmnElement="Association_1l4kbhm">
+        <di:waypoint x="300" y="260" />
+        <di:waypoint x="300" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_14c66bh_di" bpmnElement="Association_14c66bh">
+        <di:waypoint x="460" y="260" />
+        <di:waypoint x="460" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_098f31s_di" bpmnElement="Association_098f31s">
+        <di:waypoint x="640" y="257" />
+        <di:waypoint x="640" y="380" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

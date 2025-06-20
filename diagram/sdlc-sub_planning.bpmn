@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0m43cod" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="Process_SDLC_Planning" name="SDLC - Planning" isExecutable="true" camunda:versionTag="1.0.0" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1lpojni</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1lpojni" sourceRef="StartEvent_1" targetRef="Activity_0z6n1kw" />
+    <bpmn:endEvent id="Event_14pjx58">
+      <bpmn:incoming>Flow_1vyxof1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1iw1ylu" sourceRef="Activity_06062vv" targetRef="Activity_00zd08s" />
+    <bpmn:sequenceFlow id="Flow_1vyxof1" sourceRef="Activity_00zd08s" targetRef="Event_14pjx58" />
+    <bpmn:userTask id="Activity_0z6n1kw" name="Project Initialization" camunda:candidateGroups="PLANNING_DIVISION">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Project_Initialization_Report</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Project_Initialization_Report" label="Project Initialization Report" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1lpojni</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wy6i20</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_06062vv" name="Feasibility Study" camunda:candidateGroups="PLANNING_DIVISION">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Feasibility_Report</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Feasibility_Report" label="Feasibility Report" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1wy6i20</bpmn:incoming>
+      <bpmn:outgoing>Flow_1iw1ylu</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_00zd08s" name="Project Planning" camunda:candidateGroups="PLANNING_DIVISION">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requireDocument">Project_Plan_Schedule_Budget</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:formData>
+          <camunda:formField id="Project_Plan_Schedule_Budget" label="Project Plan Schedule Budget" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1iw1ylu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vyxof1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1wy6i20" sourceRef="Activity_0z6n1kw" targetRef="Activity_06062vv" />
+    <bpmn:textAnnotation id="TextAnnotation_16putvw">
+      <bpmn:text>Project goals and objectives defined</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0g8545a" sourceRef="Activity_0z6n1kw" targetRef="TextAnnotation_16putvw" />
+    <bpmn:textAnnotation id="TextAnnotation_1i5ct8p">
+      <bpmn:text>Result is The Feasibility Report</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0vtiqji" sourceRef="Activity_06062vv" targetRef="TextAnnotation_1i5ct8p" />
+    <bpmn:textAnnotation id="TextAnnotation_0y1o607">
+      <bpmn:text>Project Plan with schedules and budget</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0589v5d" sourceRef="Activity_00zd08s" targetRef="TextAnnotation_0y1o607" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_SDLC_Planning">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="162" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14pjx58_di" bpmnElement="Event_14pjx58">
+        <dc:Bounds x="712" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ike8fs_di" bpmnElement="Activity_0z6n1kw">
+        <dc:Bounds x="250" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1o34t2s_di" bpmnElement="Activity_06062vv">
+        <dc:Bounds x="400" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t7jtrr_di" bpmnElement="Activity_00zd08s">
+        <dc:Bounds x="550" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_16putvw_di" bpmnElement="TextAnnotation_16putvw">
+        <dc:Bounds x="250" y="210" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1i5ct8p_di" bpmnElement="TextAnnotation_1i5ct8p">
+        <dc:Bounds x="400" y="210" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0y1o607_di" bpmnElement="TextAnnotation_0y1o607">
+        <dc:Bounds x="550" y="210" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1lpojni_di" bpmnElement="Flow_1lpojni">
+        <di:waypoint x="198" y="120" />
+        <di:waypoint x="250" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iw1ylu_di" bpmnElement="Flow_1iw1ylu">
+        <di:waypoint x="500" y="120" />
+        <di:waypoint x="550" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vyxof1_di" bpmnElement="Flow_1vyxof1">
+        <di:waypoint x="650" y="120" />
+        <di:waypoint x="712" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wy6i20_di" bpmnElement="Flow_1wy6i20">
+        <di:waypoint x="350" y="120" />
+        <di:waypoint x="400" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0g8545a_di" bpmnElement="Association_0g8545a">
+        <di:waypoint x="300" y="160" />
+        <di:waypoint x="300" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0vtiqji_di" bpmnElement="Association_0vtiqji">
+        <di:waypoint x="450" y="160" />
+        <di:waypoint x="450" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0589v5d_di" bpmnElement="Association_0589v5d">
+        <di:waypoint x="600" y="160" />
+        <di:waypoint x="600" y="210" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
