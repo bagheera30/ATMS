@@ -42,7 +42,7 @@ router.get(
   }
 );
 
-router.patch("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
+router.post("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
   const data = req.body;
   const id = req.params.id;
   const r = req.user.roles.split(",");

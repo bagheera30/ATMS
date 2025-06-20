@@ -149,12 +149,18 @@ const userstatus = async (uuid, fromedit, data) => {
     console.log(uuid, fromedit, data);
     const result = await session.run(
       `
-      MATCH(u:User {uuid: $uuid})-[r:HAS_STATUS]->(s:Status)
-      SET s.status = $data.status, s.modifiedAt=timestamp(),s.modifiedBy=$fromedit
-      RETURN{
-      username:u.username,
-      status:s.status
-      }as result
+     MATCH (u:User {uuid: $uuid})-[r:HAS_STATUS]->(s:Status)
+SET s.status = $data.status,
+    s.modifiedAt = timestamp(),
+    s.modifiedBy = $fromedit
+WITH u, s, $data AS data
+WHERE data.user IS NOT NULL
+SET u += data.user
+RETURN {
+    username: u.username,
+    status: s.status,
+    updatedUser: properties(u)
+} AS result
       `,
       {
         uuid,

@@ -84,7 +84,6 @@ class UserService {
           code: 0,
           status: true,
           message: "sucess",
-          user,
         };
       } else {
         if (!data.password) {

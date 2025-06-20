@@ -115,8 +115,8 @@ const findToken = async (token) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User  {otp: $token})-[:HAS_STATUS]->(s:Status)
-       SET u.otp=null,s.status="unlocked",s.modifiedAt=timestamp()
+      `MATCH (u:User  {otp: $token})
+       SET u.otp=null,s.modifiedAt=timestamp()
        RETURN { code: 0, status: true, message: 'success OTP' } AS result`,
       {
         token: token,
