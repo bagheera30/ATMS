@@ -98,6 +98,7 @@ const getAllBycustomerId = async (customer) => {
         nama:p.nama,
         customer:c.name,
         status:s.status
+
       }as result`,
       {
         customer,
@@ -116,7 +117,19 @@ const getProjek = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `match(a:Atribut)-[:HAS_ATRIBUTE]->(p:Projek {businessKey:$uuid})return a as result`,
+      `MATCH (p:Projek {businessKey: 'test'})
+OPTIONAL MATCH (c:Customer)-[:HAS_CUSTOMER]->(p)
+OPTIONAL MATCH (p)-[:HAS_STATUS]->(s:Status)
+WITH p, 
+     collect(DISTINCT c.name) AS customerNames, 
+     collect(DISTINCT s.status) AS statuses
+RETURN {
+    task:[(a:Atribut)-[:HAS_ATRIBUTE]->(p)|a.taskname],
+    businessKey: p.businessKey,
+    nama: p.nama,
+    customer: customerNames[0],
+    status: statuses[0]          
+} AS result`,
       {
         uuid,
       }
