@@ -49,9 +49,12 @@ const getmanager = async (search) => {
       MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(wg.name)CONTAINS $search
       MATCH (u)-[:HAS_ROLE]->(r:Role) where r.RoleName='manager'
       RETURN{
-      name:u.namaLengkap,
-      username:u.username,
-      email:u.email
+      username: u.username,
+      fullName: u.namaLengkap,
+      email: u.email,
+      posisi: u.jabatan,
+      TanggalLahir: u.dateOfBirth,
+      phoneNumber: u.phoneNumber,
       }as result
       `,
       { search }
