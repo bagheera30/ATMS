@@ -54,7 +54,7 @@ const getmanager = async (search) => {
       email: u.email,
       posisi: u.jabatan,
       TanggalLahir: u.dateOfBirth,
-      phoneNumber: u.phoneNumber,
+      phoneNumber: u.phoneNumber
       }as result
       `,
       { search }
