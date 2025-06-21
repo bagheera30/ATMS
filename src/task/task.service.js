@@ -204,13 +204,23 @@ class TaskService {
     }
   }
   async gettask(id) {
+    console.log("test");
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
-    console.log(response.data.name);
-    const comment = await getcommen(response.data.name);
-    const transformedComments = comment.map((item) => ({
-      user: item.user[0], // Mengambil elemen pertama dari array user
-      description: item.deskripsi[0], // Mengambil elemen pertama dari array deskripsi
-    }));
+    
+
+    let transformedComments = []; // Default empty array
+    try {
+      const comment = await getcommen(response.data.name);
+      transformedComments = comment
+        ? comment.map((item) => ({
+            user: item.user[0], // Mengambil elemen pertama dari array user
+            description: item.deskripsi[0], // Mengambil elemen pertama dari array deskripsi
+          }))
+        : [];
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      // Jika terjadi error, transformedComments tetap empty array
+    }
 
     const form = await axios.get(
       `${process.env.URL_CAMUNDA}/task/${id}/form-variables`
@@ -226,7 +236,7 @@ class TaskService {
       InstanceId: response.data.processInstanceId,
       priority: response.data.priority,
       description: response.data.description,
-      comment: transformedComments,
+      comment: transformedComments, // Akan berupa array kosong jika tidak ada komentar
       VariablesTask: form.data,
     };
     return data;
