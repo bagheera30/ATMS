@@ -107,7 +107,7 @@ router.get("/verifOtp/:otp", async (req, res) => {
   }
 });
 
-router.post("/resendtoken", async (req, res) => {
+router.post("/resendotp", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await authService.resendOtp(email);
