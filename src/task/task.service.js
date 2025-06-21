@@ -1,6 +1,7 @@
 const { param } = require("../projek/projek.controller");
 const { default: axios } = require("axios");
 const { upsert, upsertComment, getcommen } = require("./task.repository");
+const QueryString = require("qs");
 
 class TaskService {
   async getalltask() {
@@ -163,10 +164,33 @@ class TaskService {
   }
   async overdue() {
     try {
-      const camunda = process.env.CAMUNDA_URL;
-      const response = await axios.get(`${camunda}/task`);
-      return;
-    } catch (error) {}
+      const camunda = process.env.URL_CAMUNDA;
+      const currentDate = new Date();
+
+      // Set the overdue threshold (e.g., tasks due before now are overdue)
+      const dueDateAfter = new Date(
+        currentDate.getTime() - 24 * 60 * 60 * 1000
+      ); // 24 hours ago
+
+      const response = await axios.get(`${camunda}/task`, {
+        params: {
+          dueDateBefore: currentDate.toISOString(),
+          dueDateAfter: dueDateAfter.toISOString(),
+          // Additional useful filters:
+          // assigned: true/false,
+          // taskDefinitionKey: 'your_task_key',
+          // processInstanceId: 'your_process_id'
+        },
+        paramsSerializer: (params) => {
+          return QueryString.stringify(params, { encode: false });
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching overdue tasks:", error);
+      throw error; // Or handle it appropriately for your use case
+    }
   }
   async gettasklistinbox() {
     try {
@@ -206,7 +230,6 @@ class TaskService {
   async gettask(id) {
     console.log("test");
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
-    
 
     let transformedComments = []; // Default empty array
     try {

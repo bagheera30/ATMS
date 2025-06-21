@@ -85,15 +85,32 @@ router.get("/verifOtp/:otp", async (req, res) => {
     const otp = req.params;
     const user = await authService.VerifOtp(otp.otp);
 
-    if (!user) {
+    if (!user.status) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
-        code: 3,
+        code: 2,
         status: false,
-        message: "User  not found or OTP is invalid",
+        message: user.message,
       });
     }
 
+    res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+router.post("/resendtoken", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await authService.resendOtp(email);
     res.status(200).json({
       user,
     });

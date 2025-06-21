@@ -22,7 +22,13 @@ class authService {
 
       // const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
       const otp = 11111;
-      const newUser = await authRepository.createUser({ user }, otp);
+
+      const otpExpires = Math.floor(Date.now() / 1000) + 5 * 60;
+      const newUser = await authRepository.createUser(
+        { user },
+        otp,
+        otpExpires
+      );
       console.log(newUser);
 
       const nm = nodemailer.createTransport({
@@ -63,18 +69,74 @@ class authService {
       throw new Error(`Error creating user: ${error.message}`);
     }
   }
+  async resendOtp(email) {
+    try {
+      const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+      const otpExpires = Math.floor(Date.now() / 1000) + 5 * 60;
+      const result = await authRepository.resendotp(email, otp, otpExpires);
+      const nm = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_VERIF,
+          pass: process.env.PASSWORD_EMAIL,
+        },
+      });
+      const mailOptions = {
+        from: process.env.EMAIL_VERIF, // Email pengirim
+        to: email,
+        subject: "Kode OTP Verifikasi", // Subjek email
+        html: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+  <img src="https://img.freepik.com/free-psd/phone-icon-design_23-2151311652.jpg?t=st=1740712456~exp=1740716056~hmac=edbd775bf2f8b086629ddbb8440face843343bf69929cb8a4137e9c3aa1c2848&w=900" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
+  <h2 style="color: #4CAF50; text-align: center;">Selamat Datang!</h2>
+  <p style="text-align: center;">Terima kasih telah mendaftar di layanan kami. Untuk menyelesaikan proses registrasi, silakan masukkan kode OTP berikut:</p>
+  <div style="text-align: center; margin: 20px 0;">
+    <h1 style="background-color: #4CAF50; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
+      ${otp} <!-- OTP akan disisipkan di sini -->
+    </h1>
+  </div>
+  <p style="text-align: center; font-size: 12px; color: #777;">Kode OTP ini hanya berlaku selama 5 menit.</p>
+  <p style="text-align: center; font-size: 12px; color: #777;">Jika Anda tidak merasa meminta kode OTP ini, abaikan email ini.</p>
+  <footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #777;">
+    <p>&copy; 2023 YourCompany. All rights reserved.</p>
+    <p><a href="https://yourdomain.com/privacy" style="color: #4CAF50; text-decoration: none;">Kebijakan Privasi</a> | <a href="https://yourdomain.com/contact" style="color: #4CAF50; text-decoration: none;">Hubungi Kami</a></p>
+  </footer>
+</div>`,
+      };
 
+      await nm.sendMail(mailOptions);
+      console.log("Email OTP terkirim");
+      return result;
+    } catch (error) {
+      throw new Error(`Verifikasi OTP gagal: ${error.message}`);
+    }
+  }
   async VerifOtp(otp) {
     if (!otp) {
-      throw new Error("Please input otp");
+      throw new Error("Harap masukkan OTP");
     }
 
-    const intotp = parseInt(otp);
     try {
-      const vrfotp = await authRepository.findToken(intotp);
-      return vrfotp;
+      const intotp = parseInt(otp);
+      if (isNaN(intotp)) {
+        throw new Error("OTP harus berupa angka");
+      }
+      const time = Math.floor(Date.now() / 1000);
+
+      const verificationResult = await authRepository.findToken(intotp, time);
+      if (!verificationResult.status) {
+        return {
+          status: false,
+          message: verificationResult.message,
+        };
+      }
+      return {
+        success: true,
+        message: verificationResult,
+      };
     } catch (error) {
-      throw new Error(`cannot OTP: ${error.message}`);
+      throw new Error(`Verifikasi OTP gagal: ${error.message}`);
     }
   }
   async login(email, password) {

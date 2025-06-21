@@ -124,7 +124,7 @@ WITH p,
      collect(DISTINCT c.name) AS customerNames, 
      collect(DISTINCT s.status) AS statuses
 RETURN {
-    task:[(a:Atribut)-[:HAS_ATRIBUTE]->(p)|a.taskname],
+    task_name:[(a:Atribut)-[:HAS_ATRIBUTE]->(p)|a.taskname],
     businessKey: p.businessKey,
     nama: p.nama,
     customer: customerNames[0],

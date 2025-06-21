@@ -1,7 +1,7 @@
 const db = require("../db/db");
 const neo = db.getInstance();
 
-const createUser = async (data, otp) => {
+const createUser = async (data, otp, otpExpires) => {
   const session = neo.session();
 
   try {
@@ -60,6 +60,7 @@ const createUser = async (data, otp) => {
         modifiedBy: "",
         modifiedAt: timestamp(),
         otp: $otp
+        otpExpiresAt:$otpExpires
       })-[:HAS_ROLE]->(r)
       CREATE (u)-[:HAS_STATUS]->(su)
   )
@@ -80,6 +81,7 @@ const createUser = async (data, otp) => {
         phoneNumber: data.user.phoneNumber || "",
         jabatan: data.user.jabatan,
         otp,
+        otpExpires,
       }
     );
     // Return only the records
@@ -110,25 +112,63 @@ const validasiEmail = async (username) => {
     await session.close();
   }
 };
-const findToken = async (token) => {
-  // Log the received token
+const resendotp = async (email, otp, otpExpires) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User  {otp: $token})
-       SET u.otp=null, u.modifiedAt=timestamp()
+      `MATCH (u:User {email: $email})
+       SET u.otp=$otp,u.otpExpiresAt=$otpExpires, u.modifiedAt=timestamp()
        RETURN { code: 0, status: true, message: 'success OTP' } AS result`,
       {
+        email: email,
+        otp: otp,
+        otpExpires: otpExpires,
+      }
+    );
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
+const findToken = async (token, time) => {
+  // Log the received token
+  const session = neo.session();
+  try {
+    console.log("Received token:", token);
+    console.log("Received time:", time);
+    const result = await session.run(
+      `// First, find and lock the user with matching OTP
+MATCH (u:User {otp: $token})
+WHERE u.otpExpiresAt > $time
+WITH u
+LIMIT 1
+
+// If user exists, update and return success
+FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] ELSE [] END |
+    SET u.otp = null,
+        u.otpExpiresAt = null,
+        u.isVerified = true,
+        u.modifiedAt = timestamp()
+)
+
+RETURN {status: 'success', user: properties(u)}AS result`,
+      {
         token: token,
+        time: time,
       }
     );
 
+    console.log("test", result.records);
     // Check if records are returned
     if (result.records.length === 0) {
-      console.log("No user found with the provided OTP.");
-      return null; // or handle it as needed
+      return {
+        status: false,
+        message: "OTP sudah kadaluwarsa atau tidak valid",
+      }; // or handle it as needed
     }
-
     return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
@@ -185,4 +225,10 @@ END AS result`,
     await session.close();
   }
 };
-module.exports = { createUser, authentication, findToken, validasiEmail };
+module.exports = {
+  createUser,
+  authentication,
+  findToken,
+  validasiEmail,
+  resendotp,
+};
