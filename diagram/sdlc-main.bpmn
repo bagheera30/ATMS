@@ -150,11 +150,19 @@
         <bpmn:incoming>Flow_11f6xes</bpmn:incoming>
         <bpmn:incoming>Flow_0angyht</bpmn:incoming>
         <bpmn:incoming>Flow_0za714y</bpmn:incoming>
+        <bpmn:incoming>Flow_0pj2mgn</bpmn:incoming>
         <bpmn:escalationEventDefinition id="EscalationEventDefinition_01u5c4n" escalationRef="Escalation_1ns7nkn" />
       </bpmn:intermediateThrowEvent>
       <bpmn:sequenceFlow id="Flow_11f6xes" sourceRef="Event_1r1fq1p" targetRef="Event_Escalation_Email_Throw" />
       <bpmn:sequenceFlow id="Flow_0angyht" sourceRef="Event_0n2g8sc" targetRef="Event_Escalation_Email_Throw" />
       <bpmn:sequenceFlow id="Flow_0za714y" sourceRef="Event_0xgcnoq" targetRef="Event_Escalation_Email_Throw" />
+      <bpmn:boundaryEvent id="Event_1xorcuu" cancelActivity="false" attachedToRef="sdlc_planning">
+        <bpmn:outgoing>Flow_0pj2mgn</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_11t0m8y">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10S</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_0pj2mgn" sourceRef="Event_1xorcuu" targetRef="Event_Escalation_Email_Throw" />
     </bpmn:subProcess>
     <bpmn:startEvent id="Event_1gtnx86">
       <bpmn:outgoing>Flow_1egakdr</bpmn:outgoing>
@@ -176,16 +184,6 @@
   <bpmn:escalation id="Escalation_1ns7nkn" name="Escalation_Email" escalationCode="0" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="software_development_lifecycle">
-      <bpmndi:BPMNShape id="Event_1gtnx86_di" bpmnElement="Event_1gtnx86">
-        <dc:Bounds x="152" y="332" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1defiom_di" bpmnElement="Activity_0ss2few">
-        <dc:Bounds x="600" y="760" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1algdw3_di" bpmnElement="Event_1algdw3">
-        <dc:Bounds x="1862" y="332" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0e4hso0_di" bpmnElement="Activity_0e4hso0" isExpanded="true">
         <dc:Bounds x="330" y="80" width="1460" height="600" />
       </bpmndi:BPMNShape>
@@ -228,16 +226,19 @@
           <dc:Bounds x="862" y="545" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1cbb655_di" bpmnElement="Event_P6_When_Bug">
-        <dc:Bounds x="1572" y="372" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1547" y="406" width="26" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="BPMNShape_0i0acoh" bpmnElement="Event_0xgcnoq">
+        <dc:Bounds x="1092" y="372" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1lcl70k_di" bpmnElement="Event_P6_When_CR">
-        <dc:Bounds x="1472" y="292" width="36" height="36" />
+      <bpmndi:BPMNShape id="BPMNShape_1e35y2m" bpmnElement="Event_0n2g8sc">
+        <dc:Bounds x="932" y="372" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_159nd7m_di" bpmnElement="Event_1r1fq1p">
+        <dc:Bounds x="772" y="372" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1n78o5i_di" bpmnElement="Event_P4_When_Bug">
+        <dc:Bounds x="1252" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1458" y="276" width="23" height="14" />
+          <dc:Bounds x="1287" y="406" width="26" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_12s8kog_di" bpmnElement="Event_P4_When_CR">
@@ -246,20 +247,20 @@
           <dc:Bounds x="1175" y="266" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1n78o5i_di" bpmnElement="Event_P4_When_Bug">
-        <dc:Bounds x="1252" y="372" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_1lcl70k_di" bpmnElement="Event_P6_When_CR">
+        <dc:Bounds x="1472" y="292" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1287" y="406" width="26" height="14" />
+          <dc:Bounds x="1458" y="276" width="23" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_159nd7m_di" bpmnElement="Event_1r1fq1p">
-        <dc:Bounds x="772" y="372" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_1cbb655_di" bpmnElement="Event_P6_When_Bug">
+        <dc:Bounds x="1572" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1547" y="406" width="26" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1e35y2m" bpmnElement="Event_0n2g8sc">
-        <dc:Bounds x="932" y="372" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0i0acoh" bpmnElement="Event_0xgcnoq">
-        <dc:Bounds x="1092" y="372" width="36" height="36" />
+      <bpmndi:BPMNShape id="BPMNShape_01sgw7s" bpmnElement="Event_1xorcuu">
+        <dc:Bounds x="612" y="372" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0l9h30y_di" bpmnElement="Flow_0l9h30y">
         <di:waypoint x="1270" y="408" />
@@ -332,6 +333,21 @@
         <di:waypoint x="1110" y="520" />
         <di:waypoint x="918" y="520" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pj2mgn_di" bpmnElement="Flow_0pj2mgn">
+        <di:waypoint x="630" y="408" />
+        <di:waypoint x="630" y="520" />
+        <di:waypoint x="882" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1gtnx86_di" bpmnElement="Event_1gtnx86">
+        <dc:Bounds x="152" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1defiom_di" bpmnElement="Activity_0ss2few">
+        <dc:Bounds x="600" y="760" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1algdw3_di" bpmnElement="Event_1algdw3">
+        <dc:Bounds x="1862" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1mzf23i_di" bpmnElement="escalate_email">
         <dc:Bounds x="632" y="662" width="36" height="36" />
         <bpmndi:BPMNLabel>

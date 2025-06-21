@@ -20,7 +20,7 @@ const cretaecustomer = async (data, username) => {
 
 CREATE (s:Status {
     uuid: randomUUID(),
-    status: "locked",
+    status: "inactive",
     createdBy: $username,
     createAt: timestamp(),
     modifiedBy: "",
