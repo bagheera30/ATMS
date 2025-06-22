@@ -68,6 +68,7 @@ const findUserAll = async () => {
 RETURN {
   id: u.uuid,
   username: u.username,
+  namaLengkap: u.namaLengkap,
   email: u.email,
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
