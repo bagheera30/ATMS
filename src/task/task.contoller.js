@@ -45,7 +45,7 @@ router.get(
     }
   }
 );
-router.post(
+router.get(
   "/:id/unclaim",
   authMiddleware(["manager", "user"]),
   async (req, res) => {
