@@ -6,7 +6,7 @@ const findUserAllByUsername = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (u:User {username: $username})-[:HAS_ROLE]->(r:Role)
+      MATCH (u:User )-[:HAS_ROLE]->(r:Role)where LOWER(u.username)+LOWER(u.namemaLengkap)CONTAINS $username
 WITH u, collect(r.RoleName) AS roles
 RETURN {
   id: u.uuid,
@@ -14,6 +14,7 @@ RETURN {
   fullName: u.namaLengkap,
   email: u.email,
   posisi: u.jabatan,
+  status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
   TanggalLahir: u.dateOfBirth,
   phoneNumber: u.phoneNumber,
   Role: roles
@@ -72,7 +73,7 @@ RETURN {
   \`No.Hp\`: u.phoneNumber,
   posisi: u.jabatan,
   status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
-  Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName][0]
+  Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName]
 } AS result
 
 

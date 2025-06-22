@@ -11,9 +11,10 @@ const {
 const bcrypt = require("bcrypt");
 
 class UserService {
-  async getUserallByUsername(username) {
+  async getUserallByUsername(search) {
     try {
-      const user = await findUserAllByUsername(username);
+      const lower = search.toLowerCase();
+      const user = await findUserAllByUsername(lower);
       if (Array.isArray(user.Role)) {
         user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
       }
