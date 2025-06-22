@@ -15,11 +15,6 @@ class UserService {
     try {
       const lower = search.toLowerCase();
       const user = await findUserAllByUsername(lower);
-      console.log(user);
-      if (Array.isArray(user.Role)) {
-        user.Role = user.Role.join(", "); // contoh hasil: "admin, editor"
-      }
-      console.log("test", user);
       if (!user) {
         return {
           code: 1,
