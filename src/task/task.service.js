@@ -39,6 +39,46 @@ class TaskService {
     }
   }
 
+  async getasbyinbox(username) {
+    try {
+      console.log(username);
+      const urlcamund = process.env.URL_CAMUNDA;
+      const response = await axios.get(`${urlcamund}/task`, {
+        params: {
+          assignee: username,
+        },
+      });
+      const tasks = response.data;
+
+      // Filter hanya field yang dibutuhkan
+      const filteredTasks = tasks.map((task) => ({
+        id: task.id,
+        name: task.name,
+        owner: task.owner,
+        assignee: task.assignee,
+        created: task.created,
+        followUp: task.followUp,
+        due_date: task.due,
+        delegation: task.delegationState,
+      }));
+
+      return filteredTasks;
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      if (error.response) {
+        // Jika error berasal dari response server
+        res.status(error.response.status).json({
+          error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
+        });
+      } else {
+        // Jika error berasal dari komunikasi dengan server
+        res.status(500).json({
+          error: "Failed to fetch tasks from Camunda. Status: 500",
+        });
+      }
+    }
+  }
+
   async assignee(username, taskid) {
     try {
       const cm = process.env.URL_CAMUNDA;
