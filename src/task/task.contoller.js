@@ -23,33 +23,36 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.post("/claim", authMiddleware(["manager", "user"]), async (req, res) => {
-  const data = req.body;
-  console.log(data.taskid);
-  console.log(req.user.username);
-  try {
-    const task = await taskService.assignee(req.user.username, data.taskid);
-    res.status(200).json({
-      code: 0,
-      status: true,
-      message: "success",
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
-  }
-});
-router.post(
-  "/unclaim",
+router.get(
+  "/:id/claim",
   authMiddleware(["manager", "user"]),
   async (req, res) => {
-    const data = req.body;
+    const data = req.params.id;
+    console.log(req.user.username);
+    try {
+      await taskService.assignee(req.user.username, data);
+      res.status(200).json({
+        code: 0,
+        status: true,
+        message: "success",
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+);
+router.post(
+  "/:id/unclaim",
+  authMiddleware(["manager", "user"]),
+  async (req, res) => {
+    const data = req.params.id;
     console.log(data.taskid);
     try {
-      const task = await taskService.Unassignee(data.taskid);
+      await taskService.Unassignee(data);
       res.status(200).json({
         code: 0,
         status: true,
