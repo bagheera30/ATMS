@@ -49,6 +49,7 @@ class TaskService {
         },
       });
       const tasks = response.data;
+      console.log(tasks);
 
       // Filter hanya field yang dibutuhkan
       const filteredTasks = tasks.map((task) => ({

@@ -71,6 +71,7 @@ RETURN {
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
   posisi: u.jabatan,
+  status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
   Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName][0]
 } AS result
 
