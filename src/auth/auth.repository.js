@@ -59,7 +59,7 @@ const createUser = async (data, otp, otpExpires) => {
         createAt: timestamp(),
         modifiedBy: "",
         modifiedAt: timestamp(),
-        otp: $otp
+        otp: $otp,
         otpExpiresAt:$otpExpires
       })-[:HAS_ROLE]->(r)
       CREATE (u)-[:HAS_STATUS]->(su)

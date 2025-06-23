@@ -112,7 +112,7 @@ class UserService {
           }
           data.user.password = await bcrypt.hash(data.user.password, 10);
 
-          const user = await updateUser(uuid, data, role, fromedit);
+          const user = await updateUser(uuid, data, fromedit);
           return {
             code: 0,
             status: true,

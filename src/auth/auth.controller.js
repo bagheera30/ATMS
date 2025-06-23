@@ -23,7 +23,6 @@ router.post("/register", validateCreateUser, async (req, res) => {
     const user = await authService.createUser(data);
     console.log(user);
     res.status(201).json({
-      // Menggunakan 201 Created
       user,
     });
   } catch (error) {
@@ -107,24 +106,24 @@ router.get("/verifOtp/:otp", async (req, res) => {
   }
 });
 
-router.post("/forgotPassword", async (req, res) => {
+router.post("/:id/forgotPassword", async (req, res) => {
   try {
-    const { email } = req.body;
+    const data = req.body;
 
-    if (!email) {
+    if (!data.password) {
       return res.status(400).json({
         code: 1,
         status: false,
-        message: "Email diperlukan",
+        message: "password diperlukan",
       });
     }
 
-    const result = await authService.forgotPassword(email);
-
-    if (!result.success) {
+    const result = await authService.forgotPassword(req.params.id, data);
+    console.log(result);
+    if (!result.status) {
       return res.status(404).json({
         code: result.code,
-        status: false,
+        status: result.status,
         message: result.message,
       });
     }

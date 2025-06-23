@@ -191,7 +191,7 @@ const updateUser = async (uuid, data, dataform) => {
       {
         uuid,
         data,
-        dataform,
+        dataform: dataform || "",
       }
     );
     console.log(result.records[0].get("result"));
