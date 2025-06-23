@@ -107,6 +107,43 @@ router.get("/verifOtp/:otp", async (req, res) => {
   }
 });
 
+router.post("/forgotPassword", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        code: 1,
+        status: false,
+        message: "Email diperlukan",
+      });
+    }
+
+    const result = await authService.forgotPassword(email);
+
+    if (!result.success) {
+      return res.status(404).json({
+        code: result.code,
+        status: false,
+        message: result.message,
+      });
+    }
+
+    res.status(200).json({
+      code: 0,
+      status: true,
+      message: result.message,
+    });
+  } catch (error) {
+    console.error("Error in forgotPassword route:", error);
+    res.status(500).json({
+      code: 2,
+      status: false,
+      message: error.message || "Terjadi kesalahan server",
+    });
+  }
+});
+
 router.post("/resendotp", async (req, res) => {
   try {
     const { email } = req.body;

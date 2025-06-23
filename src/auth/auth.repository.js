@@ -94,6 +94,35 @@ const createUser = async (data, otp, otpExpires) => {
   }
 };
 
+const sendOtpToEmail = async (email, otp) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `OPTIONAL MATCH (u:User)
+WHERE lower(u.email) CONTAINS $email
+FOREACH (ignore IN CASE WHEN u IS NOT NULL THEN [1] ELSE [] END |
+  SET u.otp = $otp
+)
+RETURN
+  CASE 
+    WHEN u IS NOT NULL THEN 
+      { code: 0, status: true, message: 'success OTP',email:u.email,otp:u.otp }
+    ELSE 
+      { code: 1, status: false, message: 'email tidak ditemukan' }
+  END AS result`,
+      {
+        email,
+        otp,
+      }
+    );
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
 const validasiEmail = async (username) => {
   const session = neo.session();
   try {
@@ -115,6 +144,7 @@ const validasiEmail = async (username) => {
 const resendotp = async (email, otp, otpExpires) => {
   const session = neo.session();
   try {
+    console.log(email);
     const result = await session.run(
       `MATCH (u:User {email: $email})
        SET u.otp=$otp,u.otpExpiresAt=$otpExpires, u.modifiedAt=timestamp()
@@ -125,6 +155,7 @@ const resendotp = async (email, otp, otpExpires) => {
         otpExpires: otpExpires,
       }
     );
+    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -231,4 +262,5 @@ module.exports = {
   findToken,
   validasiEmail,
   resendotp,
+  sendOtpToEmail,
 };

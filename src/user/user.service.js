@@ -75,15 +75,23 @@ class UserService {
     try {
       // untuk change password
       if (role.includes("manager")) {
+        if (data.user.password) {
+          return {
+            code: 2,
+            status: false,
+            message: "manager can't change password",
+          };
+        }
+        data.user.password = await bcrypt.hash(data.user.password, 10);
         const user = await userstatus(uuid, fromedit, data);
-        console.log(user);
+        console.log("user", user);
         return {
           code: 0,
           status: true,
           message: "sucess",
         };
       } else {
-        if (!data.password) {
+        if (!data.user.password) {
           return {
             code: 2,
             status: false,
@@ -92,7 +100,9 @@ class UserService {
         } else {
           const fn = await findUserById(uuid);
           const pw = fn.password;
-          const isPasswordValid = await bcrypt.compare(data.password, pw);
+          console.log(pw);
+          const isPasswordValid = await bcrypt.compare(data.user.password, pw);
+
           if (!isPasswordValid) {
             return {
               code: 2,
@@ -100,14 +110,13 @@ class UserService {
               message: "Incorrect password",
             };
           }
-          data.password = await bcrypt.hash(data.password, 10);
+          data.user.password = await bcrypt.hash(data.user.password, 10);
 
           const user = await updateUser(uuid, data, role, fromedit);
           return {
             code: 0,
             status: true,
             message: "sucess",
-            user,
           };
         }
       }

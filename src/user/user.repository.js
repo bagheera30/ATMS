@@ -145,7 +145,6 @@ const userUpdateRole = async (username, fromedit, data) => {
 const userstatus = async (uuid, fromedit, data) => {
   const session = neo.session();
   try {
-    console.log(uuid, fromedit, data);
     const result = await session.run(
       `
      MATCH (u:User {uuid: $uuid})-[r:HAS_STATUS]->(s:Status)

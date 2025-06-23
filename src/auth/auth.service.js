@@ -69,11 +69,59 @@ class authService {
       throw new Error(`Error creating user: ${error.message}`);
     }
   }
+  async forgotPassword(email) {
+    try {
+      if (!email) {
+        throw new Error("Email is required");
+      }
+
+      const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+      const user = await authRepository.sendOtpToEmail(email, otp);
+      console.log(user);
+      if (user.message === "email tidak ditemukan") {
+        return {
+          success: false,
+          code: 3, // Custom code for "email not found"
+          message: user.message,
+        };
+      }
+      const nm = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_VERIF,
+          pass: process.env.PASSWORD_EMAIL,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_VERIF,
+        to: user.email,
+        subject: "Kode OTP Verifikasi",
+        html: `...your email template...`,
+      };
+
+      await nm.sendMail(mailOptions);
+      console.log("Email OTP terkirim");
+
+      return {
+        success: true,
+        code: 0,
+        message: "OTP berhasil dikirim",
+        data: user,
+      };
+    } catch (error) {
+      console.error("Error in forgotPassword:", error);
+      throw new Error(`Gagal mengirim OTP: ${error.message}`);
+    }
+  }
   async resendOtp(email) {
     try {
       const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
       const otpExpires = Math.floor(Date.now() / 1000) + 5 * 60;
       const result = await authRepository.resendotp(email, otp, otpExpires);
+      console.log("service", result);
       const nm = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
