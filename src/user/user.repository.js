@@ -6,7 +6,7 @@ const findUserAllByUsername = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (u:User)WHERE LOWER(u.username) + LOWER(u.namaLengkap) CONTAINS 'akasakaryuz2'
+      MATCH (u:User)WHERE LOWER(u.username) + LOWER(u.namaLengkap) CONTAINS $username
       RETURN {
         id: u.uuid,
         username: u.username,
