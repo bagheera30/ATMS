@@ -185,7 +185,7 @@ FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] ELSE [] END |
         u.modifiedAt = timestamp()
 )
 
-RETURN {status: 'success', user: properties(u)}AS result`,
+RETURN {status: 'success', id: u.uuid}AS result`,
       {
         token: token,
         time: time,
