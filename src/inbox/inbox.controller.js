@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/autentication");
 const multer = require("multer");
+const { createinbox } = require("./inbox.service");
 const upload = multer();
 
 router.post(
@@ -11,23 +12,23 @@ router.post(
   upload.any(), // Handle any file uploads
   async (req, res) => {
     try {
-      const id = req.params.id;
-      const variables = req.body.variables || {};
-      const files = {};
-
-      if (req.files && req.files.length > 0) {
-        req.files.forEach((file) => {
-          files[file.fieldname] = file;
+      // Validasi harus ada file yang diupload
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: "Harus mengirim minimal satu file",
         });
       }
 
-      const response = await inboxService.createinbox(
-        id,
+      const id = req.params.id;
+      const files = {}; // Hanya proses files
 
-        req.user.username,
-        variables,
-        files
-      );
+      req.files.forEach((file) => {
+        files[file.fieldname] = file;
+      });
+
+      // Panggil service tanpa variables
+      const response = await createinbox(id, req.user.username, files);
 
       res.status(201).json(response);
     } catch (error) {

@@ -26,25 +26,28 @@ router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.post("/addUser", authMiddleware(["manager",'admin']), async (req, res) => {
-  const id = req.query.RoleName;
-  const data = req.body;
-  console.log(data);
-  try {
-    
-    const user = await adduserToWorkgroup(data.uuid, id);
+router.post(
+  "/addUser",
+  authMiddleware(["manager", "user"]),
+  async (req, res) => {
+    const id = req.query.RoleName;
+    const data = req.body;
+    console.log(data);
+    try {
+      const user = await adduserToWorkgroup(data.uuid, id);
 
-    res.status(201).json({
-      user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
+      res.status(201).json({
+        user,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
   }
-});
+);
 router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   const data = req.body;
   const uuid = req.params.uuid;
