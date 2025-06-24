@@ -46,7 +46,7 @@ const getmanager = async (search) => {
   try {
     const result = await session.run(
       `
-      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(u.name)CONTAINS $search
+      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(wg.name)CONTAINS $search
       MATCH (u)-[:HAS_ROLE]->(r:Role) where r.RoleName='manager'
       RETURN{
       group_name:wg.name,
