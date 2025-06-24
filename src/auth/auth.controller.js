@@ -22,6 +22,14 @@ router.post("/register", validateCreateUser, async (req, res) => {
     const data = req.body;
     const user = await authService.createUser(data);
     console.log(user);
+    if(!user.status){
+      return res.status(404).json({
+        // Menggunakan 404 Not Found jika pengguna tidak ditemukan
+        code: 2,
+        status: false,
+        message: user.message,
+      });
+    }
     res.status(201).json({
       user,
     });

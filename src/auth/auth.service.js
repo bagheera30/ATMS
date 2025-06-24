@@ -33,6 +33,13 @@ class authService {
         otpExpires
       );
       console.log(newUser);
+      if(!newUser.status){
+        return {
+          code: 1,
+          status: false,
+          message: "email or username already exist",
+        };
+      }
 
       const nm = nodemailer.createTransport({
         host: "smtp.gmail.com",

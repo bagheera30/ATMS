@@ -1,29 +1,43 @@
+// inbox.router.js
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/autentication");
-const { Variables } = require("camunda-external-task-client-js");
+const multer = require("multer");
+const upload = multer();
 
-router.post("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = req.body;
-    const variables = req.body.variables;
+router.post(
+  "/:id",
+  authMiddleware(["manager", "user"]),
+  upload.any(), // Handle any file uploads
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      const variables = req.body.variables || {};
+      const files = {};
 
-    const response = await inboxService.createinbox(
-      id,
-      data,
-      req.user.username,
-      variables
-    );
-    res.status(201).json(response);
-  } catch (error) {
-    console.error(
-      "Error completing task:",
-      error.response?.data || error.message
-    );
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message,
-    });
+      if (req.files && req.files.length > 0) {
+        req.files.forEach((file) => {
+          files[file.fieldname] = file;
+        });
+      }
+
+      const response = await inboxService.createinbox(
+        id,
+
+        req.user.username,
+        variables,
+        files
+      );
+
+      res.status(201).json(response);
+    } catch (error) {
+      console.error("Error completing task:", error);
+      res.status(500).json({
+        success: false,
+        error: error.response?.data?.message || error.message,
+      });
+    }
   }
-});
+);
+
+module.exports = router;
