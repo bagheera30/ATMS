@@ -22,7 +22,7 @@ class UserService {
           message: "user not found",
         };
       }
-      // console.log(user);
+      
       return {
         code: 0,
         status: true,
