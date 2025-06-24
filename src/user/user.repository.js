@@ -64,6 +64,9 @@ const findUserAll = async () => {
     const result = await session.run(
       `
       MATCH (u:User)
+OPTIONAL MATCH (u)-[:HAS_STATUS]->(s:Status)
+OPTIONAL MATCH (u)-[:HAS_ROLE]->(r:Role)
+WITH u, s.status AS status, COLLECT(r.RoleName) AS roles
 RETURN {
   id: u.uuid,
   username: u.username,
@@ -72,8 +75,8 @@ RETURN {
   TanggalLahir: u.dateOfBirth,
   \`No.Hp\`: u.phoneNumber,
   posisi: u.jabatan,
-  status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
-  Role: [(c)-[:HAS_ROLE]->(s:Role)|s.RoleName]
+  status: status,
+  Role: roles
 } AS result
 
 
