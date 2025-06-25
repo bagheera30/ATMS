@@ -8,11 +8,20 @@ const {
   upsert,
   getAllProjek,
   getfile,
+  getAll,
 } = require("./projek.repository");
 const uploadToMinio = require("../lib/minio");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {
+  async getprojekAll() {
+    try {
+      const result = await getAll();
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
   async getAll(search) {
     try {
       const data = await getAllProjek(search);
@@ -60,28 +69,36 @@ class ProjekIntanceService {
   }
 
   async getDownload(uuid) {
-    if (!uuid) {
-      throw new Error("please complete the form");
-    }
     try {
-      const user = await getfile(uuid);
-      const bucket = process.env.MINIO_BUCKET_NAME;
-      const value = user.value;
-      try {
-        // Set header untuk response
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`
-        );
+      const bucketName = process.env.MINIO_BUCKET_NAME; // Replace with your bucket name
+      const fileName = uuid; // Or map uuid to actual file name
 
-        // Panggil fungsi downloadFromMinio dan pipe ke response
-        await downloadFromMinio(bucket, filename, res);
-        return file;
-      } catch (error) {
-        throw error;
-      }
+      // You might want to get the original file name from your database
+      const originalName = fileName; // Replace with logic to get original name
+
+      // Create a PassThrough stream to pipe the download
+      const stream = new require("stream").PassThrough();
+
+      // Get the file from Minio
+      const minioStream = await minioClient.getObject(bucketName, fileName);
+
+      // Get file metadata (optional)
+      const stat = await minioClient.statObject(bucketName, fileName);
+      const contentType =
+        stat.metaData["content-type"] || "application/octet-stream";
+
+      // Pipe Minio stream to our pass-through stream
+      minioStream.pipe(stream);
+
+      return {
+        stream,
+        contentType,
+        originalName,
+        size: stat.size,
+      };
     } catch (error) {
-      throw error;
+      console.error("Download error:", error);
+      throw new Error("Failed to download file: " + error.message);
     }
   }
 

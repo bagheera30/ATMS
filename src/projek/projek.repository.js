@@ -185,6 +185,7 @@ module.exports = {
   upsert,
   getAllBycustomerId,
   getProjek,
+  getAll,
   getAllProjek,
   deleteProject,
   getfile,
