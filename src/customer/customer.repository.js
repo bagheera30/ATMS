@@ -58,6 +58,7 @@ const getAll = async (search) => {
         address:c.address,
         city:c.city,
         country:c.country,
+        category:c.category,
         status: [(c)-[:HAS_STATUS]->(s:Status)|s.status][0]
       }as result`,
       {
@@ -86,6 +87,7 @@ const getByid = async (uiid) => {
         address:c.address,
         city:c.city,
         country:c.country,
+        category:c.category,
         status:[(c)-[HAS_STATUS]->(s:Status)|s.status][0]
       }as result`,
       {
