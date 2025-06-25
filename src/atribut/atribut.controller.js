@@ -1,8 +1,9 @@
 const express = require("express");
 const { getDownload } = require("./atribut.service");
+const authMiddleware = require("../middlewares/autentication");
 const router = express.Router();
 
-router.get("/:id/download", async (req, res) => {
+router.get("/:id/download", authMiddleware(["manager","user"]), async (req, res) => {
   const id = req.params.id;
   console.log(id);
   try {
