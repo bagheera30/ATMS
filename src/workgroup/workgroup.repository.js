@@ -86,6 +86,28 @@ const getAll = async (search) => {
     await session.close();
   }
 };
+
+const getallwg=async () => {
+  const session = neo.session();
+  try {
+    console.log("getallwg");
+    const result = await session.run(
+      `MATCH (n:Workgroup)
+      RETURN {
+        uuid: n.uuid,
+        name: n.name,
+        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+        } as result`
+    );
+
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+}
 const searchWorkgroup = async (search) => {
   const session = neo.session();
   try {
@@ -187,5 +209,6 @@ module.exports = {
   deleteWorkgroup,
   addmember,
   getmanager,
+  getallwg,
   removemember,
 };

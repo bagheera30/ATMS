@@ -6,6 +6,7 @@ const {
   removemember,
   addmember,
   getmanager,
+  getallwg,
 } = require("./workgroup.repository");
 
 class WorkgroupService {
@@ -17,6 +18,14 @@ class WorkgroupService {
         throw new Error("please complete the form");
       }
       const user = await upsertWorkgroup(uuid, username, name, status);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getallwg() {
+    try {
+      const user = await getallwg();
       return user;
     } catch (error) {
       throw error;

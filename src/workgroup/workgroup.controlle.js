@@ -8,6 +8,7 @@ const {
   adduserToWorkgroup,
   deleteuserWorkgroup,
   getManeger,
+  getallwg,
 } = require("./workgroup.service");
 
 const router = express.Router();
@@ -58,9 +59,21 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
     if (req.user.roles === "admin") {
       workgroup = await getManeger(wg);
     } else {
-      console.log("test2: ", wg);
+      console.log(wg);
+      if (!wg) {
+        console.log("masuk");
+        workgroup = await getallwg();
+        if (workgroup.length === 0) {
+          res.status(200).json({
+            code: 1,
+            status: false,
+            message: "No workgroup found",
+          });
+        }
+      }
       workgroup = await getAllWorkgroup(wg);
     }
+    console.log(workgroup);
 
     res.status(200).json({
       workgroup,
