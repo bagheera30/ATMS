@@ -176,7 +176,8 @@ class authService {
       const time = Math.floor(Date.now() / 1000);
 
       const verificationResult = await authRepository.findToken(intotp, time);
-      if (!verificationResult.status) {
+      console.log(verificationResult);
+      if (verificationResult.status==false) {
         return {
           status: false,
           message: verificationResult.message,
@@ -184,7 +185,7 @@ class authService {
       }
       return {
         success: true,
-        message: verificationResult,
+        message: verificationResult.status,
       };
     } catch (error) {
       throw new Error(`Verifikasi OTP gagal: ${error.message}`);

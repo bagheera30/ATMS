@@ -12,6 +12,7 @@ const cretaecustomer = async (data, username) => {
     address: $address,
     city: $city,
     country: $country,
+    category: $category,
     createdBy: $username,
     createAt: timestamp(),
     modifiedBy: "",
@@ -35,6 +36,7 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
         city: data.city,
         country: data.country,
         username,
+        category: data.category,
         address: data.address,
       }
     );

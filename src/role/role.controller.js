@@ -69,7 +69,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.post("/", authMiddleware(["manager"]), async (req, res) => {
+router.post("/", authMiddleware(["manager", "user"]), async (req, res) => {
   const data = req.body;
   console.log(data.RoleName);
   const username = req.user.username;

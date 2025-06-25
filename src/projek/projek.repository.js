@@ -117,14 +117,14 @@ const getProjek = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (p:Projek {businessKey: 'test'})
+      `MATCH (p:Projek {businessKey: $uuid})
 OPTIONAL MATCH (c:Customer)-[:HAS_CUSTOMER]->(p)
 OPTIONAL MATCH (p)-[:HAS_STATUS]->(s:Status)
 WITH p, 
      collect(DISTINCT c.name) AS customerNames, 
      collect(DISTINCT s.status) AS statuses
 RETURN {
-    task_name:[(a:Atribut)-[:HAS_ATRIBUTE]->(p)|a.taskname],
+    task:[(a:Atribut)-[:HAS_ATRIBUTE]->(p) | {taskname: a.taskname, value: a.value}],
     businessKey: p.businessKey,
     nama: p.nama,
     customer: customerNames[0],

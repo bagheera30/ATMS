@@ -91,8 +91,8 @@ router.get("/verifOtp/:otp", async (req, res) => {
   try {
     const otp = req.params;
     const user = await authService.VerifOtp(otp.otp);
-
-    if (!user.status) {
+    console.log(user);
+    if (user.status==false) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
         code: 2,
