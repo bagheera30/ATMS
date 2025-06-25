@@ -64,7 +64,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
         console.log("masuk");
         workgroup = await getallwg();
         if (workgroup.length === 0) {
-          res.status(200).json({
+          res.status(404).json({
             code: 1,
             status: false,
             message: "No workgroup found",
