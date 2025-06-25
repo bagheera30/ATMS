@@ -83,8 +83,8 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
   }
 });
 
-router.get("/download/:filename", async (req, res) => {
-  const uuid = req.params.filename;
+router.get("/:id/download", async (req, res) => {
+  const uuid = req.params.id;
   try {
     // Get file info or stream from service
     const fileInfo = await projekIntanceService.getDownload(uuid);

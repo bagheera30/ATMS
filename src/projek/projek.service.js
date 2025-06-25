@@ -68,39 +68,7 @@ class ProjekIntanceService {
     }
   }
 
-  async getDownload(uuid) {
-    try {
-      const bucketName = process.env.MINIO_BUCKET_NAME; // Replace with your bucket name
-      const fileName = uuid; // Or map uuid to actual file name
-
-      // You might want to get the original file name from your database
-      const originalName = fileName; // Replace with logic to get original name
-
-      // Create a PassThrough stream to pipe the download
-      const stream = new require("stream").PassThrough();
-
-      // Get the file from Minio
-      const minioStream = await minioClient.getObject(bucketName, fileName);
-
-      // Get file metadata (optional)
-      const stat = await minioClient.statObject(bucketName, fileName);
-      const contentType =
-        stat.metaData["content-type"] || "application/octet-stream";
-
-      // Pipe Minio stream to our pass-through stream
-      minioStream.pipe(stream);
-
-      return {
-        stream,
-        contentType,
-        originalName,
-        size: stat.size,
-      };
-    } catch (error) {
-      console.error("Download error:", error);
-      throw new Error("Failed to download file: " + error.message);
-    }
-  }
+  
 
   async createProjek(data, file, username) {
     if (!data) {
