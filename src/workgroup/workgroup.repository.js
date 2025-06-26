@@ -87,7 +87,7 @@ const getAll = async (search) => {
   }
 };
 
-const getallwg=async () => {
+const getallwg = async () => {
   const session = neo.session();
   try {
     console.log("getallwg");
@@ -96,18 +96,25 @@ const getallwg=async () => {
       RETURN {
         uuid: n.uuid,
         name: n.name,
+        member: toInteger(size([(n)-[:HAS_WORKGROUP]->(u:User) | u])),
         status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-        } as result`
+      } as result`
     );
 
-    return result.records.map((record) => record.get("result"));
+    return result.records.map((record) => {
+      const result = record.get("result");
+      if (result.member_count && typeof result.member_count === "object") {
+        result.member_count = result.member_count.low;
+      }
+      return result;
+    });
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
     await session.close();
   }
-}
+};
 const searchWorkgroup = async (search) => {
   const session = neo.session();
   try {

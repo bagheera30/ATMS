@@ -66,6 +66,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
       if (!wg) {
         console.log("masuk");
         workgroup = await getallwg();
+        console.log(workgroup);
         if (workgroup.length === 0) {
           res.status(404).json({
             code: 1,
@@ -73,10 +74,13 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
             message: "No workgroup found",
           });
         }
+      }else{
+        console.log("keluar");
+        workgroup = await getAllWorkgroup(wg);
       }
-      workgroup = await getAllWorkgroup(wg);
+      
     }
-    console.log(workgroup);
+
 
     res.status(200).json({
       workgroup,
