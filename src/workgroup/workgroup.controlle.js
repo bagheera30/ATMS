@@ -74,13 +74,11 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
             message: "No workgroup found",
           });
         }
-      }else{
+      } else {
         console.log("keluar");
         workgroup = await getAllWorkgroup(wg);
       }
-      
     }
-
 
     res.status(200).json({
       workgroup,
@@ -93,7 +91,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
     });
   }
 });
-router.get("/:uuid", authMiddleware(["manager"]), async (req, res) => {
+router.get("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const uuid = req.params.uuid;
   try {
     const workgroup = await getByid(uuid);
@@ -109,7 +107,7 @@ router.get("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.delete("/:uuid", authMiddleware(["manager"]), async (req, res) => {
+router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;
   try {
     const user = await deleteWorkgroup(id);
