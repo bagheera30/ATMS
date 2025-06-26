@@ -56,6 +56,13 @@ router.post("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
       req.user.roles,
       username
     );
+    if(user.code == 2){
+      res.status(404).json({
+        code: user.code,
+        status: user.status,
+        message: user.message,
+      });
+    }
     res.status(201).json({
       user,
     });
