@@ -54,7 +54,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   const username = req.user.username;
   const name = data.RoleName;
   const status = data.status;
-  console.log("salah");
+
   try {
     const user = await upsertWorkgroup(uuid, username, name, status);
     res.status(201).json({
@@ -71,9 +71,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
 
 router.post("/", authMiddleware(["manager", "user"]), async (req, res) => {
   const data = req.body;
-  console.log(data.RoleName);
   const username = req.user.username;
-  console.log(req.user.roles);
   const name = data.RoleName;
   const status = data.status;
   console.log("salah");

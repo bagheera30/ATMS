@@ -21,6 +21,9 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   try {
     const user = await upsertWorkgroup(uuid, username, name, status);
     res.status(201).json({
+      code: 1,
+      status: true,
+      message: "Workgroup created successfully",
       user,
     });
   } catch (error) {
