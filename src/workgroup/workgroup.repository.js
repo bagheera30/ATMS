@@ -93,19 +93,25 @@ const getallwg = async () => {
     console.log("getallwg");
     const result = await session.run(
       `MATCH (n:Workgroup)
+      OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
+      OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
+      WITH n, count(DISTINCT r) as memberCount, collect(s.status)[0] as status
       RETURN {
         uuid: n.uuid,
         name: n.name,
-        member: toInteger(size([(n)-[:HAS_WORKGROUP]->(u:User) | u])),
-        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+        member: memberCount,
+        status: status
       } as result`
     );
 
     return result.records.map((record) => {
       const result = record.get("result");
-      if (result.member_count && typeof result.member_count === "object") {
-        result.member_count = result.member_count.low;
+
+      // Konversi manual dari Neo4j Integer ke Number
+      if (result.member && typeof result.member.toNumber === "function") {
+        result.member = result.member.toNumber();
       }
+
       return result;
     });
   } catch (error) {
@@ -115,6 +121,7 @@ const getallwg = async () => {
     await session.close();
   }
 };
+
 const searchWorkgroup = async (search) => {
   const session = neo.session();
   try {
