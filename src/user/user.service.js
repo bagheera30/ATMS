@@ -75,12 +75,19 @@ class UserService {
     try {
       console.log(data);
 
+      // Initialize user object if not exists
+      if (!data.user) {
+        data.user = {};
+      }
+
       // untuk change password
       if (role.includes("manager")) {
+        // Jika manager mengubah password
         if (data.user.password) {
-          // Cek apakah manager mengedit dirinya sendiri
-          const currentUser = await findUserById(uuid); // Data user yang sedang login
-          const editedUser = await findUserAllByUsername(fromedit); // Data user yang sedang di-edit
+          console.log("Manager changing password");
+
+          const currentUser = await findUserById(uuid);
+          const editedUser = await findUserAllByUsername(fromedit);
 
           // Jika user yang di-edit bukan diri sendiri
           if (!editedUser || currentUser.username !== editedUser.username) {
@@ -91,9 +98,10 @@ class UserService {
             };
           }
 
-          // Jika sampai sini berarti manager mengedit dirinya sendiri
+          // Hash password baru jika manager mengedit password sendiri
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
+        // Jika manager tidak mengubah password, lanjut tanpa error
 
         // Lanjutkan update data
         const user = await userstatus(uuid, fromedit, data);
@@ -101,40 +109,42 @@ class UserService {
         return {
           code: 0,
           status: true,
-          message: "success", // Diperbaiki typo dari "sucess"
+          message: "success",
         };
       } else {
-        // Logic untuk non-manager
+        // Logic untuk non-manager (password wajib)
         if (!data.user.password) {
           return {
             code: 2,
             status: false,
-            message: "Please complete the form",
-          };
-        } else {
-          const fn = await findUserById(uuid);
-          const pw = fn.password;
-          console.log(pw);
-          const isPasswordValid = await bcrypt.compare(data.user.password, pw);
-
-          if (!isPasswordValid) {
-            return {
-              code: 2,
-              status: false,
-              message: "Incorrect password",
-            };
-          }
-          data.user.password = await bcrypt.hash(data.user.password, 10);
-
-          const user = await updateUser(uuid, data, fromedit);
-          return {
-            code: 0,
-            status: true,
-            message: "success", // Diperbaiki typo dari "sucess"
+            message: "Password is required for non-manager roles",
           };
         }
+
+        const fn = await findUserById(uuid);
+        const pw = fn.password;
+        console.log(pw);
+        const isPasswordValid = await bcrypt.compare(data.user.password, pw);
+
+        if (!isPasswordValid) {
+          return {
+            code: 2,
+            status: false,
+            message: "Incorrect password",
+          };
+        }
+
+        data.user.password = await bcrypt.hash(data.user.password, 10);
+        const user = await userstatus(uuid, fromedit, data);
+
+        return {
+          code: 0,
+          status: true,
+          message: "success",
+        };
       }
     } catch (error) {
+      console.error("Error in updateUser:", error);
       return {
         code: 2,
         status: false,
