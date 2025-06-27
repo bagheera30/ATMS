@@ -211,7 +211,7 @@ const deleteUser = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (u:User)-[r]-(s) where u.uuid = $uuid DETACH DELETE u,r,s 
+      `MATCH (u:User)-[r]-(s:Status) where u.uuid = $uuid DETACH DELETE u,r,s 
       RETURN CASE WHEN u IS NOT NULL THEN {code: 0, status: true, message: 'Object Successful Deleted'}  
       ELSE {code: -1, status: false, message: 'Nothing object found'} END AS result `,
       {
