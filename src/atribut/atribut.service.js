@@ -1,28 +1,28 @@
-const { downloadFromMinio } = require("../lib/minio");
-const minioClient = require("../lib/minioClient");
 const { getAtribut } = require("./atribut.repository");
+const { getPresignedUrl } = require("../lib/minio");
 
 class atributService {
   async getDownload(uuid) {
     try {
       const bucketName = process.env.MINIO_BUCKET_NAME;
       const res = await getAtribut(uuid);
-      console.log(res);
+
+      if (!res || !res.value) {
+        throw new Error("Atribut tidak ditemukan");
+      }
+
       const fileName = res.value;
 
-      // Membuat PassThrough stream untuk menangani data
-      const passThrough = new require("stream").PassThrough();
-
-      // Download file dari MinIO dan pipe ke passThrough stream
-      await downloadFromMinio(bucketName, fileName, passThrough);
+      // Dapatkan presigned URL dari MinIO
+      const presignedUrl = await getPresignedUrl(bucketName, fileName, 300); // 5 menit
 
       return {
-        stream: passThrough,
+        url: presignedUrl,
         fileName: fileName,
       };
     } catch (error) {
       console.error("Download error:", error);
-      throw new Error("Failed to download file: " + error.message);
+      throw new Error("Failed to generate download URL: " + error.message);
     }
   }
 }
