@@ -22,7 +22,7 @@ class UserService {
           message: "user not found",
         };
       }
-      
+
       return {
         code: 0,
         status: true,
@@ -73,24 +73,38 @@ class UserService {
   }
   async updateUser(uuid, data, role, fromedit) {
     try {
+      console.log(data);
+
       // untuk change password
       if (role.includes("manager")) {
         if (data.user.password) {
-          return {
-            code: 2,
-            status: false,
-            message: "manager can't change password",
-          };
+          // Cek apakah manager mengedit dirinya sendiri
+          const currentUser = await findUserById(uuid); // Data user yang sedang login
+          const editedUser = await findUserAllByUsername(fromedit); // Data user yang sedang di-edit
+
+          // Jika user yang di-edit bukan diri sendiri
+          if (!editedUser || currentUser.username !== editedUser.username) {
+            return {
+              code: 2,
+              status: false,
+              message: "Manager can only change their own password",
+            };
+          }
+
+          // Jika sampai sini berarti manager mengedit dirinya sendiri
+          data.user.password = await bcrypt.hash(data.user.password, 10);
         }
-        data.user.password = await bcrypt.hash(data.user.password, 10);
+
+        // Lanjutkan update data
         const user = await userstatus(uuid, fromedit, data);
         console.log("user", user);
         return {
           code: 0,
           status: true,
-          message: "sucess",
+          message: "success", // Diperbaiki typo dari "sucess"
         };
       } else {
+        // Logic untuk non-manager
         if (!data.user.password) {
           return {
             code: 2,
@@ -116,7 +130,7 @@ class UserService {
           return {
             code: 0,
             status: true,
-            message: "sucess",
+            message: "success", // Diperbaiki typo dari "sucess"
           };
         }
       }
