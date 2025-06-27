@@ -7,6 +7,7 @@ class atributService {
     try {
       const bucketName = process.env.MINIO_BUCKET_NAME;
       const res = await getAtribut(uuid);
+      console.log(res);
       const fileName = res.value;
 
       // Membuat PassThrough stream untuk menangani data
