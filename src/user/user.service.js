@@ -81,7 +81,7 @@ class UserService {
       }
 
       // untuk change password
-      if (role.includes("manager")) {
+      if (role.includes("manager") || role.includes("admin")) {
         // Jika manager mengubah password
         if (data.user.password) {
           console.log("Manager changing password");

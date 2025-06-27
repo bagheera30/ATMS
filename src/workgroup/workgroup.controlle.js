@@ -12,7 +12,7 @@ const {
 } = require("./workgroup.service");
 
 const router = express.Router();
-router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
+router.post("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const uuid = req.params.uuid;
   const username = req.user.username;
@@ -35,7 +35,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.post("/", authMiddleware(["manager"]), async (req, res) => {
+router.post("/", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const username = req.user.username;
   const name = data.name;
@@ -59,7 +59,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
     let workgroup;
     const wg = req.query.search;
     console.log(req.user.roles);
-    if (req.user.roles === "admin") {
+    if (req.user.roles === "system") {
       workgroup = await getManeger(wg);
     } else {
       console.log(wg);
@@ -125,26 +125,30 @@ router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
-router.post("/addUser/:id", authMiddleware(["manager"]), async (req, res) => {
-  const id = req.params.id;
-  const data = req.body;
-  try {
-    const user = await adduserToWorkgroup(data.uuid, id);
-    res.status(201).json({
-      user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
+router.post(
+  "/addUser/:id",
+  authMiddleware(["manager", "admin"]),
+  async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    try {
+      const user = await adduserToWorkgroup(data.uuid, id);
+      res.status(201).json({
+        user,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 router.delete(
   "/removeUser/:id",
-  authMiddleware(["manager"]),
+  authMiddleware(["manager", "admin"]),
   async (req, res) => {
     const id = req.params.id;
     const data = req.body;

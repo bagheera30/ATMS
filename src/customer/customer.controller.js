@@ -38,7 +38,6 @@ router.get("/:id", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 router.post("/", authMiddleware(["manager"]), async (req, res) => {
-  // console.log(data);
   const username = req.user.username;
   console.log("s", username);
   try {

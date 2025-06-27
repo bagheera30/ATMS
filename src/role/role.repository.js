@@ -134,8 +134,8 @@ const removemember = async (username, uuid) => {
   const session = neo.session();
   const result = await session.run(
     `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS $uuid
-    MATCH (u:User)where LOWER(u.namaLengkap) CONTAINS $username
-      MATCH (u)-[r:HAS_Role]->(n)
+    MATCH (u:User)where u.uuid CONTAINS $username
+    MATCH (u)-[r:HAS_Role]->(n)
     DELETE r
     RETURN {
       Name_Role: n.RoleName,

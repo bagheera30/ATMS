@@ -17,7 +17,7 @@ const authMiddleware = (allowedRoles = []) => {
       // Check if the provided token matches the admin token
       if (token === adminToken) {
         // If it's an admin token, bypass all other checks
-        req.user = { roles: "admin" }; // Set admin role
+        req.user = { roles: "system" }; // Set admin role
         return next();
       }
 

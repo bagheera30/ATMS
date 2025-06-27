@@ -10,25 +10,29 @@ const {
 } = require("./role.service");
 
 const router = express.Router();
-router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
-  const id = req.query.RoleName;
-  const data = req.body;
-  try {
-    const user = await deleteuserWorkgroup(data.uuid, id);
-    res.status(201).json({
-      user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
+router.delete(
+  "/removeUser",
+  authMiddleware(["manager", "admin"]),
+  async (req, res) => {
+    const id = req.query.RoleName;
+    const data = req.body;
+    try {
+      const user = await deleteuserWorkgroup(data.uuid, id);
+      res.status(201).json({
+        user,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
   }
-});
+);
 router.post(
   "/addUser",
-  authMiddleware(["manager", "user"]),
+  authMiddleware(["manager", "admin"]),
   async (req, res) => {
     const id = req.query.RoleName;
     const data = req.body;
@@ -48,7 +52,7 @@ router.post(
     }
   }
 );
-router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
+router.post("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const uuid = req.params.uuid;
   const username = req.user.username;
@@ -69,7 +73,7 @@ router.post("/:uuid", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.post("/", authMiddleware(["manager", "user"]), async (req, res) => {
+router.post("/", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const username = req.user.username;
   const name = data.RoleName;
@@ -91,7 +95,7 @@ router.post("/", authMiddleware(["manager", "user"]), async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   const serch = req.query.RoleName;
   try {
     let workgroup;
@@ -112,7 +116,7 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   const uuid = req.query.search;
   try {
     const workgroup = await getByid(uuid);
@@ -128,7 +132,7 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.delete("/:uuid", authMiddleware(["manager"]), async (req, res) => {
+router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;
   try {
     const user = await deleteWorkgroup(id);

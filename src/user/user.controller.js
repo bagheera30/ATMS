@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get(
   "/",
-  authMiddleware(["manager", "user", "admin"]),
+  authMiddleware(["manager", "user", "admin", "system"]),
   async (req, res) => {
     try {
       const search = req.query.username;
@@ -15,7 +15,7 @@ router.get(
       if (req.user.roles === "user") {
         user = await userService.getUserallByUsername(req.user.username);
         console.log("user: ", user);
-      } else if (req.user.roles === "admin") {
+      } else if (req.user.roles === "system") {
         user = await userService.getTaskOverdue(search);
         console.log("user overdue: ", user);
       } else {
@@ -43,7 +43,7 @@ router.get(
   }
 );
 
-router.post("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
+router.post("/:id", authMiddleware(["manager", "user", "admin"]), async (req, res) => {
   const data = req.body;
   const id = req.params.id;
   const r = req.user.roles.split(",");
