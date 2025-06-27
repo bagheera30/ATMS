@@ -5,12 +5,10 @@ const router = express.Router();
 
 router.get("/:id/download", async (req, res) => {
   const id = req.params.id;
-  console.log(id);
-  try {
-    const { stream, fileName } = await getDownload(id);
 
-    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-    stream.pipe(res);
+  try {
+    const { url } = await getDownload(id);
+    return res.redirect(url); // Redirect client langsung ke presigned URL
   } catch (error) {
     res.status(400).json({
       code: 2,
@@ -19,4 +17,5 @@ router.get("/:id/download", async (req, res) => {
     });
   }
 });
+
 module.exports = router;
