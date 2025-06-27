@@ -13,18 +13,16 @@ async function uploadToMinio(fileBuffer, bucketName, objectName) {
   console.log(`File "${objectName}" uploaded to bucket "${bucketName}"`);
 }
 
-async function getPresignedUrl(bucketName, fileName, expirySeconds = 300) {
-  try {
-    const url = await minioClient.presignedGetObject(
-      bucketName,
-      fileName,
-      expirySeconds
-    );
-    return url;
-  } catch (err) {
-    throw new Error("Gagal mendapatkan presigned URL: " + err.message);
-  }
+async function downloadFromMinio(bucketName, fileName, writableStream) {
+  return new Promise((resolve, reject) => {
+    minioClient
+      .getObject(bucketName, fileName)
+      .then((stream) => {
+        stream.pipe(writableStream);
+        stream.on("end", () => resolve());
+        stream.on("error", (err) => reject(err));
+      })
+      .catch((err) => reject(err));
+  });
 }
-
-
-module.exports = { uploadToMinio, getPresignedUrl };
+module.exports = { uploadToMinio, downloadFromMinio };
