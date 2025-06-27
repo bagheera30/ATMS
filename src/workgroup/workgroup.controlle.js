@@ -91,7 +91,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
     });
   }
 });
-router.get("/:uuid", authMiddleware(["admin"]), async (req, res) => {
+router.get("/:uuid", authMiddleware(["admin", "manager"]), async (req, res) => {
   const uuid = req.params.uuid;
   try {
     const workgroup = await getByid(uuid);
