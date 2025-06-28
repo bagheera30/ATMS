@@ -48,7 +48,7 @@ WITH n, count(DISTINCT r) AS userCount, s.status AS status
 RETURN {
   uuid: n.uuid,
   name: n.RoleName,
-  user: userCount,
+  member: userCount,
   status: status
 } AS result
 `);
