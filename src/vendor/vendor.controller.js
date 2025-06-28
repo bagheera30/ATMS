@@ -45,6 +45,13 @@ router.post("/", authMiddleware(["manager"]), async (req, res) => {
   const uuid = "";
   try {
     const vendor = await vendorService.updsertVendor(uuid, data, username);
+    if(vendor.status === false){
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: vendor.message,
+      });
+    }
     res.status(200).json({
       code: 0,
       status: true,

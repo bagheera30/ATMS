@@ -49,6 +49,29 @@ const updsert = async (uuid, data, username) => {
     await session.close();
   }
 };
+
+const getbyname = async (name) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (n:Vendor {name: $name}) RETURN {
+          uuid: n.uuid,
+          name: n.name,
+          address: n.address,
+          city: n.city,
+          country: n.country,
+          status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+          } as result`,
+      { name }
+    );
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
 const getallVendor = async () => {
   const session = neo.session();
   try {
@@ -115,4 +138,5 @@ module.exports = {
   getallVendor,
   getByIdvendor,
   deleteVendor,
+  getbyname,
 };

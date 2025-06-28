@@ -12,12 +12,29 @@ const {
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, name, status) {
     try {
+      let user;
+      console.log(uuid);
       if (!username) {
         throw new Error("username is required");
       } else if (!name) {
         throw new Error("please complete the form");
       }
-      const user = await upsertWorkgroup(uuid, username, name, status);
+
+      if (uuid == "") {
+  
+        const get = await getAll(name);
+        if (get.length > 0) {
+          return {
+            status: false,
+            message: "Workgroup already exists",
+          };
+        } else {
+          user = await upsertWorkgroup(uuid, username, name, status);
+        }
+      } else {
+        user = await upsertWorkgroup(uuid, username, name, status);
+      }
+
       return user;
     } catch (error) {
       throw error;

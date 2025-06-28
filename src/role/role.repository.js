@@ -4,58 +4,36 @@ const neo = db.getInstance();
 
 const upsertWorkgroup = async (uuid, username, name, status) => {
   const session = neo.session();
+  console.log(uuid, username, name, status);
   try {
     const result = await session.run(
-      ` // First try to find an existing Role with the same name
-MATCH (existing:Role {RoleName: $name})
-WITH existing
-LIMIT 1
+      `
+      MERGE (r:Role {uuid: $uuid})
+ON CREATE SET
+    r.uuid =  randomUUID(),
+    r.RoleName = $name,
+    r.createdAt = timestamp(),
+    r.createdBy = $username
+ON MATCH SET
+    r.RoleName = $name,
+    r.updatedBy = $username,
+    r.updatedAt = timestamp()
 
-// If exists, update it
-FOREACH (ignore IN CASE WHEN existing IS NOT NULL THEN [1] ELSE [] END |
-  SET existing.RoleName = $name,
-      existing.updatedAt = timestamp(),
-      existing.updatedBy = $username
-  MERGE (existing)-[r:HAS_STATUS]->(st:Status)
-  ON CREATE SET
-      st.status = $status,
-      st.createdAt = timestamp()
-  ON MATCH SET
-      st.status = $status,
-      st.modifiedAt = timestamp()
-)
-
-// If doesn't exist, create new
-FOREACH (ignore IN CASE WHEN existing IS NULL THEN [1] ELSE [] END |
-  CREATE (n:Role {uuid: randomUUID(), RoleName: $name, createdAt: timestamp(), createdBy: $username})
-  MERGE (n)-[r:HAS_STATUS]->(st:Status)
-  ON CREATE SET
-      st.status = $status,
-      st.createdAt = timestamp()
-  ON MATCH SET
-      st.status = $status,
-      st.modifiedAt = timestamp()
-)
-
-// Return appropriate result
-WITH 
-  CASE WHEN existing IS NOT NULL THEN existing ELSE null END as updatedNode,
-  CASE WHEN existing IS NULL THEN $name ELSE null END as newName,
-  $status as status
-
-OPTIONAL MATCH (r:Role) 
-WHERE (updatedNode IS NOT NULL AND r.uuid = updatedNode.uuid) OR 
-      (updatedNode IS NULL AND r.RoleName = newName)
-WITH r, status
-LIMIT 1
-
-OPTIONAL MATCH (r)-[:HAS_STATUS]->(st:Status)
+MERGE (r)-[rel:HAS_STATUS]->(s:Status)
+ON CREATE SET
+    s.status = $status,
+    s.createdAt = timestamp(),
+    s.createdBy = $username
+ON MATCH SET
+    s.status = $status,
+    s.updatedBy = $username,
+    s.updatedAt = timestamp()
 RETURN {
-  name: r.RoleName,
-  status: st.status,
-  uuid: r.uuid,
-  action: CASE WHEN r.createdAt = r.updatedAt OR r.updatedAt IS NULL THEN "created" ELSE "updated" END
-} as result`,
+  code: 1,
+  status: true
+} as result
+
+      `,
       {
         uuid: uuid || "",
         name,
@@ -63,7 +41,8 @@ RETURN {
         status: status || "inactive",
       }
     );
-    return result.records.map((record) => record.get("result"));
+    console.log(result);
+    return result.records[0]?.get("result") || null;
   } finally {
     await session.close();
   }

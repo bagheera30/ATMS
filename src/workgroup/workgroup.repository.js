@@ -41,6 +41,26 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
   }
 };
 
+const getWorkgroup = async (uuid) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup {name: $uuid}) RETURN {
+        uuid: n.uuid,
+        name: n.name,
+        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+        } as result`,
+      { uuid }
+    );
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
+
 const getmanager = async (search) => {
   const session = neo.session();
   try {
@@ -77,7 +97,7 @@ const getAll = async (search) => {
         search,
       }
     );
-
+    console.log(result.records.map((record) => record.get("result")));
     return result.records.map((record) => record.get("result"));
   } catch (error) {
     console.error("Error executing query:", error);

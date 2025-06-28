@@ -52,9 +52,9 @@ router.post(
     }
   }
 );
-router.post("/:uuid", authMiddleware(["admin"]), async (req, res) => {
+router.post("/:RoleName", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
-  const uuid = req.params.uuid;
+  const uuid = req.params.RoleName;
   const username = req.user.username;
   const name = data.RoleName;
   const status = data.status;
@@ -77,12 +77,20 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const username = req.user.username;
   const name = data.RoleName;
-  const status = data.status;
-  console.log("salah");
+  const status = 'inactive';
   const uuid = null;
+  console.log("salah");
+
   try {
-    const user = await upsertWorkgroup(uuid, username, name, status);
+    const user = await upsertWorkgroup(uuid,username, name, status);
     console.log(user);
+    if(user.status === false){
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: user.message,
+      });
+    }
     res.status(201).json({
       user,
     });
@@ -120,6 +128,7 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   const uuid = req.query.search;
   try {
     const workgroup = await getByid(uuid);
+
     res.status(200).json({
       workgroup,
     });

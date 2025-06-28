@@ -3,6 +3,7 @@ const {
   deleteVendor,
   updsert,
   getByIdvendor,
+  getbyname,
 } = require("./vendor.repository");
 
 class VendorService {
@@ -32,6 +33,7 @@ class VendorService {
   }
   async updsertVendor(uuid, data, username) {
     try {
+      let user;
       if (!username) {
         throw new Error("username is required");
       } else if (!uuid) {
@@ -44,8 +46,19 @@ class VendorService {
         ) {
           throw new Error("please complete the form");
         }
+        const get = await getbyname(data.name);
+        if (get.length > 0) {
+          return {
+            status: false,
+            message: "vendor already exists",
+          };
+        } else {
+          user = await updsert(uuid, data, username);
+        }
+      } else {
+        user = await updsert(uuid, data, username);
       }
-      const user = await updsert(uuid, data, username);
+
       return user;
     } catch (error) {
       throw error;

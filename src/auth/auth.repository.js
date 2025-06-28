@@ -19,10 +19,11 @@ const createUser = async (data, otp, otpExpires) => {
 
 WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires,
     EXISTS { (:User {username: username}) } AS username_exists,
-    EXISTS { (:User {email: email}) } AS email_exists
+    EXISTS { (:User {email: email}) } AS email_exists,
+    EXISTS { (:Role {RoleName: "user"}) } AS role_exists
 
 WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires, 
-     username_exists, email_exists,
+     username_exists, email_exists, role_exists,
     CASE 
         WHEN username_exists AND email_exists THEN 'Username dan email sudah terdaftar'
         WHEN username_exists THEN 'Username sudah terdaftar'
@@ -31,85 +32,45 @@ WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, 
     END AS conflict_message,
     NOT (username_exists OR email_exists) AS can_register
 
-OPTIONAL MATCH (existingRole:Role {RoleName: "user"})
-WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires, 
-     username_exists, email_exists, conflict_message, can_register,
-     existingRole
-
 FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
-    // Jika role tidak ada, buat yang baru
-    FOREACH (ignore IN CASE WHEN existingRole IS NULL THEN [1] ELSE [] END |
-        CREATE (newRole:Role {
-            RoleName: "user",
-            uuid: randomUUID(),
-            createdBy: username,
-            createAt: timestamp()
-        })
-        
-        MERGE (newRole)-[:HAS_STATUS]->(:Status {
-            uuid: randomUUID(),
-            status: "inactive",
-            createdBy: username,
-            createAt: timestamp()
-        })
-        
-        CREATE (userStatus:Status {
-            uuid: randomUUID(),
-            status: "locked",
-            createdBy: username,
-            createAt: timestamp()
-        })
-        
-        CREATE (u:User {
-            uuid: randomUUID(),
-            username: username,
-            namaLengkap: namaLengkap,
-            email: email,
-            dateOfBirth: dateOfBirth,
-            phoneNumber: phoneNumber,
-            jabatan: jabatan,
-            password: password,
-            createdBy: username,
-            createAt: timestamp(),
-            modifiedBy: "",
-            modifiedAt: timestamp(),
-            otp: otp,
-            otpExpiresAt: otpExpires
-        })-[:HAS_ROLE]->(newRole)
-        
-        CREATE (u)-[:HAS_STATUS]->(userStatus)
-    )
+    MERGE (r:Role {RoleName: "user"})
+    ON CREATE SET 
+        r.uuid = randomUUID(),
+        r.createdBy = username,
+        r.createAt = timestamp()
     
-    // Jika role sudah ada, gunakan yang existing
-    FOREACH (ignore IN CASE WHEN existingRole IS NOT NULL THEN [1] ELSE [] END |
-        CREATE (userStatus:Status {
-            uuid: randomUUID(),
-            status: "locked",
-            createdBy: username,
-            createAt: timestamp()
-        })
-        
-        CREATE (u:User {
-            uuid: randomUUID(),
-            username: username,
-            namaLengkap: namaLengkap,
-            email: email,
-            dateOfBirth: dateOfBirth,
-            phoneNumber: phoneNumber,
-            jabatan: jabatan,
-            password: password,
-            createdBy: username,
-            createAt: timestamp(),
-            modifiedBy: "",
-            modifiedAt: timestamp(),
-            otp: otp,
-            otpExpiresAt: otpExpires
-        })-[:HAS_ROLE]->(existingRole)
-        
-        CREATE (u)-[:HAS_STATUS]->(userStatus)
-    )
+    MERGE (r)-[:HAS_STATUS]->(sr:Status {status: "inactive"})
+    ON CREATE SET
+        sr.uuid = randomUUID(),
+        sr.createdBy = username,
+        sr.createAt = timestamp()
+    
+    CREATE (su:Status {
+        uuid: randomUUID(),
+        status: "locked",
+        createdBy: username,
+        createAt: timestamp()
+    })
+    
+    CREATE (u:User {
+        uuid: randomUUID(),
+        username: username,
+        namaLengkap: namaLengkap,
+        email: email,
+        dateOfBirth: dateOfBirth,
+        phoneNumber: phoneNumber,
+        jabatan: jabatan,
+        password: password,
+        createdBy: username,
+        createAt: timestamp(),
+        modifiedBy: "",
+        modifiedAt: timestamp(),
+        otp: otp,
+        otpExpiresAt: otpExpires
+    })-[:HAS_ROLE]->(r)
+    
+    CREATE (u)-[:HAS_STATUS]->(su)
 )
-
 RETURN 
     CASE 
         WHEN conflict_message IS NOT NULL THEN 
