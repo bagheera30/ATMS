@@ -27,6 +27,7 @@ router.post("/start", authMiddleware(["manager"]), async (req, res) => {
 router.get("/definition", authMiddleware(["manager"]), async (req, res) => {
   try {
     const data = await projekIntanceService.getdefinition();
+
     res.status(200).json({
       code: 0,
       status: true,
@@ -41,7 +42,23 @@ router.get("/definition", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-
+router.get("/definition/:id", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const bpmxl = await projekIntanceService.getDetailDefinition(req.params.id);
+    res.status(200).json({
+      code: 0,
+      status: true,
+      bpmxl,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
 router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
   const bs = req.query.businessKey;
   const search = req.query.search;
@@ -83,39 +100,6 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
   }
 });
 
-router.get("/:id/download", async (req, res) => {
-  const uuid = req.params.id;
-  try {
-    // Get file info or stream from service
-    const fileInfo = await projekIntanceService.getDownload(uuid);
 
-    // Set appropriate headers for download
-    res.setHeader("Content-Type", fileInfo.contentType);
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=${fileInfo.originalName}`
-    );
-
-    // Pipe the file stream to response
-    fileInfo.stream.pipe(res);
-
-    // Handle stream events
-    fileInfo.stream.on("error", (err) => {
-      console.error("Stream error:", err);
-      res.status(500).end();
-    });
-
-    fileInfo.stream.on("end", () => {
-      res.end();
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
-  }
-});
 
 module.exports = router;

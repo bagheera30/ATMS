@@ -2,6 +2,7 @@ const { param } = require("../projek/projek.controller");
 const { default: axios } = require("axios");
 const { upsert, upsertComment, getcommen } = require("./task.repository");
 const QueryString = require("qs");
+const { getDetailDefinition } = require("../projek/projek.service");
 
 class TaskService {
   async getalltask() {
@@ -48,12 +49,14 @@ class TaskService {
           assignee: username,
         },
       });
+
       const tasks = response.data;
-      console.log(tasks);
+      const bpm = await getDetailDefinition();
 
       // Filter hanya field yang dibutuhkan
       const filteredTasks = tasks.map((task) => ({
         id: task.id,
+        active: task.taskDefinitionKey,
         name: task.name,
         owner: task.owner,
         assignee: task.assignee,
@@ -271,7 +274,9 @@ class TaskService {
   async gettask(id) {
     console.log("test");
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
-
+    console.log(response.data);
+    const bpm = await getDetailDefinition(response.data.processDefinitionId);
+  
     let transformedComments = []; // Default empty array
     try {
       const comment = await getcommen(response.data.name);
@@ -296,6 +301,8 @@ class TaskService {
       assignee: response.data.assignee,
       created: response.data.owner,
       due_date: response.data.due,
+      bpm,
+      active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
       InstanceId: response.data.processInstanceId,
       priority: response.data.priority,

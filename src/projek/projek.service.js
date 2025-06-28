@@ -68,8 +68,21 @@ class ProjekIntanceService {
     }
   }
 
-  
+  async getDetailDefinition(uuid) {
+    if (!uuid) {
+      throw new Error("please complete the form");
+    }
+    try {
+      const df = await axios.get(
+        `${process.env.URL_CAMUNDA}/process-definition/${uuid}/xml`
+      );
+      const bpmxl=df.data.bpmn20Xml
 
+      return bpmxl;
+    } catch (error) {
+      throw error;
+    }
+  }
   async createProjek(data, file, username) {
     if (!data) {
       throw new Error("Please complete the form and upload a BPMN file.");
