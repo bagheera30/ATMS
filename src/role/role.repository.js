@@ -132,11 +132,12 @@ const addmember = async (username, RoleName) => {
 };
 const removemember = async (username, uuid) => {
   const session = neo.session();
+  console.log(username, uuid);
   const result = await session.run(
-    `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS $uuid
-    MATCH (u:User)where u.uuid CONTAINS $username
-    MATCH (u)-[r:HAS_Role]->(n)
-    DELETE r
+    `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS 'test2'
+    MATCH (u:User)where u.uuid CONTAINS 'c2f157e2-ff19-44b7-a18b-a9e72346027a'
+      match (u)-[r:HAS_ROLE]->(n)
+      delete r
     RETURN {
       Name_Role: n.RoleName,
       user: u.namaLengkap
