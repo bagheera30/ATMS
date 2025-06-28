@@ -13,63 +13,109 @@ const createUser = async (data, otp, otpExpires) => {
       $dateOfBirth AS dateOfBirth,
       $phoneNumber AS phoneNumber,
       $jabatan AS jabatan,
-      $password AS password
+      $password AS password,
+      $otp AS otp,
+      $otpExpires AS otpExpires
 
-      WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password,
-        EXISTS { (:User {username: username}) } AS username_exists,
-        EXISTS { (:User {email: email}) } AS email_exists
+WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires,
+    EXISTS { (:User {username: username}) } AS username_exists,
+    EXISTS { (:User {email: email}) } AS email_exists
 
-      WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, username_exists, email_exists,
-        CASE 
-          WHEN username_exists AND email_exists THEN 'Username dan email sudah terdaftar'
-          WHEN username_exists THEN 'Username sudah terdaftar'
-          WHEN email_exists THEN 'Email sudah terdaftar'
-          ELSE NULL
-        END AS conflict_message,
-        NOT (username_exists OR email_exists) AS can_register
-
-    FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
-      CREATE (r:Role {
-        uuid: randomUUID(),
-        RoleName: "user",
-        createdBy: username,
-        createAt: timestamp()
-      })-[:HAS_STATUS]->(sr:Status {
-        uuid: randomUUID(),
-        status: "inactive",
-        createdBy: username,
-        createAt: timestamp()
-      })
-      CREATE (su:Status {
-        uuid: randomUUID(),
-        status: "locked",
-        createdBy: username,
-        createAt: timestamp()
-      })
-      CREATE (u:User {
-        uuid: randomUUID(),
-        username: username,
-        namaLengkap: namaLengkap,
-        email: email,
-        dateOfBirth: dateOfBirth,
-        phoneNumber: phoneNumber,
-        jabatan: jabatan,
-        password: password,
-        createdBy: username,
-        createAt: timestamp(),
-        modifiedBy: "",
-        modifiedAt: timestamp(),
-        otp: $otp,
-        otpExpiresAt:$otpExpires
-      })-[:HAS_ROLE]->(r)
-      CREATE (u)-[:HAS_STATUS]->(su)
-  )
-  RETURN 
+WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires, 
+     username_exists, email_exists,
     CASE 
-      WHEN conflict_message IS NOT NULL THEN 
-        { code: 1, status: false, message: conflict_message }
-      ELSE 
-        { code: 0, status: true, message: 'create user success' }
+        WHEN username_exists AND email_exists THEN 'Username dan email sudah terdaftar'
+        WHEN username_exists THEN 'Username sudah terdaftar'
+        WHEN email_exists THEN 'Email sudah terdaftar'
+        ELSE NULL
+    END AS conflict_message,
+    NOT (username_exists OR email_exists) AS can_register
+
+OPTIONAL MATCH (existingRole:Role {RoleName: "user"})
+WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires, 
+     username_exists, email_exists, conflict_message, can_register,
+     existingRole
+
+FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
+    // Jika role tidak ada, buat yang baru
+    FOREACH (ignore IN CASE WHEN existingRole IS NULL THEN [1] ELSE [] END |
+        CREATE (newRole:Role {
+            RoleName: "user",
+            uuid: randomUUID(),
+            createdBy: username,
+            createAt: timestamp()
+        })
+        
+        MERGE (newRole)-[:HAS_STATUS]->(:Status {
+            uuid: randomUUID(),
+            status: "inactive",
+            createdBy: username,
+            createAt: timestamp()
+        })
+        
+        CREATE (userStatus:Status {
+            uuid: randomUUID(),
+            status: "locked",
+            createdBy: username,
+            createAt: timestamp()
+        })
+        
+        CREATE (u:User {
+            uuid: randomUUID(),
+            username: username,
+            namaLengkap: namaLengkap,
+            email: email,
+            dateOfBirth: dateOfBirth,
+            phoneNumber: phoneNumber,
+            jabatan: jabatan,
+            password: password,
+            createdBy: username,
+            createAt: timestamp(),
+            modifiedBy: "",
+            modifiedAt: timestamp(),
+            otp: otp,
+            otpExpiresAt: otpExpires
+        })-[:HAS_ROLE]->(newRole)
+        
+        CREATE (u)-[:HAS_STATUS]->(userStatus)
+    )
+    
+    // Jika role sudah ada, gunakan yang existing
+    FOREACH (ignore IN CASE WHEN existingRole IS NOT NULL THEN [1] ELSE [] END |
+        CREATE (userStatus:Status {
+            uuid: randomUUID(),
+            status: "locked",
+            createdBy: username,
+            createAt: timestamp()
+        })
+        
+        CREATE (u:User {
+            uuid: randomUUID(),
+            username: username,
+            namaLengkap: namaLengkap,
+            email: email,
+            dateOfBirth: dateOfBirth,
+            phoneNumber: phoneNumber,
+            jabatan: jabatan,
+            password: password,
+            createdBy: username,
+            createAt: timestamp(),
+            modifiedBy: "",
+            modifiedAt: timestamp(),
+            otp: otp,
+            otpExpiresAt: otpExpires
+        })-[:HAS_ROLE]->(existingRole)
+        
+        CREATE (u)-[:HAS_STATUS]->(userStatus)
+    )
+)
+
+RETURN 
+    CASE 
+        WHEN conflict_message IS NOT NULL THEN 
+            { code: 1, status: false, message: conflict_message }
+        ELSE 
+            { code: 0, status: true, message: 'create user success' }
     END AS result
   `,
       {

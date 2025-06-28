@@ -6,27 +6,56 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      ` MERGE (n:Role {uuid: $uuid})
-       ON CREATE SET
-           n.uuid = randomUUID(),
-           n.RoleName = $name,
-           n.createdAt = timestamp(),
-           n.createdBy = $username
-       ON MATCH SET
-           n.RoleName = $name,
-           n.updatedAt = timestamp(),
-           n.updatedBy = $username
-       MERGE (n)-[r:HAS_STATUS]->(st:Status)
-       ON CREATE SET
-           st.status = $status,
-           st.createdAt = timestamp()
-       ON MATCH SET
-           st.status=$status,
-           st.modifiedAt = timestamp()
-       RETURN {
-           name: n.RoleName,
-           status: st.status
-       } as result`,
+      ` // First try to find an existing Role with the same name
+MATCH (existing:Role {RoleName: $name})
+WITH existing
+LIMIT 1
+
+// If exists, update it
+FOREACH (ignore IN CASE WHEN existing IS NOT NULL THEN [1] ELSE [] END |
+  SET existing.RoleName = $name,
+      existing.updatedAt = timestamp(),
+      existing.updatedBy = $username
+  MERGE (existing)-[r:HAS_STATUS]->(st:Status)
+  ON CREATE SET
+      st.status = $status,
+      st.createdAt = timestamp()
+  ON MATCH SET
+      st.status = $status,
+      st.modifiedAt = timestamp()
+)
+
+// If doesn't exist, create new
+FOREACH (ignore IN CASE WHEN existing IS NULL THEN [1] ELSE [] END |
+  CREATE (n:Role {uuid: randomUUID(), RoleName: $name, createdAt: timestamp(), createdBy: $username})
+  MERGE (n)-[r:HAS_STATUS]->(st:Status)
+  ON CREATE SET
+      st.status = $status,
+      st.createdAt = timestamp()
+  ON MATCH SET
+      st.status = $status,
+      st.modifiedAt = timestamp()
+)
+
+// Return appropriate result
+WITH 
+  CASE WHEN existing IS NOT NULL THEN existing ELSE null END as updatedNode,
+  CASE WHEN existing IS NULL THEN $name ELSE null END as newName,
+  $status as status
+
+OPTIONAL MATCH (r:Role) 
+WHERE (updatedNode IS NOT NULL AND r.uuid = updatedNode.uuid) OR 
+      (updatedNode IS NULL AND r.RoleName = newName)
+WITH r, status
+LIMIT 1
+
+OPTIONAL MATCH (r)-[:HAS_STATUS]->(st:Status)
+RETURN {
+  name: r.RoleName,
+  status: st.status,
+  uuid: r.uuid,
+  action: CASE WHEN r.createdAt = r.updatedAt OR r.updatedAt IS NULL THEN "created" ELSE "updated" END
+} as result`,
       {
         uuid: uuid || "",
         name,
