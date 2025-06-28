@@ -22,7 +22,7 @@ router.post("/register", validateCreateUser, async (req, res) => {
     const data = req.body;
     const user = await authService.createUser(data);
     console.log(user);
-    if(!user.status){
+    if (!user.status) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
         code: 2,
@@ -92,7 +92,7 @@ router.get("/verifOtp/:otp", async (req, res) => {
     const otp = req.params;
     const user = await authService.VerifOtp(otp.otp);
     console.log(user);
-    if (user.status==false) {
+    if (user.status == false) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
         code: 2,
@@ -114,21 +114,21 @@ router.get("/verifOtp/:otp", async (req, res) => {
   }
 });
 
-router.post("/:id/forgotPassword", async (req, res) => {
+router.post("/forgotPassword", async (req, res) => {
   try {
     const data = req.body;
 
-    if (!data.password) {
+    if (!data.email) {
       return res.status(400).json({
         code: 1,
         status: false,
-        message: "password diperlukan",
+        message: "email diperlukan",
       });
     }
 
-    const result = await authService.forgotPassword(req.params.id, data);
+    const result = await authService.forgotPassword(data);
     console.log(result);
-    if (!result.status) {
+    if (result.status == false) {
       return res.status(404).json({
         code: result.code,
         status: result.status,

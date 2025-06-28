@@ -128,12 +128,15 @@ const validasiEmail = async (username) => {
   try {
     const result = await session.run(
       `MATCH (u:User {email: $username})
-        RETURN u`,
+        RETURN {
+        id: u.uuid,
+        email: u.email
+        }as result`,
       {
         username: username,
       }
     );
-    return result.records.length > 0 ? result.records[0].get("u") : null;
+    return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error validating email:", error);
     return false; // Jika terjadi kesalahan, anggap username valid
@@ -165,7 +168,6 @@ const resendotp = async (email, otp, otpExpires) => {
   }
 };
 const findToken = async (token, time) => {
-  // Log the received token
   const session = neo.session();
   try {
     console.log("Received token:", token);
