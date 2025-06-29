@@ -126,7 +126,7 @@ router.get("/overdue", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.get("/:id", authMiddleware(["manager"]), async (req, res) => {
+router.get("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
   try {
     const data = await taskService.gettask(req.params.id);
     res.status(200).json({
