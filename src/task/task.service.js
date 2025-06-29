@@ -302,7 +302,6 @@ class TaskService {
       // Jika ada key sebelumnya dan value saat ini sama dengan key sebelumnya, skip
       if (previousKey !== null && variable.value === previousKey) {
         console.log(`Skipping: ${key} (value sama dengan key sebelumnya)`);
-        extractedVariables[key] = variable;
         continue; // Lewatkan variabel ini
       }
       extractedVariables[key] = variable;
