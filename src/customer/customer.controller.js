@@ -55,7 +55,7 @@ router.post("/", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.patch("/:id", authMiddleware(["manager"]), async (req, res) => {
+router.post("/:id", authMiddleware(["manager"]), async (req, res) => {
   const data = req.body;
   const id = req.params.id;
   const username = req.user.username;
