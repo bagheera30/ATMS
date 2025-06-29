@@ -242,7 +242,7 @@ class authService {
       const token = jwt.sign(
         { userId: user.uuid, username: user.username, roles: role }, // Payload token
         process.env.JWT_SECRET || "default_secret", // Use environment variable or default secret
-        { expiresIn: "1h" } // Token berlaku selama 1 jam
+        { expiresIn: "1d" } // Token berlaku selama 1 jam
       );
 
       return {
