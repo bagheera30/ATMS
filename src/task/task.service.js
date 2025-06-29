@@ -51,7 +51,7 @@ class TaskService {
       });
 
       const tasks = response.data;
-      const bpm = await getDetailDefinition();
+      // const bpm = await getDetailDefinition();
 
       // Filter hanya field yang dibutuhkan
       const filteredTasks = tasks.map((task) => ({
