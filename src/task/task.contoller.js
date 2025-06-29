@@ -5,7 +5,7 @@ const taskService = require("./task.service");
 
 const router = express.Router();
 
-router.get("/", authMiddleware(["manager"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
   try {
     const data = await getalltask();
     res.status(200).json({
