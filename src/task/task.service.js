@@ -294,7 +294,27 @@ class TaskService {
     const form = await axios.get(
       `${process.env.URL_CAMUNDA}/task/${id}/form-variables`
     );
+ 
+    const camundaVariables = {};
 
+    let previousKey = null;
+    for (const [key, variable] of Object.entries(form.data)) {
+      // Jika ingin melewati variabel dengan key yang sama seperti sebelumnya
+      if (previousKey !== null && previousKey === key) {
+        // Perbaikan: bandingkan dengan key, bukan previousKey
+        continue; // Lewati iterasi ini
+      }
+
+      // Hanya proses variabel yang diperlukan
+      camundaVariables[key] = {
+        type: variable.type,
+        value: variable.value,
+        valueInfo: variable.valueInfo || {}, // Pastikan valueInfo ada
+      };
+
+      previousKey = key; // Simpan key saat ini untuk perbandingan berikutnya
+    }
+    console.log(camundaVariables);
     const data = {
       id: response.data.id,
       task_name: response.data.name,
@@ -308,7 +328,7 @@ class TaskService {
       priority: response.data.priority,
       description: response.data.description,
       comment: transformedComments, // Akan berupa array kosong jika tidak ada komentar
-      VariablesTask: form.data,
+      VariablesTask: camundaVariables,
     };
     return data;
   }
