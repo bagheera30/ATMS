@@ -276,7 +276,7 @@ class TaskService {
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
     console.log(response.data);
     const bpm = await getDetailDefinition(response.data.processDefinitionId);
-  
+
     let transformedComments = []; // Default empty array
     try {
       const comment = await getcommen(response.data.name);
@@ -294,27 +294,29 @@ class TaskService {
     const form = await axios.get(
       `${process.env.URL_CAMUNDA}/task/${id}/form-variables`
     );
- 
-    const camundaVariables = {};
-
+    const formVariables = form.data;
+    const extractedVariables = {};
     let previousKey = null;
-    for (const [key, variable] of Object.entries(form.data)) {
-      // Jika ingin melewati variabel dengan key yang sama seperti sebelumnya
-      if (previousKey !== null && previousKey === key) {
-        // Perbaikan: bandingkan dengan key, bukan previousKey
-        continue; // Lewati iterasi ini
+
+    for (const [key, variable] of Object.entries(formVariables)) {
+      // Jika ada key sebelumnya dan value saat ini sama dengan key sebelumnya, skip
+      if (previousKey !== null && variable.value === previousKey) {
+        console.log(`Skipping: ${key} (value sama dengan key sebelumnya)`);
+        extractedVariables[key] = variable;
+        continue; // Lewatkan variabel ini
+      }
+      extractedVariables[key] = variable;
+
+      console.log("test10 ", extractedVariables[key]);
+
+      // Jika tipe Json dan masih string, parse ke object
+      if (variable.type === "Json" && typeof variable.value === "string") {
+        extractedVariables[key] = JSON.parse(variable.value);
       }
 
-      // Hanya proses variabel yang diperlukan
-      camundaVariables[key] = {
-        type: variable.type,
-        value: variable.value,
-        valueInfo: variable.valueInfo || {}, // Pastikan valueInfo ada
-      };
-
-      previousKey = key; // Simpan key saat ini untuk perbandingan berikutnya
+      previousKey = key;
     }
-    console.log(camundaVariables);
+    console.log(extractedVariables);
     const data = {
       id: response.data.id,
       task_name: response.data.name,
@@ -328,7 +330,7 @@ class TaskService {
       priority: response.data.priority,
       description: response.data.description,
       comment: transformedComments, // Akan berupa array kosong jika tidak ada komentar
-      VariablesTask: camundaVariables,
+      VariablesTask: extractedVariables,
     };
     return data;
   }
