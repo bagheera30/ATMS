@@ -4,6 +4,7 @@ const YAML = require("yaml");
 const path = require("path");
 const chokidar = require("chokidar");
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 
 const cors = require("cors");
 
@@ -29,7 +30,16 @@ function loadSwaggerFile() {
 }
 
 let swaggerDocument = loadSwaggerFile();
+const limiter = rateLimit({
+  windowMs: 20 * 60 * 1000, 
+  max: 100, 
+  message: "Too many requests from this IP, please try again later",
+  standardHeaders: true, 
+  legacyHeaders: false, 
+});
 
+// Apply to all requests
+app.use(limiter);
 // Endpoint untuk Swagger UI
 app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
   // Setup Swagger UI dengan dokumen terbaru
