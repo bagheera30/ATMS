@@ -210,8 +210,6 @@ class TaskService {
     try {
       const camunda = process.env.URL_CAMUNDA;
       const currentDate = new Date();
-
-      // Set the overdue threshold (e.g., tasks due before now are overdue)
       const dueDateAfter = new Date(
         currentDate.getTime() - 24 * 60 * 60 * 1000
       ); // 24 hours ago
@@ -220,14 +218,16 @@ class TaskService {
         params: {
           // dueDateBefore: currentDate.toISOString(),
           dueDateAfter: dueDateAfter.toISOString(),
-       
         },
         paramsSerializer: (params) => {
           return QueryString.stringify(params, { encode: false });
         },
       });
-
-      return response.data;
+      const duedates = response.data
+        .filter((task) => task.due !== null)
+        .map((task) => task);
+      console.log(duedates);
+      return duedates;
     } catch (error) {
       console.error("Error fetching overdue tasks:", error);
       throw error; // Or handle it appropriately for your use case
