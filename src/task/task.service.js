@@ -218,12 +218,9 @@ class TaskService {
 
       const response = await axios.get(`${camunda}/task`, {
         params: {
-          dueDateBefore: currentDate.toISOString(),
+          // dueDateBefore: currentDate.toISOString(),
           dueDateAfter: dueDateAfter.toISOString(),
-          // Additional useful filters:
-          // assigned: true/false,
-          // taskDefinitionKey: 'your_task_key',
-          // processInstanceId: 'your_process_id'
+       
         },
         paramsSerializer: (params) => {
           return QueryString.stringify(params, { encode: false });

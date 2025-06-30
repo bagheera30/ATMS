@@ -21,7 +21,6 @@ class WorkgroupService {
       }
 
       if (uuid == "") {
-  
         const get = await getAll(name);
         if (get.length > 0) {
           return {
@@ -84,8 +83,14 @@ class WorkgroupService {
   async deleteWorkgroup(id) {
     try {
       const user = await deleteWorkgroup(id);
-      console.log(user);
-      return user;
+      console.log("test1:", user);
+      if (user == "Failed: Workgroup has users"){
+        return {
+          code: 1,
+          status: false,
+          message: "Workgroup has users",
+        };
+      } return user;
     } catch (error) {
       throw error;
     }
@@ -101,6 +106,7 @@ class WorkgroupService {
   async deleteuserWorkgroup(idUser, id) {
     try {
       const user = await removemember(idUser, id);
+      console.log("test1: ", user);
       return user;
     } catch (error) {
       throw error;

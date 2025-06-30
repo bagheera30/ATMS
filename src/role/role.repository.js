@@ -84,7 +84,7 @@ const deleteWorkgroup = async (uuid) => {
       `MATCH (n:Role )where n.uuid=$uuid
 OPTIONAL MATCH (u:User)-[userRel:HAS_ROLE]->(n)
 WITH n, count(userRel) AS userCount
-// Find all relationships from the Workgroup (not just HAS_WORKGROUP)
+
 OPTIONAL MATCH (n)-[r]->(any)
 WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
 CALL {
@@ -110,7 +110,7 @@ FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
 RETURN 
     CASE 
         WHEN action = "Delete" THEN "Success" 
-        ELSE "Failed: Workgroup has users" 
+        ELSE "Failed: role has users" 
     END AS response`,
       { uuid }
     );

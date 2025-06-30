@@ -118,6 +118,13 @@ router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;
   try {
     const user = await deleteWorkgroup(id);
+    if (user.status === false) {
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: user.message,
+      });
+    }
     res.status(200).json({
       code: 1,
       status: true,

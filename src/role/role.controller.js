@@ -77,14 +77,14 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const username = req.user.username;
   const name = data.RoleName;
-  const status = 'inactive';
+  const status = "inactive";
   const uuid = null;
   console.log("salah");
 
   try {
-    const user = await upsertWorkgroup(uuid,username, name, status);
+    const user = await upsertWorkgroup(uuid, username, name, status);
     console.log(user);
-    if(user.status === false){
+    if (user.status === false) {
       return res.status(400).json({
         code: 2,
         status: false,
@@ -145,6 +145,13 @@ router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;
   try {
     const user = await deleteWorkgroup(id);
+    if (user.status === false) {
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: user.message,
+      });
+    }
     res.status(200).json({
       code: 1,
       status: true,

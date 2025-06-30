@@ -18,7 +18,7 @@ class WorkgroupService {
         throw new Error("please complete the form");
       }
       console.log("test id", uuid);
-      if (!uuid ) {
+      if (!uuid) {
         console.log("masuk");
         const get = await searchWorkgroup(name);
         console.log(get);
@@ -30,11 +30,10 @@ class WorkgroupService {
         } else {
           user = await upsertWorkgroup(uuid, username, name, status);
         }
-      }else{
+      } else {
         user = await upsertWorkgroup(uuid, username, name, status);
       }
 
-      
       console.log(user);
       return user;
     } catch (error) {
@@ -81,7 +80,14 @@ class WorkgroupService {
   async deleteWorkgroup(id) {
     try {
       const user = await deleteWorkgroup(id);
-      console.log(user);
+      console.log("test1:", user);
+      if (user == "Failed: role has users") {
+        return {
+          code: 1,
+          status: false,
+          message: "Workgroup has users",
+        };
+      }
       return user;
     } catch (error) {
       throw error;
