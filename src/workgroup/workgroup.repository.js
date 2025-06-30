@@ -148,7 +148,7 @@ const searchWorkgroup = async (search) => {
     const result = await session.run(
       `MATCH (n:Workgroup)where n.uuid= $search
       RETURN {
-        user: [(n)-[:HAS_WORKGROUP]->(u:User)|u.username],
+        user: [(n)-[:HAS_WORKGROUP]->(u:User)|{username: u.username, id: u.uuid}],
         name: n.name,
         status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
         } as result`,
