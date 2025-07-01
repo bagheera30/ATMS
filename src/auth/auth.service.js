@@ -81,7 +81,8 @@ class authService {
           message: "email not found",
         };
       }
-      const pw = randomPassword();
+      // const pw = randomPassword();
+      const pw = "P@ssword";
       const hashedPassword = await bcrypt.hash(pw, 10);
       const d = {
         password: hashedPassword,
