@@ -139,30 +139,26 @@ router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
-router.post(
-  "/addUser/:id",
-  authMiddleware(["manager", "admin"]),
-  async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
-    try {
-      const user = await adduserToWorkgroup(data.uuid, id);
-      res.status(201).json({
-        user,
-      });
-    } catch (error) {
-      res.status(400).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
+router.post("/addUser/:id", authMiddleware(["manager"]), async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  try {
+    const user = await adduserToWorkgroup(data.uuid, id);
+    res.status(201).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
   }
-);
+});
 
 router.delete(
   "/removeUser/:id",
-  authMiddleware(["manager", "admin"]),
+  authMiddleware(["manager"]),
   async (req, res) => {
     const id = req.params.id;
     const data = req.body;
