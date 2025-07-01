@@ -31,11 +31,11 @@ function loadSwaggerFile() {
 
 let swaggerDocument = loadSwaggerFile();
 const limiter = rateLimit({
-  windowMs: 20 * 60 * 1000, 
-  max: 100, 
+  windowMs: 60 * 1000,
+  max: 50,
   message: "Too many requests from this IP, please try again later",
-  standardHeaders: true, 
-  legacyHeaders: false, 
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // Apply to all requests
