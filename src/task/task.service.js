@@ -5,13 +5,21 @@ const QueryString = require("qs");
 const { getDetailDefinition } = require("../projek/projek.service");
 
 class TaskService {
-  async getalltask() {
+  async getalltask(businessKey) {
+    if (!businessKey) {
+      throw new Error("please complete the querry");
+    }
     try {
-      const urlcamund = process.env.URL_CAMUNDA;
-      const response = await axios.get(`${urlcamund}/task`);
+      const urlCamunda = process.env.URL_CAMUNDA;
+      // Add query parameter for businessKey to filter tasks
+      const response = await axios.get(`${urlCamunda}/task`, {
+        params: {
+          processInstanceBusinessKey: businessKey,
+        },
+      });
       const tasks = response.data;
 
-      // Filter hanya field yang dibutuhkan
+      // Filter only the needed fields
       const filteredTasks = tasks.map((task) => ({
         id: task.id,
         name: task.name,
@@ -27,15 +35,17 @@ class TaskService {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       if (error.response) {
-        // Jika error berasal dari response server
-        res.status(error.response.status).json({
+        // If error comes from server response
+        return {
+          status: error.response.status,
           error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
-        });
+        };
       } else {
-        // Jika error berasal dari komunikasi dengan server
-        res.status(500).json({
+        // If error comes from communication with server
+        return {
+          status: 500,
           error: "Failed to fetch tasks from Camunda. Status: 500",
-        });
+        };
       }
     }
   }

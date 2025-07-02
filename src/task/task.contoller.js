@@ -6,8 +6,9 @@ const taskService = require("./task.service");
 const router = express.Router();
 
 router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
+  const bs = req.query.businessKey;
   try {
-    const data = await getalltask();
+    const data = await getalltask(bs);
     res.status(200).json({
       code: 0,
       status: true,
@@ -22,7 +23,7 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
     });
   }
 });
-router.get("/inbox", authMiddleware(["manager","user"]), async (req, res) => {
+router.get("/inbox", authMiddleware(["manager", "user"]), async (req, res) => {
   try {
     const data = await taskService.getasbyinbox(req.user.username);
     res.status(200).json({
