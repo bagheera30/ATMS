@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
+const { searchWorkgroup } = require("../role/role.repository");
 
 const authMiddleware = (allowedRoles = []) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -59,7 +60,22 @@ const authMiddleware = (allowedRoles = []) => {
           .status(403)
           .json({ message: "Forbidden: Insufficient permissions." });
       }
+      // Check each role status
+      // for (const role of userRoles) {
+      //   const roleData = await searchWorkgroup(role.toLowerCase());
 
+      //   if (!roleData) {
+      //     return res.status(403).json({
+      //       message: `Forbidden: Role ${role} not found.`,
+      //     });
+      //   }
+
+      //   if (roleData.status !== "active") {
+      //     return res.status(403).json({
+      //       message: `Forbidden: Role ${role} is not active.`,
+      //     });
+      //   }
+      // }
       req.user = decoded;
       next();
     } catch (error) {

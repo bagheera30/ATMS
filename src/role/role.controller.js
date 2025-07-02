@@ -105,6 +105,7 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
 
 router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   const serch = req.query.RoleName;
+  console.log(serch);
   try {
     let workgroup;
     if (serch) {
@@ -124,22 +125,22 @@ router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
     });
   }
 });
-router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
-  const uuid = req.query.search;
-  try {
-    const workgroup = await getByid(uuid);
+// router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
+//   const uuid = req.query.search;
+//   try {
+//     const workgroup = await getByid(uuid);
 
-    res.status(200).json({
-      workgroup,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
-  }
-});
+//     res.status(200).json({
+//       workgroup,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       code: 2,
+//       status: false,
+//       message: error.message,
+//     });
+//   }
+// });
 
 router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;
