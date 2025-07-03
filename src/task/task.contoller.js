@@ -41,75 +41,63 @@ router.get("/inbox", authMiddleware(["manager", "user"]), async (req, res) => {
   }
 });
 
-router.get(
-  "/:id/claim",
-  authMiddleware(["manager", "user"]),
-  async (req, res) => {
-    const data = req.params.id;
-    console.log(req.user.username);
-    try {
-      await taskService.assignee(req.user.username, data);
-      res.status(200).json({
-        code: 0,
-        status: true,
-        message: "success",
-      });
-    } catch (error) {
-      res.status(400).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
+router.get("/:id/claim", authMiddleware(["manager"]), async (req, res) => {
+  const data = req.params.id;
+  console.log(req.user.username);
+  try {
+    await taskService.assignee(req.user.username, data);
+    res.status(200).json({
+      code: 0,
+      status: true,
+      message: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
   }
-);
-router.get(
-  "/:id/unclaim",
-  authMiddleware(["manager", "user"]),
-  async (req, res) => {
-    const data = req.params.id;
-    console.log(data.taskid);
-    try {
-      await taskService.Unassignee(data);
-      res.status(200).json({
-        code: 0,
-        status: true,
-        message: "success",
-      });
-    } catch (error) {
-      res.status(400).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
+});
+router.get("/:id/unclaim", authMiddleware(["manager"]), async (req, res) => {
+  const data = req.params.id;
+  console.log(data.taskid);
+  try {
+    await taskService.Unassignee(data);
+    res.status(200).json({
+      code: 0,
+      status: true,
+      message: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
   }
-);
+});
 
-router.post(
-  "/:id/delegate",
-  authMiddleware(["manager", "user"]),
-  async (req, res) => {
-    const data = req.body;
+router.post("/:id/delegate", authMiddleware(["manager"]), async (req, res) => {
+  const data = req.body;
 
-    try {
-      const task = await taskService.delegation(
-        req.user.username,
-        data,
-        req.params.id
-      );
-      res.status(200).json({
-        task,
-      });
-    } catch (error) {
-      res.status(400).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
+  try {
+    const task = await taskService.delegation(
+      req.user.username,
+      data,
+      req.params.id
+    );
+    res.status(200).json({
+      task,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
   }
-);
+});
 router.get(
   "/overdue",
   authMiddleware(["manager", "user"]),
