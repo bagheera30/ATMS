@@ -36,7 +36,7 @@ RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
         namaProjek: data.name,
         customer: data.customer,
         createdBy: username,
-        status: data.status || "inactive",
+        status: data.status || "active",
       }
     );
     return result.records.length > 0 ? result.records[0].get("result") : null;
