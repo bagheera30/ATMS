@@ -303,14 +303,8 @@ class TaskService {
     );
     const formVariables = form.data;
     const extractedVariables = {};
-    let previousKey = null;
 
     for (const [key, variable] of Object.entries(formVariables)) {
-      // Jika ada key sebelumnya dan value saat ini sama dengan key sebelumnya, skip
-      if (previousKey !== null && variable.value === previousKey) {
-        console.log(`Skipping: ${key} (value sama dengan key sebelumnya)`);
-        continue; // Lewatkan variabel ini
-      }
       extractedVariables[key] = variable;
 
       console.log("test10 ", extractedVariables[key]);
@@ -319,8 +313,6 @@ class TaskService {
       if (variable.type === "Json" && typeof variable.value === "string") {
         extractedVariables[key] = JSON.parse(variable.value);
       }
-
-      previousKey = key;
     }
     console.log(extractedVariables);
     const data = {
