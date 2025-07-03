@@ -61,21 +61,21 @@ const authMiddleware = (allowedRoles = []) => {
           .json({ message: "Forbidden: Insufficient permissions." });
       }
       // Check each role status
-      // for (const role of userRoles) {
-      //   const roleData = await searchWorkgroup(role.toLowerCase());
+      for (const role of userRoles) {
+        const roleData = await searchWorkgroup(role.toLowerCase());
 
-      //   if (!roleData) {
-      //     return res.status(403).json({
-      //       message: `Forbidden: Role ${role} not found.`,
-      //     });
-      //   }
+        if (!roleData) {
+          return res.status(403).json({
+            message: `Forbidden: Role ${role} not found.`,
+          });
+        }
 
-      //   if (roleData.status !== "active") {
-      //     return res.status(403).json({
-      //       message: `Forbidden: Role ${role} is not active.`,
-      //     });
-      //   }
-      // }
+        if (roleData.status !== "active") {
+          return res.status(403).json({
+            message: `Forbidden: Role ${role} is not active.`,
+          });
+        }
+      }
       req.user = decoded;
       next();
     } catch (error) {
