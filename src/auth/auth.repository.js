@@ -39,9 +39,10 @@ FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
         r.createdBy = username,
         r.createAt = timestamp()
     
-    MERGE (r)-[:HAS_STATUS]->(sr:Status {status: "inactive"})
+    MERGE (r)-[:HAS_STATUS]->(sr:Status})
     ON CREATE SET
         sr.uuid = randomUUID(),
+        sr.status = "inactive",
         sr.createdBy = username,
         sr.createAt = timestamp()
     
