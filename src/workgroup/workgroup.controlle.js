@@ -61,58 +61,66 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
-  try {
-    let workgroup;
-    const wg = req.query.search;
-    console.log(req.user.roles);
-    if (req.user.roles === "system") {
-      workgroup = await getManeger(wg);
-    } else {
-      console.log(wg);
-      if (!wg) {
-        console.log("masuk");
-        workgroup = await getallwg();
-        console.log(workgroup);
-        if (workgroup.length === 0) {
-          res.status(404).json({
-            code: 1,
-            status: false,
-            message: "No workgroup found",
-          });
-        }
+router.get(
+  "/",
+  authMiddleware(["manager", "admin", "user"]),
+  async (req, res) => {
+    try {
+      let workgroup;
+      const wg = req.query.search;
+      console.log(req.user.roles);
+      if (req.user.roles === "system") {
+        workgroup = await getManeger(wg);
       } else {
-        console.log("keluar");
-        workgroup = await getAllWorkgroup(wg);
+        console.log(wg);
+        if (!wg) {
+          console.log("masuk");
+          workgroup = await getallwg();
+          console.log(workgroup);
+          if (workgroup.length === 0) {
+            res.status(404).json({
+              code: 1,
+              status: false,
+              message: "No workgroup found",
+            });
+          }
+        } else {
+          console.log("keluar");
+          workgroup = await getAllWorkgroup(wg);
+        }
       }
-    }
 
-    res.status(200).json({
-      workgroup,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
+      res.status(200).json({
+        workgroup,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
   }
-});
-router.get("/:uuid", authMiddleware(["admin", "manager"]), async (req, res) => {
-  const uuid = req.params.uuid;
-  try {
-    const workgroup = await getByid(uuid);
-    res.status(200).json({
-      workgroup,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
+);
+router.get(
+  "/:uuid",
+  authMiddleware(["admin", "manager", "user"]),
+  async (req, res) => {
+    const uuid = req.params.uuid;
+    try {
+      const workgroup = await getByid(uuid);
+      res.status(200).json({
+        workgroup,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   const id = req.params.uuid;

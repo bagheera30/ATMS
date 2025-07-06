@@ -41,4 +41,21 @@ router.post(
   }
 );
 
+router.post("/:id/resolve", authMiddleware(["user"]), async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  try {
+    const user = await resolve(id, data);
+    res.status(201).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;

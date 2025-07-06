@@ -37,7 +37,7 @@ const createinbox = async (id, username, files) => {
         camundaVariables[key] = variable;
         continue;
       }
-      
+
       const file = files[key];
       const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
       const objectName = `${businessKey}/${file.originalname}`;
@@ -70,4 +70,67 @@ const createinbox = async (id, username, files) => {
     throw new Error(`Task completion failed: ${error.message}`);
   }
 };
-module.exports = { createinbox };
+
+const resolve = async (id, file) => {
+  const camundaURL = process.env.URL_CAMUNDA;
+
+  try {
+    // 1. Get task and form variables
+    const [taskResponse, formVarsResponse] = await Promise.all([
+      axios.get(`${camundaURL}/task/${id}`),
+      axios.get(`${camundaURL}/task/${id}/form-variables`),
+    ]);
+
+    const task = taskResponse.data;
+    const formVariables = formVarsResponse.data;
+    console.log("Form Variables:", formVariables);
+
+    const responprojek = await axios.get(
+      `${camundaURL}/process-instance/${task.processInstanceId}`
+    );
+    const businessKey = responprojek.data.businessKey;
+
+    if (!businessKey) {
+      throw new Error("No businessKey found in the task");
+    }
+
+    // 2. Validate files
+    if (!files || Object.keys(files).length === 0) {
+      throw new Error("No files were uploaded");
+    }
+    const camundaVariables = {};
+
+    let previousKey = null;
+
+    for (const [key, variable] of Object.entries(formVariables)) {
+      if (previousKey !== null && previousKey === previousKey) {
+        camundaVariables[key] = variable;
+        continue;
+      }
+
+      const file = files[key];
+      const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
+      const objectName = `${businessKey}/${file.originalname}`;
+      // Upload file to Minio
+      await uploadToMinio(file.buffer, bucketName, objectName);
+
+      variable.value = objectName;
+      camundaVariables[key] = variable;
+      previousKey = key;
+    }
+
+    // 4. Complete the task with updated variables
+    await axios.post(`${camundaURL}/task/${id}/resolve`, {
+      variables: camundaVariables,
+    });
+
+    return {
+      success: true,
+      message: "success",
+    };
+  } catch (error) {
+    console.error("File upload processing failed:", error);
+    throw new Error(`Task completion failed: ${error.message}`);
+  }
+};
+module.exports = { createinbox, resolve };
