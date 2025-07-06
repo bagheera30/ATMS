@@ -2,9 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/autentication");
-const multer = require("multer");
+
 const { createinbox } = require("./inbox.service");
-const upload = multer();
+const upload = require("../lib/fileupload");
 
 router.post(
   "/:id",
