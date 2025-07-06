@@ -79,6 +79,13 @@ class UserService {
       if (!data.user) {
         data.user = {};
       }
+      if (!data.status) {
+        return {
+          code: 2,
+          status: false,
+          message: "status is required",
+        };
+      }
 
       // untuk change password
       if (role.includes("manager") || role.includes("admin")) {
