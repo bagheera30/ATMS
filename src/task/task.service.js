@@ -314,7 +314,16 @@ class TaskService {
         extractedVariables[key] = JSON.parse(variable.value);
       }
     }
-    console.log(extractedVariables);
+    const group = await axios(
+      `${process.env.URL_CAMUNDA}/task/${id}/identity-links`
+    );
+    const links = group.data;
+
+    // Filter hanya candidate group
+    const groups = links
+      .filter((link) => link.type === "candidate" && link.groupId)
+      .map((link) => link.groupId);
+
     const data = {
       id: response.data.id,
       task_name: response.data.name,
@@ -322,6 +331,7 @@ class TaskService {
       created: response.data.owner,
       due_date: response.data.due,
       bpm,
+      groups,
       active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
       InstanceId: response.data.processInstanceId,
