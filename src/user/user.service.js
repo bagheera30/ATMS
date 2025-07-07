@@ -95,9 +95,9 @@ class UserService {
 
           const currentUser = await findUserById(uuid);
           const editedUser = await findUserAllByUsername(fromedit);
-
-          // Jika user yang di-edit bukan diri sendiri
+          
           if (!editedUser || currentUser.username !== editedUser.username) {
+       
             return {
               code: 2,
               status: false,
