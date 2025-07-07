@@ -91,6 +91,7 @@ const getAll = async (search) => {
       RETURN {
         uuid: n.uuid,
         name: n.name,
+        user:[(n)-[:HAS_WORKGROUP]->(us:User)|us.username],
         status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
         } as result`,
       {

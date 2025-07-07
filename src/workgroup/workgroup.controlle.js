@@ -85,7 +85,6 @@ router.get(
             });
           }
         } else {
-          console.log("keluar");
           workgroup = await getAllWorkgroup(wg);
         }
       }
