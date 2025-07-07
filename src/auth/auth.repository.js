@@ -39,12 +39,16 @@ FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
         r.createdBy = username,
         r.createAt = timestamp()
     
-    MERGE (r)-[:HAS_STATUS]->(sr:Status})
-    ON CREATE SET
-        sr.uuid = randomUUID(),
-        sr.status = "inactive",
-        sr.createdBy = username,
-        sr.createAt = timestamp()
+    // Only create status for role if role is newly created
+    FOREACH (_ IN CASE WHEN NOT role_exists THEN [1] ELSE [] END |
+        CREATE (sr:Status {
+            uuid: randomUUID(),
+            status: "inactive",
+            createdBy: username,
+            createAt: timestamp()
+        })
+        CREATE (r)-[:HAS_STATUS]->(sr)
+    )
     
     CREATE (su:Status {
         uuid: randomUUID(),
@@ -92,6 +96,7 @@ RETURN
         otpExpires,
       }
     );
+    console.log('masuk')
     // Return only the records
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
