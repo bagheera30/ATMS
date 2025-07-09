@@ -92,12 +92,11 @@ class UserService {
         // Jika manager mengubah password
         if (data.user.password) {
           console.log("Manager changing password");
-
+          console.log("fromedit", fromedit);
           const currentUser = await findUserById(uuid);
           const editedUser = await findUserAllByUsername(fromedit);
-          
+          console.log("editedUser", editedUser);
           if (!editedUser || currentUser.username !== editedUser.username) {
-       
             return {
               code: 2,
               status: false,
