@@ -47,6 +47,29 @@ RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
     await session.close(); // Ensure the session is closed
   }
 };
+
+const getbycreatedBy = async (createdBy) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (p:Projek {createdBy: $createdBy}) RETURN {
+        businessKey:p.businessKey,
+        nama:p.nama,
+        customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
+        status:[(p)-[:HAS_STATUS]->(s:Status)|s.status][0]
+      }as result`,
+      {
+        createdBy,
+      }
+    );
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close(); // Ensure the session is closed
+  }
+};
 const getAll = async () => {
   const session = neo.session();
   try {
@@ -189,4 +212,5 @@ module.exports = {
   getAllProjek,
   deleteProject,
   getfile,
+  getbycreatedBy,
 };

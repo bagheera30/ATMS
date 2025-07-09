@@ -2,7 +2,31 @@ const express = require("express");
 const projekIntanceService = require("./projek.service");
 
 const authMiddleware = require("../middlewares/autentication");
+const projekService = require("./projek.service");
 const router = express.Router();
+
+router.get("/Unassigned", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const data = await projekIntanceService.getbycreated(req.user.username);
+    if (data.status == false) {
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: data.message,
+      });
+    }
+    res.status(200).json({
+      data,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
 
 router.post("/start", authMiddleware(["manager"]), async (req, res) => {
   try {
@@ -99,7 +123,5 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
     });
   }
 });
-
-
 
 module.exports = router;

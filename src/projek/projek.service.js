@@ -9,11 +9,32 @@ const {
   getAllProjek,
   getfile,
   getAll,
+  getbycreatedBy,
 } = require("./projek.repository");
 const uploadToMinio = require("../lib/minio");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {
+  async getbycreated(username) {
+    try {
+      const data = await getbycreatedBy(username);
+      if (!data) {
+        return {
+          code: 1,
+          status: false,
+          message: "user not found",
+        };
+      }
+      return {
+        code: 0,
+        status: true,
+        message: "sucess",
+        data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
   async getprojekAll() {
     try {
       const result = await getAll();
@@ -76,7 +97,7 @@ class ProjekIntanceService {
       const df = await axios.get(
         `${process.env.URL_CAMUNDA}/process-definition/${uuid}/xml`
       );
-      const bpmxl=df.data.bpmn20Xml
+      const bpmxl = df.data.bpmn20Xml;
 
       return bpmxl;
     } catch (error) {
