@@ -1,38 +1,47 @@
 const db = require("../db/db");
-const { search } = require("./workgroup.controlle");
 const neo = db.getInstance();
 
-const upsertWorkgroup = async (uuid, username, name, status) => {
+const upsertWorkgroup = async (uuid, username, data) => {
   const session = neo.session();
+  console.log("datas: ", data);
   try {
     const result = await session.run(
       `MERGE (wg:Workgroup {uuid: $uuid})
        ON CREATE SET 
            wg.uuid = randomUUID(),
-           wg.name = $name,
+           wg.name = $data.name,
            wg.createdAt = timestamp(),
            wg.createdBy = $username
        ON MATCH SET 
-           wg.name = $name,
+           wg.name = $data.name,
            wg.modifiedAt = timestamp(),
            wg.modifiedBy = $username
-       
+
        MERGE (wg)-[r:HAS_STATUS]->(st:Status)
        ON CREATE SET
-           st.status = $status,
+           st.status = "inactive",
            st.createdAt = timestamp()
        ON MATCH SET
-           st.status=$status,
+           st.status = $data.status,
            st.modifiedAt = timestamp()
+
+       FOREACH (ignore IN CASE WHEN $data.uuid IS NOT NULL THEN [1] ELSE [] END |
+           MERGE (user:User {uuid: $data.uuid})
+           MERGE (wg)-[:HAS_WORKGROUP]->(user)
+       )
+
+       FOREACH (ignore IN CASE WHEN $data.businessKey IS NOT NULL THEN [1] ELSE [] END |
+           MERGE (project:Projek {businessKey: $data.businessKey})
+           MERGE (wg)-[:HAS_PROJECT]->(project)
+       )
        RETURN {
            name: wg.name,
            status: st.status
-       } as result`,
+       } AS result`,
       {
         uuid: uuid || "",
-        name,
         username,
-        status: status || "inactive",
+        data,
       }
     );
     return result.records.map((record) => record.get("result"));
@@ -40,16 +49,16 @@ const upsertWorkgroup = async (uuid, username, name, status) => {
     await session.close();
   }
 };
-
 const getWorkgroup = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (n:Workgroup {name: $uuid}) RETURN {
-        uuid: n.uuid,
-        name: n.name,
-        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-        } as result`,
+      `MATCH (n:Workgroup {uuid: $uuid}) 
+       RETURN {
+           uuid: n.uuid,
+           name: n.name,
+           status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+       } AS result`,
       { uuid }
     );
     return result.records.map((record) => record.get("result"));
@@ -61,21 +70,21 @@ const getWorkgroup = async (uuid) => {
   }
 };
 
-const getmanager = async (search) => {
+const getManager = async (search) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `
-      MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(wg.name)CONTAINS $search
-      MATCH (u)-[:HAS_ROLE]->(r:Role) where r.RoleName='manager'
-      RETURN{
-      group_name:wg.name,
-      email: u.email
-      }as result
-      `,
-      { search }
+      `MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)
+       WHERE LOWER(wg.name) CONTAINS $search
+       MATCH (u)-[:HAS_ROLE]->(r:Role) 
+       WHERE r.RoleName = 'manager'
+       RETURN {
+           group_name: wg.name,
+           email: u.email
+       } AS result`,
+      { search: search.toLowerCase() }
     );
-    return result.records[0].get("result");
+    return result.records[0]?.get("result") || null;
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
@@ -83,22 +92,21 @@ const getmanager = async (search) => {
     await session.close();
   }
 };
-const getAll = async (search) => {
+
+const getAllWorkgroups = async (search) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (n:Workgroup)where LOWER(n.name) CONTAINS $search
-      RETURN {
-        uuid: n.uuid,
-        name: n.name,
-        user:[(n)-[:HAS_WORKGROUP]->(us:User)|us.username],
-        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-        } as result`,
-      {
-        search,
-      }
+      `MATCH (n:Workgroup)
+       WHERE LOWER(n.name) CONTAINS $search
+       RETURN {
+           uuid: n.uuid,
+           name: n.name,
+           user: [(n)-[:HAS_WORKGROUP]->(us:User)|us.username],
+           status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+       } AS result`,
+      { search: search.toLowerCase() }
     );
-    console.log(result.records.map((record) => record.get("result")));
     return result.records.map((record) => record.get("result"));
   } catch (error) {
     console.error("Error executing query:", error);
@@ -108,31 +116,28 @@ const getAll = async (search) => {
   }
 };
 
-const getallwg = async () => {
+const getAllWorkgroupsWithMembers = async () => {
   const session = neo.session();
   try {
-    console.log("getallwg");
     const result = await session.run(
       `MATCH (n:Workgroup)
-      OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
-      OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
-      WITH n, count(DISTINCT r) as memberCount, collect(s.status)[0] as status
-      RETURN {
-        uuid: n.uuid,
-        name: n.name,
-        member: memberCount,
-        status: status
-      } as result`
+       OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
+       OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
+       WITH n, count(DISTINCT r) AS memberCount, collect(s.status)[0] AS status
+       RETURN {
+           uuid: n.uuid,
+           name: n.name,
+           member: memberCount,
+           status: status
+       } AS result`
     );
 
     return result.records.map((record) => {
       const result = record.get("result");
-
-      // Konversi manual dari Neo4j Integer ke Number
+      // Convert Neo4j Integer to Number if needed
       if (result.member && typeof result.member.toNumber === "function") {
         result.member = result.member.toNumber();
       }
-
       return result;
     });
   } catch (error) {
@@ -147,15 +152,16 @@ const searchWorkgroup = async (search) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (n:Workgroup)where n.uuid= $search
-      RETURN {
-        user: [(n)-[:HAS_WORKGROUP]->(u:User)|{username: u.username, id: u.uuid}],
-        name: n.name,
-        status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
-        } as result`,
+      `MATCH (n:Workgroup)
+       WHERE n.uuid = $search
+       RETURN {
+           user: [(n)-[:HAS_WORKGROUP]->(u:User)|{username: u.username, id: u.uuid}],
+           name: n.name,
+           status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
+       } AS result`,
       { search }
     );
-    return result.records.length > 0 ? result.records[0].get("result") : null;
+    return result.records[0]?.get("result") || null;
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
@@ -163,87 +169,101 @@ const searchWorkgroup = async (search) => {
     await session.close();
   }
 };
+
 const deleteWorkgroup = async (uuid) => {
   const session = neo.session();
   try {
     const result = await session.run(
       `MATCH (n:Workgroup {uuid: $uuid})
-OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
-WITH n, count(userRel) AS userCount
-OPTIONAL MATCH (n)-[r]->(any)
-WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
-CALL {
-    WITH n, userCount
-    RETURN 
-        CASE 
-            WHEN userCount = 0 THEN "Delete"
-            ELSE "Keep"
-        END AS action
-}
-WITH n, userCount, allRels, allNodes, action
-WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
-FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
-    DELETE rel
-)
-// Delete any nodes that were connected (except Users which we checked earlier)
-FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
-    DELETE node
-)
-FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
-    DELETE n
-)
-RETURN 
-    CASE 
-        WHEN action = "Delete" THEN "Success" 
-        ELSE "Failed: Workgroup has users" 
-    END AS response`,
+       OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
+       WITH n, count(userRel) AS userCount
+       OPTIONAL MATCH (n)-[r]->(any)
+       WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
+       CALL {
+           WITH n, userCount
+           RETURN 
+               CASE 
+                   WHEN userCount = 0 THEN "Delete"
+                   ELSE "Keep"
+               END AS action
+       }
+       WITH n, userCount, allRels, allNodes, action
+       WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
+       FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
+           DELETE rel
+       )
+       FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
+           DELETE node
+       )
+       FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
+           DELETE n
+       )
+       RETURN 
+           CASE 
+               WHEN action = "Delete" THEN "Success" 
+               ELSE "Failed: Workgroup has users" 
+           END AS response`,
       { uuid }
     );
-    console.log(result.records[0].get("response"));
-    return result.records.length > 0
-      ? result.records[0].get("response")
-      : { code: -1, status: false, message: "Unexpected error" };
+    return (
+      result.records[0]?.get("response") || {
+        code: -1,
+        status: false,
+        message: "Unexpected error",
+      }
+    );
   } finally {
     await session.close();
   }
 };
 
-const addmember = async (username, uuid) => {
+const addMember = async (username, uuid) => {
   const session = neo.session();
-  const result = await session.run(
-    `MATCH (n:Workgroup) where n.uuid= $uuid
-    MATCH (u:User)where u.uuid= $username
-    MERGE (n)-[:HAS_WORKGROUP]->(u)
-    RETURN {
-      name_group: n.name,
-      user: u.namaLengkap
-      } as result`,
-    { uuid, username }
-  );
-  return result.records.length > 0 ? result.records[0].get("result") : null;
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup {uuid: $uuid})
+       MATCH (u:User {uuid: $username})
+       MERGE (n)-[:HAS_WORKGROUP]->(u)
+       RETURN {
+           name_group: n.name,
+           user: u.namaLengkap
+       } AS result`,
+      { uuid, username }
+    );
+    return result.records[0]?.get("result") || null;
+  } finally {
+    await session.close();
+  }
 };
-const removemember = async (username, uuid) => {
+
+const removeMember = async (username, uuid) => {
   const session = neo.session();
-  const result = await session.run(
-    `MATCH (n:Workgroup) where n.uuid= $uuid
-    MATCH (u:User)where u.uuid= $username
-      MATCH (n)-[r:HAS_WORKGROUP]->(u)
-    DELETE r
-    RETURN {
-      name_group: n.name,
-      user: u.namaLengkap
-      } as result`,
-    { uuid, username }
-  );
-  return result.records.length > 0 ? result.records[0].get("result") : null;
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup {uuid: $uuid})
+       MATCH (u:User {uuid: $username})
+       MATCH (n)-[r:HAS_WORKGROUP]->(u)
+       DELETE r
+       RETURN {
+           name_group: n.name,
+           user: u.namaLengkap
+       } AS result`,
+      { uuid, username }
+    );
+    return result.records[0]?.get("result") || null;
+  } finally {
+    await session.close();
+  }
 };
+
 module.exports = {
   upsertWorkgroup,
-  getAll,
+  getWorkgroup,
+  getManager,
+  getAllWorkgroups,
+  getAllWorkgroupsWithMembers,
   searchWorkgroup,
   deleteWorkgroup,
-  addmember,
-  getmanager,
-  getallwg,
-  removemember,
+  addMember,
+  removeMember,
 };

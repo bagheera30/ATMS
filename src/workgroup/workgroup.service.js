@@ -7,28 +7,31 @@ const {
   addmember,
   getmanager,
   getallwg,
+  getAllWorkgroups,
+  getAllWorkgroupsWithMembers,
 } = require("./workgroup.repository");
 
 class WorkgroupService {
-  async upsertWorkgroup(uuid, username, name, status) {
+  async upsertWorkgroup(uuid, username, data) {
     try {
       let user;
-      console.log(uuid);
+      console.log(data);
       if (!username) {
         throw new Error("username is required");
-      } else if (!name) {
+      } else if (!data.name) {
         throw new Error("please complete the form");
       }
 
       if (uuid == "") {
-        const get = await getAll(name);
+        const get = await getAllWorkgroups(data.name);
+        console.log(get);
         if (get.length > 0) {
           return {
             status: false,
             message: "Workgroup already exists",
           };
         } else {
-          user = await upsertWorkgroup(uuid, username, name, status);
+          user = await upsertWorkgroup(uuid, username, data);
         }
       } else {
         user = await upsertWorkgroup(uuid, username, name, status);
@@ -41,7 +44,7 @@ class WorkgroupService {
   }
   async getallwg() {
     try {
-      const user = await getallwg();
+      const user = await getAllWorkgroupsWithMembers();
       return user;
     } catch (error) {
       throw error;
@@ -84,13 +87,14 @@ class WorkgroupService {
     try {
       const user = await deleteWorkgroup(id);
       console.log("test1:", user);
-      if (user == "Failed: Workgroup has users"){
+      if (user == "Failed: Workgroup has users") {
         return {
           code: 1,
           status: false,
           message: "Workgroup has users",
         };
-      } return user;
+      }
+      return user;
     } catch (error) {
       throw error;
     }
