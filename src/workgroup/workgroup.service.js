@@ -1,14 +1,14 @@
 const {
   upsertWorkgroup,
-  getAll,
   searchWorkgroup,
   deleteWorkgroup,
   removemember,
   addmember,
-  getmanager,
-  getallwg,
   getAllWorkgroups,
   getAllWorkgroupsWithMembers,
+  getManager,
+  removeMember,
+  getWorkgroup,
 } = require("./workgroup.repository");
 
 class WorkgroupService {
@@ -62,7 +62,7 @@ class WorkgroupService {
   }
   async getManeger(search) {
     try {
-      const workgroup = await getmanager(search);
+      const workgroup = await getManager(search);
       if (!workgroup) {
         return {
           code: 1,
@@ -77,7 +77,7 @@ class WorkgroupService {
   }
   async getByid(id) {
     try {
-      const user = await searchWorkgroup(id);
+      const user = await getWorkgroup(id);
       return user;
     } catch (error) {
       throw error;
@@ -109,7 +109,7 @@ class WorkgroupService {
   }
   async deleteuserWorkgroup(idUser, id) {
     try {
-      const user = await removemember(idUser, id);
+      const user = await removeMember(idUser, id);
       console.log("test1: ", user);
       return user;
     } catch (error) {
