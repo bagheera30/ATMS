@@ -54,7 +54,7 @@ class WorkgroupService {
     try {
       const lower = search.toLowerCase();
       console.log("test1: ", lower);
-      const user = await getAll(lower);
+      const user = await getAllWorkgroups(lower);
       return user;
     } catch (error) {
       throw error;
