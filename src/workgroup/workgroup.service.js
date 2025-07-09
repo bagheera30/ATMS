@@ -8,6 +8,7 @@ const {
   getManager,
   removeMember,
   getWorkgroup,
+  addMember,
 } = require("./workgroup.repository");
 
 class WorkgroupService {
