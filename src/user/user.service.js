@@ -108,9 +108,9 @@ class UserService {
           // Hash password baru jika manager mengedit password sendiri
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
-        // Jika manager tidak mengubah password, lanjut tanpa error
+ 
 
-        // Lanjutkan update data
+  
         const user = await userstatus(uuid, fromedit, data);
         console.log("user", user);
         return {
@@ -120,30 +120,32 @@ class UserService {
         };
       } else {
         // Logic untuk non-manager (password wajib)
-        if (!data.user.password) {
-          return {
-            code: 2,
-            status: false,
-            message: "Password is required for non-manager roles",
-          };
+        // if (!data.user.password) {
+        //   return {
+        //     code: 2,
+        //     status: false,
+        //     message: "Password is required for non-manager roles",
+        //   };
+        // }
+        if(data.user.password){
+          const fn = await findUserById(uuid);
+          const pw = fn.password;
+          console.log(pw);
+          const isPasswordValid = await bcrypt.compare(data.user.password, pw);
+
+          if (!isPasswordValid) {
+            return {
+              code: 2,
+              status: false,
+              message: "Incorrect password",
+            };
+          }
+
+          data.user.password = await bcrypt.hash(data.user.password, 10);
         }
-
-        const fn = await findUserById(uuid);
-        const pw = fn.password;
-        console.log(pw);
-        const isPasswordValid = await bcrypt.compare(data.user.password, pw);
-
-        if (!isPasswordValid) {
-          return {
-            code: 2,
-            status: false,
-            message: "Incorrect password",
-          };
-        }
-
-        data.user.password = await bcrypt.hash(data.user.password, 10);
+        
         const user = await userstatus(uuid, fromedit, data);
-
+        console.log("user", user);
         return {
           code: 0,
           status: true,
