@@ -3,7 +3,6 @@ const {
   searchWorkgroup,
   deleteWorkgroup,
   removemember,
-  addmember,
   getAllWorkgroups,
   getAllWorkgroupsWithMembers,
   getManager,
@@ -34,7 +33,7 @@ class WorkgroupService {
           user = await upsertWorkgroup(uuid, username, data);
         }
       } else {
-        user = await upsertWorkgroup(uuid, username, name, status);
+        user = await upsertWorkgroup(uuid, username, data);
       }
 
       return user;
@@ -101,7 +100,7 @@ class WorkgroupService {
   }
   async adduserToWorkgroup(idUser, id) {
     try {
-      const user = await addmember(idUser, id);
+      const user = await addMember(idUser, id);
       return user;
     } catch (error) {
       throw error;
