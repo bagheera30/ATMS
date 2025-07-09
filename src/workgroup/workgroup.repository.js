@@ -175,34 +175,34 @@ const deleteWorkgroup = async (uuid) => {
   try {
     const result = await session.run(
       `MATCH (n:Workgroup {uuid: $uuid})
-       OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
-       WITH n, count(userRel) AS userCount
-       OPTIONAL MATCH (n)-[r]->(any)
-       WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
-       CALL {
-           WITH n, userCount
-           RETURN 
-               CASE 
-                   WHEN userCount = 0 THEN "Delete"
-                   ELSE "Keep"
-               END AS action
-       }
-       WITH n, userCount, allRels, allNodes, action
-       WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
-       FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
-           DELETE rel
-       )
-       FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
-           DELETE node
-       )
-       FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
-           DELETE n
-       )
-       RETURN 
-           CASE 
-               WHEN action = "Delete" THEN "Success" 
-               ELSE "Failed: Workgroup has users" 
-           END AS response`,
+OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
+WITH n, count(userRel) AS userCount
+OPTIONAL MATCH (n)-[r]->(any)
+WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
+CALL {
+    WITH n, userCount
+    RETURN 
+        CASE 
+            WHEN userCount = 0 THEN "Delete"
+            ELSE "Keep"
+        END AS action
+}
+WITH n, userCount, allRels, allNodes, action
+WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
+FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
+    DELETE rel
+)
+FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
+    DELETE node
+)
+FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
+    DETACH DELETE n
+)
+RETURN 
+    CASE 
+        WHEN action = "Delete" THEN "Success" 
+        ELSE "Failed: Workgroup has users" 
+    END AS response`,
       { uuid }
     );
     return (
