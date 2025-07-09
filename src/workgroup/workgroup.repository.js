@@ -177,8 +177,6 @@ const deleteWorkgroup = async (uuid) => {
       `MATCH (n:Workgroup {uuid: $uuid})
 OPTIONAL MATCH (n)-[userRel:HAS_WORKGROUP]->(u:User)
 WITH n, count(userRel) AS userCount
-OPTIONAL MATCH (n)-[r]->(any)
-WITH n, userCount, collect(r) AS allRels, collect(any) AS allNodes
 CALL {
     WITH n, userCount
     RETURN 
@@ -187,14 +185,8 @@ CALL {
             ELSE "Keep"
         END AS action
 }
-WITH n, userCount, allRels, allNodes, action
-WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
-FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
-    DELETE rel
-)
-FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
-    DELETE node
-)
+WITH n, action
+WHERE action = "Delete" OR action = "Keep"
 FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
     DETACH DELETE n
 )
