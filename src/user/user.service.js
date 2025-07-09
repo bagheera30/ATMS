@@ -132,8 +132,8 @@ class UserService {
           const pw = fn.password;
           console.log(pw);
           const isPasswordValid = await bcrypt.compare(data.user.password, pw);
-
-          if (!isPasswordValid) {
+          console.log(isPasswordValid);
+          if (isPasswordValid) {
             return {
               code: 2,
               status: false,
