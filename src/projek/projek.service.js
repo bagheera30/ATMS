@@ -182,8 +182,7 @@ class ProjekIntanceService {
       // Filter proses yang mengandung kata "main" (case insensitive)
       const filteredProcesses = processDefinitionResponse.data.filter(
         (process) =>
-          process.key.toLowerCase().includes("main") ||
-          process.name.toLowerCase().includes("main")
+          process.key.toLowerCase().includes("software_development_lifecycle")
       );
 
       return filteredProcesses;
