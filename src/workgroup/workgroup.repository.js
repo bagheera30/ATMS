@@ -57,7 +57,7 @@ const getWorkgroup = async (uuid) => {
        RETURN {
            uuid: n.uuid,
            name: n.name,
-           project: [(n)-[:HAS_PROJECT]->(project:Projek)|{name: project.name, businessKey: project.businessKey}][0],
+           project: [(n)-[:HAS_PROJECT]->(p:Projek)|{name: p.nama, businessKey: p.businessKey}],
            user: [(n)-[:HAS_WORKGROUP]->(us:User)|{username: us.username, id: us.uuid}],
            status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
        } AS result`,
