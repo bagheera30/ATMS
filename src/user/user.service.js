@@ -94,7 +94,8 @@ class UserService {
           console.log("Manager changing password");
           console.log("fromedit", fromedit);
           const currentUser = await findUserById(uuid);
-          const editedUser = await findUserAllByUsername(fromedit);
+          const lower = fromedit.toLowerCase();
+          const editedUser = await findUserAllByUsername(lower);
           console.log("editedUser", editedUser);
           if (!editedUser || currentUser.username !== editedUser.username) {
             return {
