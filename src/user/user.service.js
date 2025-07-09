@@ -7,6 +7,7 @@ const {
   deleteUser,
   findUserAllByUsername,
   findUserOverdue,
+  finuserbyWG,
 } = require("./user.repository");
 const bcrypt = require("bcrypt");
 
@@ -54,6 +55,16 @@ class UserService {
     try {
       const user = await findUserById(id, username);
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async finduserbyWG(username) {
+    try {
+      const lower = username.toLowerCase();
+      const data = await finuserbyWG(lower);
+
+      return data;
     } catch (error) {
       throw error;
     }
@@ -108,9 +119,7 @@ class UserService {
           // Hash password baru jika manager mengedit password sendiri
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
- 
 
-  
         const user = await userstatus(uuid, fromedit, data);
         console.log("user", user);
         return {
@@ -127,7 +136,7 @@ class UserService {
         //     message: "Password is required for non-manager roles",
         //   };
         // }
-        if(data.user.password){
+        if (data.user.password) {
           const fn = await findUserById(uuid);
           const pw = fn.password;
           console.log(pw);
@@ -143,7 +152,7 @@ class UserService {
 
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
-        
+
         const user = await userstatus(uuid, fromedit, data);
         console.log("user", user);
         return {

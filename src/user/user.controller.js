@@ -43,37 +43,63 @@ router.get(
   }
 );
 
-router.post("/:id", authMiddleware(["manager", "user", "admin"]), async (req, res) => {
-  const data = req.body;
-  const id = req.params.id;
-  const r = req.user.roles.split(",");
-  console.log(r);
-  const username = req.user.username;
-  try {
-    const user = await userService.updateUser(
-      id,
-      data,
-      req.user.roles,
-      username
-    );
-    if(user.code == 2){
-      res.status(404).json({
-        code: user.code,
-        status: user.status,
-        message: user.message,
+router.get(
+  "/workgroup",
+  authMiddleware(["manager", "user", "admin"]),
+  async (req, res) => {
+    const username = req.user.username;
+    console.log(username);
+
+    try {
+      const data = await userService.finduserbyWG(username);
+      res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
       });
     }
-    res.status(201).json({
-      user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
   }
-});
+);
+
+router.post(
+  "/:id",
+  authMiddleware(["manager", "user", "admin"]),
+  async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+    const r = req.user.roles.split(",");
+    console.log(r);
+    const username = req.user.username;
+    try {
+      const user = await userService.updateUser(
+        id,
+        data,
+        req.user.roles,
+        username
+      );
+      if (user.code == 2) {
+        res.status(404).json({
+          code: user.code,
+          status: user.status,
+          message: user.message,
+        });
+      }
+      res.status(201).json({
+        user,
+      });
+    } catch (error) {
+      res.status(400).json({
+        code: 2,
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+);
 router.delete("/:id", authMiddleware(["manager"]), async (req, res) => {
   const id = req.params.id;
   try {

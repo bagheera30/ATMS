@@ -32,6 +32,34 @@ const findUserAllByUsername = async (username) => {
     await session.close(); // Pastikan sesi ditutup
   }
 };
+
+const finuserbyWG = async (username) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `
+      MATCH (u:User)
+      WHERE LOWER(u.username) CONTAINS $username
+      optional match (w:Workgroup)-[:HAS_WORKGROUP]->(u)
+      RETURN {
+        name_worgroup: w.name,
+        username_worgroup: [(w)-[:HAS_WORKGROUP]->(u2:User)|{id: u2.uuid, username: u2.username}]
+      } AS result
+      `,
+      {
+        username: username,
+      }
+    );
+    return result.records.length > 0
+      ? result.records.map((record) => record.get("result"))
+      : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close(); // Pastikan sesi ditutup
+  }
+};
 const findUserOverdue = async (username) => {
   const session = neo.session();
   try {
@@ -236,4 +264,5 @@ module.exports = {
   deleteUser,
   userstatus,
   findUserOverdue,
+  finuserbyWG,
 };
