@@ -179,9 +179,14 @@ class ProjekIntanceService {
         }
       );
 
-      const response = processDefinitionResponse.data;
+      // Filter proses yang mengandung kata "main" (case insensitive)
+      const filteredProcesses = processDefinitionResponse.data.filter(
+        (process) =>
+          process.key.toLowerCase().includes("main") ||
+          process.name.toLowerCase().includes("main")
+      );
 
-      return response;
+      return filteredProcesses;
     } catch (error) {
       throw error;
     }
