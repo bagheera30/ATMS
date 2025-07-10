@@ -63,11 +63,11 @@ router.post(
   }
 );
 
-router.get("/:filename/download", async (req, res) => {
-  const id = req.params.filename;
+router.get("/", async (req, res) => {
+  const id = req.query.fileName;
   try {
-    const { url } = await downloadFile(id);
-    return res.redirect(url);
+    const url = await downloadFile(id);
+    res.redirect(url);
   } catch (error) {
     res.status(400).json({
       code: 2,
