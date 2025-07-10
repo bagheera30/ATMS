@@ -307,9 +307,12 @@ class TaskService {
     const extractedVariables = {};
 
     for (const [key, variable] of Object.entries(formVariables)) {
-      extractedVariables[key] = variable;
+      // Skip jika key adalah "requireDocument"
+      if (key === "requireDocument") {
+        continue;
+      }
 
-      console.log("test10 ", extractedVariables[key]);
+      extractedVariables[key] = variable;
 
       // Jika tipe Json dan masih string, parse ke object
       if (variable.type === "Json" && typeof variable.value === "string") {
