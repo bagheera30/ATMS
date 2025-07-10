@@ -84,7 +84,7 @@ class UserService {
         code: 0,
         status: true,
         message: "success",
-        users: filteredUsers,
+        user: filteredUsers,
       };
     } catch (error) {
       throw error;

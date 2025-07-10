@@ -31,7 +31,7 @@ router.get(
         code: user.code,
         status: user.status,
         message: user.message,
-        user: user.users,
+        user: user.user,
       });
     } catch (error) {
       res.status(400).json({
