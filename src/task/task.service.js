@@ -138,6 +138,7 @@ class TaskService {
           message: data.deskripsi,
         }
       );
+      console.log(responseCamundaComment.data);
 
       if (
         !responseCamundaComment.data ||
@@ -145,13 +146,19 @@ class TaskService {
       ) {
         throw new Error("Failed to create comment in Camunda");
       }
+      const responseSetOwner = await axios.post(`${cm}/task/${id}/assignee`, {
+        owner: username,
+      });
 
-      const responsedelegate = await axios.post(
-        `${cm}/task/${taskid}/delegate`,
-        {
-          userId: cmnd.username,
-        }
-      );
+      console.log(responseSetOwner);
+
+      if (responseSetOwner.status !== 204) {
+        throw new Error("Failed to set owner in Camunda");
+      }
+
+      const responsedelegate = await axios.post(`${cm}/task/${id}/delegate`, {
+        userId: cmnd.username,
+      });
 
       if (responsedelegate.status !== 204) {
         throw new Error("Failed to delegate task in Camunda");

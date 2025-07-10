@@ -84,7 +84,7 @@ const getcommen = async (taskname) => {
       `match(c:Comment)-[:HAS_COMMENT]->(u:Projek)where u.businessKey = $taskname
       return{
         deskripsi: c.deskripsi,
-        username:c.user
+        username:c.createdBy
       } as result`,
       {
         taskname,

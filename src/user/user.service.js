@@ -63,8 +63,16 @@ class UserService {
     try {
       const lower = username.toLowerCase();
       const data = await finuserbyWG(lower);
+      const filteredData = data.map((group) => {
+        return {
+          ...group,
+          username_workgroup: group.username_workgroup.filter(
+            (user) => user.username?.toLowerCase() !== lower
+          ),
+        };
+      });
 
-      return data;
+      return filteredData;
     } catch (error) {
       throw error;
     }

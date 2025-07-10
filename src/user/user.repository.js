@@ -43,7 +43,7 @@ const finuserbyWG = async (username) => {
       optional match (w:Workgroup)-[:HAS_WORKGROUP]->(u)
       RETURN {
         name_worgroup: w.name,
-        username_worgroup: [(w)-[:HAS_WORKGROUP]->(u2:User)|{id: u2.uuid, username: u2.username}]
+        username_workgroup: [(w)-[:HAS_WORKGROUP]->(u2:User)|{id: u2.uuid, username: u2.username}]
       } AS result
       `,
       {
