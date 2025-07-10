@@ -155,6 +155,41 @@ class TaskService {
       if (responseSetOwner.status !== 204) {
         throw new Error("Failed to set owner in Camunda");
       }
+      const variablesRes = await axios.get(
+        `${cm}/task/${id}/variables`
+      );
+      const variables = variablesRes.data;
+      const requireDocument = variables.requireDocument?.value;
+
+      if (!requireDocument) {
+        console.log("requireDocument tidak ditemukan");
+        return;
+      }
+
+      // 2. Get current form variables
+      const formVarsRes = await axios.get(`${cm}/task/${id}/form-variables`);
+      const formVariables = formVarsRes.data;
+      const requiredFormData = {};
+      for (const docKey in formVariables) {
+        if (docKey === requireDocument || docKey === requireDocument[docKey]) {
+          requiredFormData[docKey] = formVariables[docKey];
+          console.log("Matched form variable:", docKey, formVariables[docKey]);
+        }
+      }
+      console.log("Required form data:", requiredFormData);
+      // 3. Prepare variables to set (with test values)
+      const variablesToSet = {};
+      for (const key in requiredFormData) {
+        variablesToSet[key] = {
+          value: null, // Setting value to "test"
+          type: requiredFormData[key].type, // Preserving original type
+        };
+      }
+
+      // 4. Set task variables
+      await axios.post(`${cm}/task/${id}/variables`, {
+        modifications: variablesToSet,
+      });
 
       const responsedelegate = await axios.post(`${cm}/task/${id}/delegate`, {
         userId: cmnd.username,
@@ -296,21 +331,12 @@ class TaskService {
       if (key === "requireDocument") {
         continue;
       }
-
       extractedVariables[key] = variable;
 
       if (variable.type === "Json" && typeof variable.value === "string") {
         extractedVariables[key] = JSON.parse(variable.value);
       }
     }
-    const group = await axios(
-      `${process.env.URL_CAMUNDA}/task/${id}/identity-links`
-    );
-    const links = group.data;
-
-    const groups = links
-      .filter((link) => link.type === "candidate" && link.groupId)
-      .map((link) => link.groupId);
 
     const data = {
       id: response.data.id,
@@ -319,7 +345,6 @@ class TaskService {
       created: response.data.owner,
       due_date: response.data.due,
       bpm,
-      groups,
       active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
       InstanceId: response.data.processInstanceId,

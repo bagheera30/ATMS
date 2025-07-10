@@ -77,6 +77,7 @@ const resolve = async (id, files) => {
 
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
+    console.log(formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`
@@ -92,23 +93,20 @@ const resolve = async (id, files) => {
     }
     const camundaVariables = {};
 
-    let previousKey = null;
-
     for (const [key, variable] of Object.entries(formVariables)) {
-      if (previousKey !== null && previousKey === previousKey) {
+      if (files[key]) {
+        console.log(key);
+        const file = files[key];
+        const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
+        const objectName = `${businessKey}/${file.originalname}`;
+        await uploadToMinio(file.buffer, bucketName, objectName);
+        variable.value = objectName;
         camundaVariables[key] = variable;
-        continue;
+      } else {
+        camundaVariables[key] = variable;
       }
-
-      const file = files[key];
-      const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
-      const objectName = `${businessKey}/${file.originalname}`;
-      await uploadToMinio(file.buffer, bucketName, objectName);
-
-      variable.value = objectName;
-      camundaVariables[key] = variable;
-      previousKey = key;
     }
+    console.log("list", camundaVariables);
 
     await axios.post(`${camundaURL}/task/${id}/resolve`, {
       variables: camundaVariables,
