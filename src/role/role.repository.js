@@ -126,11 +126,11 @@ RETURN
 const addmember = async (username, RoleName) => {
   const session = neo.session();
   const result = await session.run(
-    `MATCH (u:User {uuid: $username})
-      WITH u
+    `
+      MATCH (u:User {uuid: $username})
       MATCH (u)-[r:HAS_ROLE]->()
       DELETE r
-
+      WITH u
       MATCH (n:Role)
       WHERE toLower(n.RoleName) CONTAINS toLower($RoleName)
       CREATE (u)-[:HAS_ROLE]->(n)
