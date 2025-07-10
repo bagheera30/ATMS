@@ -126,13 +126,15 @@ RETURN
 const addmember = async (username, RoleName) => {
   const session = neo.session();
   const result = await session.run(
-    `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS $RoleName
-    MATCH (u:User)where u.uuid CONTAINS $username
-    MERGE (u)-[:HAS_ROLE]->(n)
-    RETURN {
-      name_Role: n.RoleName,
-      user: u.namaLengkap
-      } as result`,
+    `MATCH (u:User {uuid: $username})
+      DETACH DELETE (u)-[:HAS_ROLE]->()
+      MATCH (n:Role)
+      WHERE toLower(n.RoleName) CONTAINS toLower($RoleName)
+      CREATE (u)-[:HAS_ROLE]->(n)
+      RETURN {
+        name_Role: n.RoleName,
+        user: u.namaLengkap
+      } AS result`,
     { RoleName, username }
   );
   console.log(result.records[0].get("result"));
