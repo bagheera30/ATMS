@@ -72,14 +72,11 @@ class UserService {
   async getall() {
     try {
       const user = await findUserAll();
-      const filteredUsers = user.filter(
-        (user) => user.username !== "rizki_Dev"
-      );
       return {
         code: 0,
         status: true,
         message: "sucess",
-        filteredUsers,
+        user,
       };
     } catch (error) {
       throw error;
