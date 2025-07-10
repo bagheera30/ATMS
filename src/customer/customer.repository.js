@@ -45,7 +45,7 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close(); 
   }
 };
 const getAll = async (search) => {
@@ -73,7 +73,7 @@ const getAll = async (search) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const getByid = async (uiid) => {
@@ -98,7 +98,7 @@ const getByid = async (uiid) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close(); 
   }
 };
 const updateCustomer = async (uuid, data, username) => {
@@ -123,7 +123,7 @@ const updateCustomer = async (uuid, data, username) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close(); 
   }
 };
 const deleteCustomer = async (search) => {
@@ -148,7 +148,6 @@ WHERE (action = "Delete" AND userCount = 0) OR action = "Keep"
 FOREACH (rel IN CASE WHEN action = "Delete" THEN allRels ELSE [] END |
     DELETE rel
 )
-// Delete any nodes that were connected (except Users which we checked earlier)
 FOREACH (node IN CASE WHEN action = "Delete" THEN [x IN allNodes WHERE NOT x:User] ELSE [] END |
     DELETE node
 )
@@ -169,7 +168,7 @@ RETURN
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 

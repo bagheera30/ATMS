@@ -5,7 +5,6 @@ const createinbox = async (id, username, files) => {
   const camundaURL = process.env.URL_CAMUNDA;
 
   try {
-    // 1. Get task and form variables
     const [taskResponse, formVarsResponse] = await Promise.all([
       axios.get(`${camundaURL}/task/${id}`),
       axios.get(`${camundaURL}/task/${id}/form-variables`),
@@ -23,7 +22,6 @@ const createinbox = async (id, username, files) => {
       throw new Error("No businessKey found in the task");
     }
 
-    // 2. Validate files
     if (!files || Object.keys(files).length === 0) {
       throw new Error("No files were uploaded");
     }
@@ -40,7 +38,6 @@ const createinbox = async (id, username, files) => {
       const file = files[key];
       const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
       const objectName = `${businessKey}/${file.originalname}`;
-      // Upload file to Minio
       await uploadToMinio(file.buffer, bucketName, objectName);
       await upsertatribut(
         { name: key },
@@ -55,7 +52,6 @@ const createinbox = async (id, username, files) => {
       previousKey = key;
     }
 
-    // 4. Complete the task with updated variables
     await axios.post(`${camundaURL}/task/${id}/complete`, {
       variables: camundaVariables,
     });
@@ -91,7 +87,6 @@ const resolve = async (id, files) => {
       throw new Error("No businessKey found in the task");
     }
 
-    // 2. Validate files
     if (!files || Object.keys(files).length === 0) {
       throw new Error("No files were uploaded");
     }
@@ -108,7 +103,6 @@ const resolve = async (id, files) => {
       const file = files[key];
       const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
       const objectName = `${businessKey}/${file.originalname}`;
-      // Upload file to Minio
       await uploadToMinio(file.buffer, bucketName, objectName);
 
       variable.value = objectName;
@@ -116,7 +110,6 @@ const resolve = async (id, files) => {
       previousKey = key;
     }
 
-    // 4. Complete the task with updated variables
     await axios.post(`${camundaURL}/task/${id}/resolve`, {
       variables: camundaVariables,
     });

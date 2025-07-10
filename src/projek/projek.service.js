@@ -112,33 +112,26 @@ class ProjekIntanceService {
       const bucketName = process.env.MINIO_BUCKET_NAME;
       const objectName = `${projekId}_${file.originalname}`;
 
-      // Upload file ke MinIO
       await uploadToMinio(file.buffer, bucketName, objectName);
 
       const urlcamund = process.env.URL_CAMUNDA;
 
-      // Buat FormData untuk kirim ke Camunda
       const formData = new FormData();
-      formData.append(
-        "upload", // Nama field sesuai API Camunda
-        file.buffer,
-        {
-          filename: objectName,
-          contentType: "application/xml", // atau 'text/xml' tergantung jenis file BPMN
-        }
-      );
+      formData.append("upload", file.buffer, {
+        filename: objectName,
+        contentType: "application/xml",
+      });
 
-      formData.append("deployment-name", data.name); // opsional
-      formData.append("deployment-source", "process application"); // opsional
-      formData.append("deploy-changed-only", "true"); // opsional;
+      formData.append("deployment-name", data.name); 
+      formData.append("deployment-source", "process application"); 
+      formData.append("deploy-changed-only", "true"); 
 
-      // Kirim ke Camunda
       const camunda = await axios.post(
         `${urlcamund}/deployment/create`,
         formData,
         {
           headers: {
-            ...formData.getHeaders(), // otomatis set Content-Type ke multipart/form-data
+            ...formData.getHeaders(), 
           },
         }
       );
@@ -177,7 +170,6 @@ class ProjekIntanceService {
         }
       );
 
-      // Filter proses yang mengandung kata "main" (case insensitive)
       const filteredProcesses = processDefinitionResponse.data.filter(
         (process) =>
           process.key.toLowerCase().includes("software_development_lifecycle")
@@ -195,7 +187,6 @@ class ProjekIntanceService {
 
     const urlcamund = process.env.URL_CAMUNDA;
     try {
-      // Start process instance
       const startResponse = await axios.post(
         `${urlcamund}/process-definition/key/${data.key}/start`,
         {
@@ -203,7 +194,6 @@ class ProjekIntanceService {
         }
       );
 
-      // Verifikasi response
       if (startResponse.status >= 200 && startResponse.status < 300) {
         const customer = data.customer;
         const startdata = await upsert(data, customer, username);

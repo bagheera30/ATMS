@@ -29,7 +29,7 @@ const findUserAllByUsername = async (username) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Pastikan sesi ditutup
+    await session.close();
   }
 };
 
@@ -142,7 +142,7 @@ const findUserById = async (id) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const userUpdateRole = async (username, fromedit, data) => {
@@ -168,7 +168,7 @@ const userUpdateRole = async (username, fromedit, data) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const userstatus = async (uuid, fromedit, data) => {
@@ -200,7 +200,7 @@ RETURN {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const updateUser = async (uuid, data, dataform) => {
@@ -227,7 +227,7 @@ const updateUser = async (uuid, data, dataform) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const deleteUser = async (uuid) => {
@@ -246,7 +246,7 @@ const deleteUser = async (uuid) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 module.exports = {

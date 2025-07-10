@@ -19,7 +19,7 @@ router.get("/Unassigned", authMiddleware(["manager"]), async (req, res) => {
       data,
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);
     res.status(400).json({
       code: 2,
       status: false,
@@ -39,7 +39,7 @@ router.post("/start", authMiddleware(["manager"]), async (req, res) => {
       message: "Project instance started successfully",
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);
     res.status(400).json({
       code: 2,
       status: false,
@@ -58,7 +58,7 @@ router.get("/definition", authMiddleware(["manager"]), async (req, res) => {
       data,
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error); 
     res.status(400).json({
       code: 2,
       status: false,
@@ -75,7 +75,7 @@ router.get("/definition/:id", authMiddleware(["manager"]), async (req, res) => {
       bpmxl,
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error); 
     res.status(400).json({
       code: 2,
       status: false,
@@ -90,23 +90,14 @@ router.get("/", authMiddleware(["manager", "staff"]), async (req, res) => {
   try {
     let data;
 
-    // Logika pengambilan data yang lebih jelas
     if (!bs && !search) {
-      // Jika tidak ada parameter query, ambil semua projek
       data = await projekIntanceService.getprojekAll();
     } else if (bs && !search) {
-      // Jika hanya ada businessKey, ambil projek berdasarkan businessKey
       data = await projekIntanceService.getProjek(bs);
     } else if (!bs && search) {
-      // Jika hanya ada search, cari projek berdasarkan kata kunci
       data = await projekIntanceService.getAll(search);
     } else {
-      // Jika ada kedua parameter (bs dan search), tentukan logika yang sesuai
-      // Ini bisa disesuaikan dengan kebutuhan bisnis
-      // Contoh: cari dalam projek dengan businessKey tertentu
       data = await projekIntanceService.getProjekWithSearch(bs, search);
-      // Atau bisa juga mengembalikan error jika kombinasi tidak didukung
-      // throw new Error("Kombinasi parameter businessKey dan search tidak didukung");
     }
 
     res.status(200).json({

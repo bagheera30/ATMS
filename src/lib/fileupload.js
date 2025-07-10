@@ -1,9 +1,8 @@
 const multer = require("multer");
 
-// Konfigurasi multer dengan batas ukuran file
 const upload = multer({
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB
+    fileSize: 10 * 1024 * 1024, 
   },
 
   fileFilter: (req, file, cb) => {

@@ -1,13 +1,11 @@
 const minioClient = require("./minioClient");
 
 async function uploadToMinio(fileBuffer, bucketName, objectName) {
-  // Pastikan bucket ada
   const exists = await minioClient.bucketExists(bucketName);
   if (!exists) {
     await minioClient.makeBucket(bucketName);
   }
 
-  // Upload file
   await minioClient.putObject(bucketName, objectName, fileBuffer);
 }
 

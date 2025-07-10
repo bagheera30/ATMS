@@ -1,8 +1,7 @@
-// multerConfig.js
 const multer = require("multer");
 const path = require("path");
 
-const storage = multer.memoryStorage(); // simpan di buffer memory
+const storage = multer.memoryStorage(); 
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
@@ -15,7 +14,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // batas ukuran file 10MB
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 });
 
 module.exports = upload;

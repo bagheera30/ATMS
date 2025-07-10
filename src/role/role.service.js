@@ -40,7 +40,7 @@ class WorkgroupService {
       const user = await getAll();
       const role = user.map((item) => ({
         ...item,
-        member: item.member.toNumber(), // Ambil nilai integer dari objek
+        member: item.member.toNumber(), 
       }));
       return {
         code: 0,

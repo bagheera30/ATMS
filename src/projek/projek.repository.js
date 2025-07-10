@@ -44,7 +44,7 @@ RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 
@@ -67,7 +67,7 @@ const getbycreatedBy = async (createdBy) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const getAll = async () => {
@@ -86,7 +86,7 @@ const getAll = async () => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const getAllProjek = async (search) => {
@@ -109,7 +109,7 @@ const getAllProjek = async (search) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const getAllBycustomerId = async (customer) => {
@@ -132,7 +132,7 @@ const getAllBycustomerId = async (customer) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 
@@ -162,7 +162,7 @@ RETURN {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 
@@ -180,7 +180,7 @@ const getfile = (uuid) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    session.close(); // Ensure the session is closed
+    session.close();
   }
 };
 
@@ -200,7 +200,7 @@ const deleteProject = async (uuid) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 

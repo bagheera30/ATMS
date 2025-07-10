@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "sonar": "npx sonarqube-scanner -Dsonar.login=sqp_c18e9781e241967e0e7208d4e18fdffa5b0475a2 -Dsonar.host.url=http://localhost:9002"
+    "sonar": "npx sonarqube-scanner -Dsonar.token=sqp_fc9c709897e3b3372231c5c9f573e735eaf48597 -Dsonar.host.url=http://localhost:9002"
   },
   "author": "rizki & shielda",
   "license": "ISC",

@@ -23,7 +23,6 @@ router.post("/register", validateCreateUser, async (req, res) => {
     const user = await authService.createUser(data);
     if (!user.status) {
       return res.status(404).json({
-        // Menggunakan 404 Not Found jika pengguna tidak ditemukan
         code: 2,
         status: false,
         message: user.message,
@@ -34,7 +33,6 @@ router.post("/register", validateCreateUser, async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
       code: 2,
       status: false,
       message: error.message,
@@ -49,28 +47,24 @@ router.post("/login", async (req, res) => {
 
     if (user === "User is locked or status is not unlocked") {
       return res.status(401).json({
-        // Menggunakan 401 Unauthorized
         code: 1,
         status: false,
         message: "User  not unlock please contack manager or admin",
       });
     } else if (user.message === "Incorrect password") {
       return res.status(401).json({
-        // Menggunakan 401 Unauthorized
         code: 1,
         status: false,
         message: user.message,
       });
     } else if (user === "User  not found or incorrect credentials") {
       return res.status(401).json({
-        // Menggunakan 401 Unauthorized
         code: 1,
         status: false,
         message: user,
       });
     }
     res.status(200).json({
-      // Menggunakan 200 OK
       code: 0,
       status: true,
       message: user.message,
@@ -85,14 +79,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Endpoint untuk verifikasi OTP
 router.get("/verifOtp/:otp", async (req, res) => {
   try {
     const otp = req.params;
     const user = await authService.VerifOtp(otp.otp);
     if (user.status == false) {
       return res.status(404).json({
-        // Menggunakan 404 Not Found jika pengguna tidak ditemukan
         code: 2,
         status: false,
         message: user.message,
@@ -104,7 +96,6 @@ router.get("/verifOtp/:otp", async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
       code: 2,
       status: false,
       message: error.message,
@@ -157,7 +148,6 @@ router.post("/resendotp", async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      // Menggunakan 400 Bad Request untuk kesalahan yang dihasilkan dari input
       code: 2,
       status: false,
       message: error.message,

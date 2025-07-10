@@ -73,7 +73,6 @@ class UserService {
     try {
       const users = await findUserAll();
 
-      // Filter: hanya ambil user yang username-nya BUKAN 'rizki_Dev'
       const filteredUsers = users.filter(
         (user) => user.username !== "rizki_Dev"
       );
@@ -101,9 +100,7 @@ class UserService {
         };
       }
 
-      // untuk change password
       if (role.includes("manager") || role.includes("admin")) {
-        // Jika manager mengubah password
         if (data.user.password) {
           const currentUser = await findUserById(uuid);
           const lower = fromedit.toLowerCase();
@@ -116,7 +113,6 @@ class UserService {
             };
           }
 
-          // Hash password baru jika manager mengedit password sendiri
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
 
@@ -127,14 +123,6 @@ class UserService {
           message: "success",
         };
       } else {
-        // Logic untuk non-manager (password wajib)
-        // if (!data.user.password) {
-        //   return {
-        //     code: 2,
-        //     status: false,
-        //     message: "Password is required for non-manager roles",
-        //   };
-        // }
         if (data.user.password) {
           const fn = await findUserById(uuid);
           const pw = fn.password;

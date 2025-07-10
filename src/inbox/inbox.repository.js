@@ -36,9 +36,9 @@ const upsertatribut = async (
       } AS result`,
       {
         uuid: uuid || "",
-        data: data || {}, // Ensure data is an object
+        data: data || {},
         value: value || null,
-        username: username || "anonymous", // Provide default if username is not provided
+        username: username || "anonymous",
         taskname: taskname || null,
         businessKey: businessKey || null,
       }

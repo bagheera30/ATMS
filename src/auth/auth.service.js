@@ -151,9 +151,9 @@ class authService {
         },
       });
       const mailOptions = {
-        from: process.env.EMAIL_VERIF, // Email pengirim
+        from: process.env.EMAIL_VERIF,
         to: email,
-        subject: "Kode OTP Verifikasi", // Subjek email
+        subject: "Kode OTP Verifikasi",
         html: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
   <img src="https://img.freepik.com/free-psd/phone-icon-design_23-2151311652.jpg?t=st=1740712456~exp=1740716056~hmac=edbd775bf2f8b086629ddbb8440face843343bf69929cb8a4137e9c3aa1c2848&w=900" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
   <h2 style="color: #4CAF50; text-align: center;">Selamat Datang!</h2>
@@ -210,10 +210,8 @@ class authService {
       throw new Error("Please complete the form");
     }
     try {
-      // Panggil repository untuk mendapatkan data pengguna dari Neo4j
       const authResult = await authRepository.authentication(email);
 
-      // Cek apakah pengguna ditemukan atau statusnya tidak valid
       if (!authResult.status) {
         const message = authResult.message;
         return message;
@@ -221,10 +219,8 @@ class authService {
 
       const rolename = authResult.roles.map((node) => node.properties.RoleName);
       const role = rolename.toString();
-      // Ambil data pengguna dari hasil query
       const user = authResult.user.properties;
 
-      // Verifikasi kata sandi menggunakan bcrypt
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
@@ -234,11 +230,10 @@ class authService {
           message: "Incorrect password",
         };
       }
-      // Jika autentikasi berhasil, buat token JWT
       const token = jwt.sign(
-        { userId: user.uuid, username: user.username, roles: role }, // Payload token
-        process.env.JWT_SECRET || "default_secret", // Use environment variable or default secret
-        { expiresIn: "1d" } // Token berlaku selama 1 jam
+        { userId: user.uuid, username: user.username, roles: role }, 
+        process.env.JWT_SECRET || "default_secret", 
+        { expiresIn: "1d" }
       );
 
       return {

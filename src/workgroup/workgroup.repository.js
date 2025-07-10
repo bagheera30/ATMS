@@ -135,7 +135,6 @@ const getAllWorkgroupsWithMembers = async () => {
 
     return result.records.map((record) => {
       const result = record.get("result");
-      // Convert Neo4j Integer to Number if needed
       if (result.member && typeof result.member.toNumber === "function") {
         result.member = result.member.toNumber();
       }

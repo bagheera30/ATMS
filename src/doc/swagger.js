@@ -10,11 +10,11 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000", // Ganti dengan URL hosting setelah deploy
+        url: "http://localhost:3000", 
       },
     ],
   },
-  apis: ["./index.js"], // Lokasi file yang berisi definisi endpoint
+  apis: ["./index.js"], 
 };
 
 const specs = swaggerJsDoc(options);

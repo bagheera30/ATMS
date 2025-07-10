@@ -18,7 +18,6 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
 
-// Fungsi untuk memuat file Swagger YAML
 function loadSwaggerFile() {
   try {
     const fileContents = fs.readFileSync(swaggerFilePath, "utf8");
@@ -38,15 +37,11 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Apply to all requests
 app.use(limiter);
-// Endpoint untuk Swagger UI
 app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
-  // Setup Swagger UI dengan dokumen terbaru
   swaggerUi.setup(swaggerDocument)(req, res, next);
 });
 
-// Pantau perubahan pada file YAML
 chokidar.watch(swaggerFilePath).on("all", (event, path) => {
   if (event === "change") {
     console.log("Swagger file changed, reloading...");

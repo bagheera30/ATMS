@@ -12,7 +12,6 @@ class TaskService {
     }
     try {
       const urlCamunda = process.env.URL_CAMUNDA;
-      // Add query parameter for businessKey to filter tasks
       const response = await axios.get(`${urlCamunda}/task`, {
         params: {
           processInstanceBusinessKey: businessKey,
@@ -35,13 +34,11 @@ class TaskService {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       if (error.response) {
-        // If error comes from server response
         return {
           status: error.response.status,
           error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
         };
       } else {
-        // If error comes from communication with server
         return {
           status: 500,
           error: "Failed to fetch tasks from Camunda. Status: 500",
@@ -103,12 +100,10 @@ class TaskService {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       if (error.response) {
-        // Jika error berasal dari response server
         res.status(error.response.status).json({
           error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
         });
       } else {
-        // Jika error berasal dari komunikasi dengan server
         res.status(500).json({
           error: "Failed to fetch tasks from Camunda. Status: 500",
         });
@@ -136,16 +131,14 @@ class TaskService {
       );
       const taskid = id;
 
-      // Post comment ke Camunda dengan pengecekan response
       const responseCamundaComment = await axios.post(
         `${cm}/task/${taskid}/comment/create`,
         {
-          userId: cmnd.username, // Diperbaiki dari usernamee ke username
+          userId: cmnd.username,
           message: data.deskripsi,
         }
       );
 
-      // Cek apakah comment berhasil dibuat
       if (
         !responseCamundaComment.data ||
         responseCamundaComment.status !== 200
@@ -153,7 +146,6 @@ class TaskService {
         throw new Error("Failed to create comment in Camunda");
       }
 
-      // Delegate task dengan pengecekan response
       const responsedelegate = await axios.post(
         `${cm}/task/${taskid}/delegate`,
         {
@@ -161,9 +153,7 @@ class TaskService {
         }
       );
 
-      // Cek apakah delegasi berhasil
       if (responsedelegate.status !== 204) {
-        // Biasanya endpoint delegate mengembalikan 204 No Content
         throw new Error("Failed to delegate task in Camunda");
       }
 
@@ -201,12 +191,10 @@ class TaskService {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       if (error.response) {
-        // Jika error berasal dari response server
         res.status(error.response.status).json({
           error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
         });
       } else {
-        // Jika error berasal dari komunikasi dengan server
         res.status(500).json({
           error: "Failed to fetch tasks from Camunda. Status: 500",
         });
@@ -223,7 +211,6 @@ class TaskService {
 
       const response = await axios.get(`${camunda}/task`, {
         params: {
-          // dueDateBefore: currentDate.toISOString(),
           dueDateAfter: dueDateAfter.toISOString(),
         },
         paramsSerializer: (params) => {
@@ -241,17 +228,13 @@ class TaskService {
   }
   async gettasklistinbox() {
     try {
-      // Fetch all tasks from Camunda menggunakan Axios
       const response = await axios.get(`${process.env.CAMUNDA_URL}/task`);
       const tasks = response.data;
 
-      // Current time for filtering
       const now = new Date();
 
-      // Filter tasks that are not overdue: due date is either null or dueDate >= now
       const notOverdueTasks = tasks.filter((task) => {
         if (!task.due) {
-          // no due date, consider not overdue
           return true;
         }
         const dueDate = new Date(task.due);
@@ -262,12 +245,10 @@ class TaskService {
     } catch (error) {
       console.error("Error fetching or filtering tasks:", error);
       if (error.response) {
-        // Jika error berasal dari response server
         res.status(error.response.status).json({
           error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
         });
       } else {
-        // Jika error lainnya (network error, dll)
         res.status(500).json({ error: "Failed to fetch or filter tasks" });
       }
     }
@@ -296,7 +277,6 @@ class TaskService {
         : [];
     } catch (error) {
       console.error("Error fetching comments:", error);
-      // Jika terjadi error, transformedComments tetap empty array
     }
 
     const form = await axios.get(
@@ -306,14 +286,12 @@ class TaskService {
     const extractedVariables = {};
 
     for (const [key, variable] of Object.entries(formVariables)) {
-      // Skip jika key adalah "requireDocument"
       if (key === "requireDocument") {
         continue;
       }
 
       extractedVariables[key] = variable;
 
-      // Jika tipe Json dan masih string, parse ke object
       if (variable.type === "Json" && typeof variable.value === "string") {
         extractedVariables[key] = JSON.parse(variable.value);
       }
@@ -323,7 +301,6 @@ class TaskService {
     );
     const links = group.data;
 
-    // Filter hanya candidate group
     const groups = links
       .filter((link) => link.type === "candidate" && link.groupId)
       .map((link) => link.groupId);

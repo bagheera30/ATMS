@@ -8,7 +8,7 @@ router.get("/:id/download", async (req, res) => {
 
   try {
     const { url } = await getDownload(id);
-    return res.redirect(url); // Redirect client langsung ke presigned URL
+    return res.redirect(url); 
   } catch (error) {
     res.status(400).json({
       code: 2,

@@ -15,18 +15,14 @@ const authMiddleware = (allowedRoles = []) => {
     const adminToken = process.env.TOKEN_ADMIN;
 
     try {
-      // Check if the provided token matches the admin token
       if (token === adminToken) {
-        // If it's an admin token, bypass all other checks
-        req.user = { roles: "system" }; // Set admin role
+        req.user = { roles: "system" };
         return next();
       }
 
-      // Normal JWT verification for non-admin tokens
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const currentTime = Math.floor(Date.now() / 1000);
 
-      // Check token expiration
       if (decoded.exp && decoded.exp < currentTime) {
         return res
           .status(401)
@@ -39,7 +35,6 @@ const authMiddleware = (allowedRoles = []) => {
         });
       }
 
-      // Normalize roles to array
       let userRoles = [];
       if (typeof decoded.roles === "string") {
         userRoles = decoded.roles.split(",").map((r) => r.trim());
@@ -51,7 +46,6 @@ const authMiddleware = (allowedRoles = []) => {
           .json({ message: "Forbidden: Invalid role format." });
       }
 
-      // Check permissions
       if (
         allowedRoles.length > 0 &&
         !userRoles.some((role) => allowedRoles.includes(role))
@@ -60,7 +54,6 @@ const authMiddleware = (allowedRoles = []) => {
           .status(403)
           .json({ message: "Forbidden: Insufficient permissions." });
       }
-      // Check each role status
       for (const role of userRoles) {
         const roleData = await searchWorkgroup(role.toLowerCase());
 

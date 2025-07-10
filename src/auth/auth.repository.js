@@ -39,7 +39,6 @@ FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
         r.createdBy = username,
         r.createAt = timestamp()
     
-    // Only create status for role if role is newly created
     FOREACH (_ IN CASE WHEN NOT role_exists THEN [1] ELSE [] END |
         CREATE (sr:Status {
             uuid: randomUUID(),
@@ -99,7 +98,7 @@ RETURN
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error creating user:", error);
-    return null; // Return null or handle the error as needed
+    return null;
   } finally {
     await session.close();
   }
@@ -150,7 +149,7 @@ const validasiEmail = async (username) => {
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error validating email:", error);
-    return false; // Jika terjadi kesalahan, anggap username valid
+    return false;
   } finally {
     await session.close();
   }
@@ -180,13 +179,12 @@ const findToken = async (token, time) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `// First, find and lock the user with matching OTP
+      `
 MATCH (u:User {otp: $token})
 WHERE u.otpExpiresAt > $time
 WITH u
 LIMIT 1
 
-// If user exists, update and return success
 FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] ELSE [] END |
     SET u.otp = null,
         u.otpExpiresAt = null,
@@ -205,14 +203,14 @@ RETURN {status: true, id: u.uuid}AS result`,
       return {
         status: false,
         message: "OTP sudah kadaluwarsa atau tidak valid",
-      }; // or handle it as needed
+      };
     }
     return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close();
   }
 };
 const authentication = async (username) => {
@@ -240,8 +238,6 @@ END AS result`,
         username: username,
       }
     );
-
-    // Mengambil hasil dari kueri
     const response =
       result.records.length > 0
         ? result.records[0].get("result")

@@ -15,7 +15,7 @@ const getAtribut = async (id) => {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
   } finally {
-    await session.close(); // Ensure the session is closed
+    await session.close(); 
   }
 };
 
