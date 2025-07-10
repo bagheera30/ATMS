@@ -10,20 +10,15 @@ router.get(
     try {
       const search = req.query.username;
       let user;
-      console.log("user req: ", req.user.roles);
-      console.log(search);
       if (req.user.roles === "staff") {
         user = await userService.getUserallByUsername(req.user.username);
-        console.log("user: ", user);
       } else if (req.user.roles === "system") {
         user = await userService.getTaskOverdue(search);
-        console.log("user overdue: ", user);
       } else {
         if (search) {
           user = await userService.getUserallByUsername(search);
         } else {
           user = await userService.getall();
-          console.log("user: ", user);
         }
       }
 
@@ -48,7 +43,6 @@ router.get(
   authMiddleware(["manager", "staff", "admin"]),
   async (req, res) => {
     const username = req.user.username;
-    console.log(username);
 
     try {
       const data = await userService.finduserbyWG(username);
@@ -72,7 +66,6 @@ router.post(
     const data = req.body;
     const id = req.params.id;
     const r = req.user.roles.split(",");
-    console.log(r);
     const username = req.user.username;
     try {
       const user = await userService.updateUser(

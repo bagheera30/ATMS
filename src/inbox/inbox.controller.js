@@ -46,10 +46,23 @@ router.post(
   upload.any(),
   authMiddleware(["staff"]),
   async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
     try {
-      const user = await resolve(id, data);
+      // Validasi harus ada file yang diupload
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: "Harus mengirim minimal satu file",
+        });
+      }
+
+      const id = req.params.id;
+      const files = {}; // Hanya proses files
+
+      req.files.forEach((file) => {
+        files[file.fieldname] = file;
+      });
+
+      const user = await resolve(id, files);
       res.status(201).json({
         user,
       });

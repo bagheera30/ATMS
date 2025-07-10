@@ -43,7 +43,6 @@ router.get("/inbox", authMiddleware(["manager", "staff"]), async (req, res) => {
 
 router.get("/:id/claim", authMiddleware(["manager"]), async (req, res) => {
   const data = req.params.id;
-  console.log(req.user.username);
   try {
     await taskService.assignee(req.user.username, data);
     res.status(200).json({
@@ -61,7 +60,6 @@ router.get("/:id/claim", authMiddleware(["manager"]), async (req, res) => {
 });
 router.get("/:id/unclaim", authMiddleware(["manager"]), async (req, res) => {
   const data = req.params.id;
-  console.log(data.taskid);
   try {
     await taskService.Unassignee(data);
     res.status(200).json({

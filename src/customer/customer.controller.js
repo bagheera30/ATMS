@@ -39,11 +39,9 @@ router.get("/:id", authMiddleware(["manager"]), async (req, res) => {
 });
 router.post("/", authMiddleware(["manager"]), async (req, res) => {
   const username = req.user.username;
-  console.log("s", username);
   try {
     const data = req.body;
     const user = await create(data, username);
-    console.log(user);
     res.status(200).json({
       user,
     });

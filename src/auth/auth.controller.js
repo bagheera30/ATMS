@@ -21,7 +21,6 @@ router.post("/register", validateCreateUser, async (req, res) => {
   try {
     const data = req.body;
     const user = await authService.createUser(data);
-    console.log(user);
     if (!user.status) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
@@ -91,7 +90,6 @@ router.get("/verifOtp/:otp", async (req, res) => {
   try {
     const otp = req.params;
     const user = await authService.VerifOtp(otp.otp);
-    console.log(user);
     if (user.status == false) {
       return res.status(404).json({
         // Menggunakan 404 Not Found jika pengguna tidak ditemukan
@@ -127,7 +125,6 @@ router.post("/forgotPassword", async (req, res) => {
     }
 
     const result = await authService.forgotPassword(data);
-    console.log(result);
     if (result.status == false) {
       return res.status(404).json({
         code: result.code,

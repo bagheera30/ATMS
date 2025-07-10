@@ -15,7 +15,6 @@ class WorkgroupService {
   async upsertWorkgroup(uuid, username, data) {
     try {
       let user;
-      console.log(data);
       if (!username) {
         throw new Error("username is required");
       } else if (!data.name) {
@@ -24,7 +23,6 @@ class WorkgroupService {
 
       if (uuid == "") {
         const get = await getAllWorkgroups(data.name);
-        console.log(get);
         if (get.length > 0) {
           return {
             status: false,
@@ -53,7 +51,6 @@ class WorkgroupService {
   async getAllWorkgroup(search) {
     try {
       const lower = search.toLowerCase();
-      console.log("test1: ", lower);
       const user = await getAllWorkgroups(lower);
       return user;
     } catch (error) {
@@ -86,7 +83,6 @@ class WorkgroupService {
   async deleteWorkgroup(id) {
     try {
       const user = await deleteWorkgroup(id);
-      console.log("test1:", user);
       if (user == "Failed: Workgroup has users") {
         return {
           code: 1,
@@ -110,7 +106,6 @@ class WorkgroupService {
   async deleteuserWorkgroup(idUser, id) {
     try {
       const user = await removeMember(idUser, id);
-      console.log("test1: ", user);
       return user;
     } catch (error) {
       throw error;

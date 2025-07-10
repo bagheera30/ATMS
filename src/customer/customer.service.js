@@ -8,7 +8,6 @@ const {
 
 class CustomerService {
   async create(data, username) {
-    console.log(data);
     const name = data.name;
     const address = data.address;
     const city = data.city;

@@ -78,8 +78,6 @@ class UserService {
         (user) => user.username !== "rizki_Dev"
       );
 
-      console.log("Filtered Users:", filteredUsers);
-
       return {
         code: 0,
         status: true,
@@ -92,9 +90,6 @@ class UserService {
   }
   async updateUser(uuid, data, role, fromedit) {
     try {
-      console.log(data);
-
-      // Initialize user object if not exists
       if (!data.user) {
         data.user = {};
       }
@@ -110,12 +105,9 @@ class UserService {
       if (role.includes("manager") || role.includes("admin")) {
         // Jika manager mengubah password
         if (data.user.password) {
-          console.log("Manager changing password");
-          console.log("fromedit", fromedit);
           const currentUser = await findUserById(uuid);
           const lower = fromedit.toLowerCase();
           const editedUser = await findUserAllByUsername(lower);
-          console.log("editedUser", editedUser);
           if (!editedUser || currentUser.username !== editedUser.username) {
             return {
               code: 2,
@@ -129,7 +121,6 @@ class UserService {
         }
 
         const user = await userstatus(uuid, fromedit, data);
-        console.log("staff", user);
         return {
           code: 0,
           status: true,
@@ -147,9 +138,7 @@ class UserService {
         if (data.user.password) {
           const fn = await findUserById(uuid);
           const pw = fn.password;
-          console.log(pw);
           const isPasswordValid = await bcrypt.compare(data.user.password, pw);
-          console.log(isPasswordValid);
           if (isPasswordValid) {
             return {
               code: 2,
@@ -162,7 +151,6 @@ class UserService {
         }
 
         const user = await userstatus(uuid, fromedit, data);
-        console.log("staff", user);
         return {
           code: 0,
           status: true,

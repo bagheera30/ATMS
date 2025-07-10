@@ -96,8 +96,6 @@ RETURN
         otpExpires,
       }
     );
-    console.log("masuk");
-    // Return only the records
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error creating user:", error);
@@ -160,7 +158,6 @@ const validasiEmail = async (username) => {
 const resendotp = async (email, otp, otpExpires) => {
   const session = neo.session();
   try {
-    console.log(email);
     const result = await session.run(
       `MATCH (u:User {email: $email})
        SET u.otp=$otp,u.otpExpiresAt=$otpExpires, u.modifiedAt=timestamp()
@@ -171,7 +168,6 @@ const resendotp = async (email, otp, otpExpires) => {
         otpExpires: otpExpires,
       }
     );
-    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -183,8 +179,6 @@ const resendotp = async (email, otp, otpExpires) => {
 const findToken = async (token, time) => {
   const session = neo.session();
   try {
-    console.log("Received token:", token);
-    console.log("Received time:", time);
     const result = await session.run(
       `// First, find and lock the user with matching OTP
 MATCH (u:User {otp: $token})
@@ -207,8 +201,6 @@ RETURN {status: true, id: u.uuid}AS result`,
       }
     );
 
-    console.log("test", result.records);
-    // Check if records are returned
     if (result.records.length === 0) {
       return {
         status: false,

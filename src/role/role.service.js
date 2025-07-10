@@ -10,18 +10,14 @@ const {
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, name, status) {
     try {
-      console.log(username, name, status);
       let user;
       if (!username) {
         throw new Error("username is required");
       } else if (!name) {
         throw new Error("please complete the form");
       }
-      console.log("test id", uuid);
       if (!uuid) {
-        console.log("masuk");
         const get = await searchWorkgroup(name);
-        console.log(get);
         if (get) {
           return {
             status: false,
@@ -34,7 +30,6 @@ class WorkgroupService {
         user = await upsertWorkgroup(uuid, username, name, status);
       }
 
-      console.log(user);
       return user;
     } catch (error) {
       throw error;
@@ -80,7 +75,6 @@ class WorkgroupService {
   async deleteWorkgroup(id) {
     try {
       const user = await deleteWorkgroup(id);
-      console.log("test1:", user);
       if (user == "Failed: role has users") {
         return {
           code: 1,

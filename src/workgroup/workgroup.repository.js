@@ -3,7 +3,6 @@ const neo = db.getInstance();
 
 const upsertWorkgroup = async (uuid, username, data) => {
   const session = neo.session();
-  console.log("datas: ", data);
   try {
     const result = await session.run(
       `MERGE (wg:Workgroup {uuid: $uuid})

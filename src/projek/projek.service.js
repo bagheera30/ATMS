@@ -46,7 +46,6 @@ class ProjekIntanceService {
   async getAll(search) {
     try {
       const data = await getAllProjek(search);
-      console.log(data[0]);
       const promises = data.map(async (item) => {
         return {
           businessKey: item.businessKey,
@@ -58,8 +57,7 @@ class ProjekIntanceService {
 
       const resultdata = await Promise.all(promises);
 
-      console.log(resultdata);
-      return data;
+      return resultdata;
     } catch (error) {
       console.error("Error in getAll():", error.message);
       throw error;
@@ -208,9 +206,7 @@ class ProjekIntanceService {
       // Verifikasi response
       if (startResponse.status >= 200 && startResponse.status < 300) {
         const customer = data.customer;
-        console.log(customer);
         const startdata = await upsert(data, customer, username);
-        console.log(startdata);
 
         return startResponse.data; // Optional: return response data jika diperlukan
       } else {

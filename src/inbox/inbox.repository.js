@@ -10,7 +10,6 @@ const upsertatribut = async (
   username,
   businessKey
 ) => {
-  console.log(data);
   const session = neo.session();
   try {
     const result = await session.run(

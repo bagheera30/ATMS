@@ -40,7 +40,6 @@ const upsert = async (data, uuid, username) => {
 
 const upsertComment = async (uuid, username, taskname, businesskey, data) => {
   const session = neo.session();
-  console.log(businesskey);
   try {
     const result = await session.run(
       `MATCH(u:User)where u.uuid = $data.userid

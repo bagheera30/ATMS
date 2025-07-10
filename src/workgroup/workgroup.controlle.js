@@ -66,15 +66,11 @@ router.get(
     try {
       let workgroup;
       const wg = req.query.search;
-      console.log(req.user.roles);
       if (req.user.roles === "system") {
         workgroup = await getManeger(wg);
       } else {
-        console.log(wg);
         if (!wg) {
-          console.log("masuk");
           workgroup = await getallwg();
-          console.log(workgroup);
           if (workgroup.length === 0) {
             res.status(404).json({
               code: 1,

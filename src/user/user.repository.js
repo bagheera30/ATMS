@@ -63,7 +63,6 @@ const finuserbyWG = async (username) => {
 const findUserOverdue = async (username) => {
   const session = neo.session();
   try {
-    console.log("test1: ", username);
     const result = await session.run(
       `
       MATCH (wg:Workgroup)-[:HAS_WORKGROUP]->(u:User)where LOWER(u.username)CONTAINS $username
@@ -78,7 +77,6 @@ RETURN DISTINCT{
         username,
       }
     );
-    console.log(result.records[0].get("result"));
     return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
@@ -111,7 +109,6 @@ RETURN {
 
       `
     );
-    console.log(result.records[0].get("result"));
     return result.records.map((record) => record.get("result"));
   } catch (error) {
     console.error("Error executing query:", error);
@@ -177,7 +174,6 @@ const userUpdateRole = async (username, fromedit, data) => {
 const userstatus = async (uuid, fromedit, data) => {
   const session = neo.session();
   try {
-    console.log("data2 ", data);
     const result = await session.run(
       `
      MATCH (u:User {uuid: $uuid})-[r:HAS_STATUS]->(s:Status)
@@ -199,7 +195,6 @@ RETURN {
         fromedit,
       }
     );
-    console.log("result", result.records);
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);
@@ -227,7 +222,6 @@ const updateUser = async (uuid, data, dataform) => {
         dataform: dataform || "",
       }
     );
-    console.log(result.records[0].get("result"));
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {
     console.error("Error executing query:", error);

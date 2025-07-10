@@ -13,7 +13,6 @@ const createinbox = async (id, username, files) => {
 
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
-    console.log("Form Variables:", formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`
@@ -75,7 +74,6 @@ const resolve = async (id, files) => {
   const camundaURL = process.env.URL_CAMUNDA;
 
   try {
-    // 1. Get task and form variables
     const [taskResponse, formVarsResponse] = await Promise.all([
       axios.get(`${camundaURL}/task/${id}`),
       axios.get(`${camundaURL}/task/${id}/form-variables`),
@@ -83,7 +81,6 @@ const resolve = async (id, files) => {
 
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
-    console.log("Form Variables:", formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`

@@ -19,10 +19,7 @@ class TaskService {
         },
       });
       const tasks = response.data;
-      console.log(tasks);
-      // const bpm = await getDetailDefinition();
 
-      // Filter only the needed fields
       const filteredTasks = tasks.map((task) => ({
         id: task.id,
         name: task.name,
@@ -55,7 +52,6 @@ class TaskService {
 
   async getasbyinbox(username) {
     try {
-      console.log("Username:", username);
       const urlcamund = process.env.URL_CAMUNDA;
 
       const responseAssignee = await axios.get(`${urlcamund}/task`, {
@@ -66,7 +62,6 @@ class TaskService {
       const lw = username.toLowerCase();
 
       const ow = await findUserAllByUsername(lw);
-      console.log(ow.fullName);
 
       const responseOwner = await axios.get(`${urlcamund}/task`, {
         params: {
@@ -74,15 +69,11 @@ class TaskService {
         },
       });
 
-      // Gabungkan kedua hasil dan hilangkan duplikasi berdasarkan task.id
       const combinedTasks = [...responseAssignee.data, ...responseOwner.data];
-      console.log(combinedTasks);
-      // Hilangkan duplikasi (misalnya jika task sama muncul di kedua query)
       const uniqueTasks = Array.from(
         new Map(combinedTasks.map((task) => [task.id, task])).values()
       );
 
-      // Filter hanya field yang dibutuhkan
       const filteredTasks = uniqueTasks.map((task) => ({
         id: task.id,
         active: task.taskDefinitionKey,
@@ -105,11 +96,9 @@ class TaskService {
   async assignee(username, taskid) {
     try {
       const cm = process.env.URL_CAMUNDA;
-      console.log(username, taskid);
       const response = await axios.post(`${cm}/task/${taskid}/claim`, {
         userId: username,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -208,7 +197,6 @@ class TaskService {
     try {
       const cm = process.env.URL_CAMUNDA;
       const response = await axios.post(`${cm}/task/${taskid}/unclaim`);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -245,7 +233,6 @@ class TaskService {
       const duedates = response.data
         .filter((task) => task.due !== null)
         .map((task) => task);
-      console.log(duedates);
       return duedates;
     } catch (error) {
       console.error("Error fetching overdue tasks:", error);
@@ -256,7 +243,6 @@ class TaskService {
     try {
       // Fetch all tasks from Camunda menggunakan Axios
       const response = await axios.get(`${process.env.CAMUNDA_URL}/task`);
-      console.log("test", response.data);
       const tasks = response.data;
 
       // Current time for filtering
@@ -264,7 +250,6 @@ class TaskService {
 
       // Filter tasks that are not overdue: due date is either null or dueDate >= now
       const notOverdueTasks = tasks.filter((task) => {
-        console.log(tasks.due);
         if (!task.due) {
           // no due date, consider not overdue
           return true;

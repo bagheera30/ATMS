@@ -4,7 +4,6 @@ const neo = db.getInstance();
 
 const upsertWorkgroup = async (uuid, username, name, status) => {
   const session = neo.session();
-  console.log(uuid, username, name, status);
   try {
     const result = await session.run(
       `
@@ -41,7 +40,6 @@ RETURN {
         status: status || "inactive",
       }
     );
-    console.log(result);
     return result.records[0]?.get("result") || null;
   } finally {
     await session.close();
@@ -114,7 +112,6 @@ RETURN
     END AS response`,
       { uuid }
     );
-    console.log(result.records[0].get("response"));
     return result.records.length > 0
       ? result.records[0].get("response")
       : { code: -1, status: false, message: "Unexpected error" };
@@ -141,12 +138,10 @@ const addmember = async (username, RoleName) => {
       } AS result`,
     { RoleName, username }
   );
-  console.log(result.records[0].get("result"));
   return result.records.length > 0 ? result.records[0].get("result") : null;
 };
 const removemember = async (username, uuid) => {
   const session = neo.session();
-  console.log(username, uuid);
   const result = await session.run(
     `MATCH (n:Role) where LOWER (n.RoleName) CONTAINS $uuid
     MATCH (u:User)where u.uuid CONTAINS $username

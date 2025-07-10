@@ -28,13 +28,11 @@ class authService {
       const otp = 11111;
 
       const otpExpires = Math.floor(Date.now() / 1000) + 5 * 60;
-      console.log({ user });
       const newUser = await authRepository.createUser(
         { user },
         otp,
         otpExpires
       );
-      console.log(newUser);
       if (!newUser.status) {
         return {
           code: 1,
@@ -143,7 +141,6 @@ class authService {
       const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
       const otpExpires = Math.floor(Date.now() / 1000) + 5 * 60;
       const result = await authRepository.resendotp(email, otp, otpExpires);
-      console.log("service", result);
       const nm = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -176,7 +173,6 @@ class authService {
       };
 
       await nm.sendMail(mailOptions);
-      console.log("Email OTP terkirim");
       return result;
     } catch (error) {
       throw new Error(`Verifikasi OTP gagal: ${error.message}`);
@@ -195,7 +191,6 @@ class authService {
       const time = Math.floor(Date.now() / 1000);
 
       const verificationResult = await authRepository.findToken(intotp, time);
-      console.log(verificationResult);
       if (verificationResult.status == false) {
         return {
           status: false,

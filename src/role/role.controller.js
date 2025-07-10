@@ -36,7 +36,6 @@ router.post(
   async (req, res) => {
     const id = req.query.RoleName;
     const data = req.body;
-    console.log(data);
     try {
       const user = await adduserToWorkgroup(data.uuid, id);
 
@@ -79,11 +78,9 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
   const name = data.RoleName;
   const status = "inactive";
   const uuid = null;
-  console.log("salah");
 
   try {
     const user = await upsertWorkgroup(uuid, username, name, status);
-    console.log(user);
     if (user.status === false) {
       return res.status(400).json({
         code: 2,
@@ -105,7 +102,6 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
 
 router.get("/", authMiddleware(["manager", "admin"]), async (req, res) => {
   const serch = req.query.RoleName;
-  console.log(serch);
   try {
     let workgroup;
     if (serch) {

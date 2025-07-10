@@ -65,7 +65,6 @@ const getAll = async (search) => {
         search,
       }
     );
-    console.log(result.records.map((record) => record.get("result")));
 
     return result.records.length > 0
       ? result.records.map((record) => record.get("result"))
@@ -165,7 +164,6 @@ RETURN
         search,
       }
     );
-    console.log("delete", result.records[0].get("response"));
     return result.records.length > 0 ? result.records[0].get("response") : null;
   } catch (error) {
     console.error("Error executing query:", error);
