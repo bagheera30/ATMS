@@ -281,18 +281,26 @@ class TaskService {
     }
   }
   async gettask(id) {
-    console.log("test");
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
-    console.log(response.data);
-    const bpm = await getDetailDefinition(response.data.processDefinitionId);
+    const processInstanceId = response.data.processInstanceId;
 
+    if (!processInstanceId) {
+      throw new Error("Process instance ID tidak ditemukan.");
+    }
+
+    // Step 2: Dapatkan businessKey dari process instance
+    const processResponse = await axios.get(
+      `${process.env.URL_CAMUNDA}/process-instance/${processInstanceId}`
+    );
+    const businessKey = processResponse.data.businessKey;
+    const bpm = await getDetailDefinition(response.data.processDefinitionId);
     let transformedComments = []; // Default empty array
     try {
-      const comment = await getcommen(response.data.name);
+      const comment = await getcommen(businessKey);
       transformedComments = comment
         ? comment.map((item) => ({
-            user: item.user[0], // Mengambil elemen pertama dari array user
-            description: item.deskripsi[0], // Mengambil elemen pertama dari array deskripsi
+            user: item.username,
+            description: item.deskripsi, // Mengambil elemen pertama dari array deskripsi
           }))
         : [];
     } catch (error) {

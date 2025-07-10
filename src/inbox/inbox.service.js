@@ -71,7 +71,7 @@ const createinbox = async (id, username, files) => {
   }
 };
 
-const resolve = async (id, file) => {
+const resolve = async (id, files) => {
   const camundaURL = process.env.URL_CAMUNDA;
 
   try {
@@ -133,4 +133,8 @@ const resolve = async (id, file) => {
     throw new Error(`Task completion failed: ${error.message}`);
   }
 };
+
+const downloadFile = async (filename) => {
+  
+}
 module.exports = { createinbox, resolve };

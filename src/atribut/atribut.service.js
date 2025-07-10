@@ -14,7 +14,7 @@ class atributService {
       const fileName = res.value;
 
       // Dapatkan presigned URL dari MinIO
-      const presignedUrl = await getPresignedUrl(bucketName, fileName, 300); // 5 menit
+      const presignedUrl = await getPresignedUrl(bucketName, fileName, 300); 
 
       return {
         url: presignedUrl,

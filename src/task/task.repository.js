@@ -82,10 +82,10 @@ const getcommen = async (taskname) => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `match(c:Comment{task_name:$taskname})
+      `match(c:Comment)-[:HAS_COMMENT]->(u:Projek)where u.businessKey = $taskname
       return{
-      deskripsi:[(c)-[:HAS_COMMENT]->(u:User)|c.deskripsi],
-      user:[(c)-[:HAS_COMMENT]->(u:User)|u.namaLengkap]
+        deskripsi: c.deskripsi,
+        username:c.user
       } as result`,
       {
         taskname,
