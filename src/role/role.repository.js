@@ -133,7 +133,7 @@ const addmember = async (username, RoleName) => {
       WITH u
       MATCH (n:Role)
       WHERE toLower(n.RoleName) CONTAINS toLower($RoleName)
-      WITH u, n LIMIT 1  // <-- memastikan hanya satu role dipilih
+      WITH u, n LIMIT 1
       CREATE (u)-[:HAS_ROLE]->(n)
       RETURN {
         name_Role: n.RoleName,
