@@ -61,7 +61,7 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
 
 router.get(
   "/",
-  authMiddleware(["manager", "admin", "user"]),
+  authMiddleware(["manager", "admin", "staff"]),
   async (req, res) => {
     try {
       let workgroup;
@@ -101,7 +101,7 @@ router.get(
 );
 router.get(
   "/:uuid",
-  authMiddleware(["admin", "manager", "user"]),
+  authMiddleware(["admin", "manager", "staff"]),
   async (req, res) => {
     const uuid = req.params.uuid;
     try {

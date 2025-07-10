@@ -83,7 +83,7 @@ router.get("/definition/:id", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "staff"]), async (req, res) => {
   const bs = req.query.businessKey;
   const search = req.query.search;
 

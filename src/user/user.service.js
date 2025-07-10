@@ -121,7 +121,7 @@ class UserService {
         }
 
         const user = await userstatus(uuid, fromedit, data);
-        console.log("user", user);
+        console.log("staff", user);
         return {
           code: 0,
           status: true,
@@ -154,7 +154,7 @@ class UserService {
         }
 
         const user = await userstatus(uuid, fromedit, data);
-        console.log("user", user);
+        console.log("staff", user);
         return {
           code: 0,
           status: true,

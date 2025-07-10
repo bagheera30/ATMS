@@ -20,7 +20,7 @@ const createUser = async (data, otp, otpExpires) => {
 WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires,
     EXISTS { (:User {username: username}) } AS username_exists,
     EXISTS { (:User {email: email}) } AS email_exists,
-    EXISTS { (:Role {RoleName: "user"}) } AS role_exists
+    EXISTS { (:Role {RoleName: "staff"}) } AS role_exists
 
 WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, otp, otpExpires, 
      username_exists, email_exists, role_exists,
@@ -33,7 +33,7 @@ WITH username, email, namaLengkap, dateOfBirth, phoneNumber, jabatan, password, 
     NOT (username_exists OR email_exists) AS can_register
 
 FOREACH (_ IN CASE WHEN can_register THEN [1] ELSE [] END |
-    MERGE (r:Role {RoleName: "user"})
+    MERGE (r:Role {RoleName: "staff"})
     ON CREATE SET 
         r.uuid = randomUUID(),
         r.createdBy = username,
@@ -96,7 +96,7 @@ RETURN
         otpExpires,
       }
     );
-    console.log('masuk')
+    console.log("masuk");
     // Return only the records
     return result.records.length > 0 ? result.records[0].get("result") : null;
   } catch (error) {

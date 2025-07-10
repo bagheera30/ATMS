@@ -5,14 +5,14 @@ const router = express.Router();
 
 router.get(
   "/",
-  authMiddleware(["manager", "user", "admin", "system"]),
+  authMiddleware(["manager", "staff", "admin", "system"]),
   async (req, res) => {
     try {
       const search = req.query.username;
       let user;
       console.log("user req: ", req.user.roles);
       console.log(search);
-      if (req.user.roles === "user") {
+      if (req.user.roles === "staff") {
         user = await userService.getUserallByUsername(req.user.username);
         console.log("user: ", user);
       } else if (req.user.roles === "system") {
@@ -45,7 +45,7 @@ router.get(
 
 router.get(
   "/workgroup",
-  authMiddleware(["manager", "user", "admin"]),
+  authMiddleware(["manager", "staff", "admin"]),
   async (req, res) => {
     const username = req.user.username;
     console.log(username);
@@ -67,7 +67,7 @@ router.get(
 
 router.post(
   "/:id",
-  authMiddleware(["manager", "user", "admin"]),
+  authMiddleware(["manager", "staff", "admin"]),
   async (req, res) => {
     const data = req.body;
     const id = req.params.id;

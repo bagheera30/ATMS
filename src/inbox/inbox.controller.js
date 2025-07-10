@@ -3,12 +3,12 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/autentication");
 
-const { createinbox, resolve } = require("./inbox.service");
+const { createinbox, resolve, downloadFile } = require("./inbox.service");
 const upload = require("../lib/fileupload");
 
 router.post(
   "/:id",
-  authMiddleware(["manager", "user"]),
+  authMiddleware(["manager", "staff"]),
   upload.any(), // Handle any file uploads
   async (req, res) => {
     try {
@@ -44,7 +44,7 @@ router.post(
 router.post(
   "/:id/resolve",
   upload.any(),
-  authMiddleware(["user"]),
+  authMiddleware(["staff"]),
   async (req, res) => {
     const id = req.params.id;
     const data = req.body;
@@ -62,5 +62,19 @@ router.post(
     }
   }
 );
+
+router.get("/:filename/download", async (req, res) => {
+  const id = req.params.filename;
+  try {
+    const { url } = await downloadFile(id);
+    return res.redirect(url);
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
 
 module.exports = router;

@@ -5,7 +5,7 @@ const taskService = require("./task.service");
 
 const router = express.Router();
 
-router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
+router.get("/", authMiddleware(["manager", "staff"]), async (req, res) => {
   const bs = req.query.businessKey;
   try {
     const data = await getalltask(bs);
@@ -23,7 +23,7 @@ router.get("/", authMiddleware(["manager", "user"]), async (req, res) => {
     });
   }
 });
-router.get("/inbox", authMiddleware(["manager", "user"]), async (req, res) => {
+router.get("/inbox", authMiddleware(["manager", "staff"]), async (req, res) => {
   try {
     const data = await taskService.getasbyinbox(req.user.username);
     res.status(200).json({
@@ -100,7 +100,7 @@ router.post("/:id/delegate", authMiddleware(["manager"]), async (req, res) => {
 });
 router.get(
   "/overdue",
-  authMiddleware(["manager", "user"]),
+  authMiddleware(["manager", "staff"]),
   async (req, res) => {
     try {
       const overdue = await taskService.overdue();
@@ -119,7 +119,7 @@ router.get(
     }
   }
 );
-router.get("/:id", authMiddleware(["manager", "user"]), async (req, res) => {
+router.get("/:id", authMiddleware(["manager", "staff"]), async (req, res) => {
   try {
     const data = await taskService.gettask(req.params.id);
     res.status(200).json({

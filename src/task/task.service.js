@@ -3,6 +3,7 @@ const { default: axios } = require("axios");
 const { upsert, upsertComment, getcommen } = require("./task.repository");
 const QueryString = require("qs");
 const { getDetailDefinition } = require("../projek/projek.service");
+const { findUserAllByUsername } = require("../user/user.repository");
 
 class TaskService {
   async getalltask(businessKey) {
@@ -54,19 +55,35 @@ class TaskService {
 
   async getasbyinbox(username) {
     try {
-      console.log(username);
+      console.log("Username:", username);
       const urlcamund = process.env.URL_CAMUNDA;
-      const response = await axios.get(`${urlcamund}/task`, {
+
+      const responseAssignee = await axios.get(`${urlcamund}/task`, {
         params: {
           assignee: username,
         },
       });
+      const lw = username.toLowerCase();
 
-      const tasks = response.data;
-      // const bpm = await getDetailDefinition();
+      const ow = await findUserAllByUsername(lw);
+      console.log(ow.fullName);
+
+      const responseOwner = await axios.get(`${urlcamund}/task`, {
+        params: {
+          owner: ow.fullName,
+        },
+      });
+
+      // Gabungkan kedua hasil dan hilangkan duplikasi berdasarkan task.id
+      const combinedTasks = [...responseAssignee.data, ...responseOwner.data];
+      console.log(combinedTasks);
+      // Hilangkan duplikasi (misalnya jika task sama muncul di kedua query)
+      const uniqueTasks = Array.from(
+        new Map(combinedTasks.map((task) => [task.id, task])).values()
+      );
 
       // Filter hanya field yang dibutuhkan
-      const filteredTasks = tasks.map((task) => ({
+      const filteredTasks = uniqueTasks.map((task) => ({
         id: task.id,
         active: task.taskDefinitionKey,
         name: task.name,
@@ -80,18 +97,8 @@ class TaskService {
 
       return filteredTasks;
     } catch (error) {
-      console.error("Error fetching tasks:", error);
-      if (error.response) {
-        // Jika error berasal dari response server
-        res.status(error.response.status).json({
-          error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
-        });
-      } else {
-        // Jika error berasal dari komunikasi dengan server
-        res.status(500).json({
-          error: "Failed to fetch tasks from Camunda. Status: 500",
-        });
-      }
+      console.error("Error fetching tasks:", error.message);
+      throw error;
     }
   }
 
@@ -123,7 +130,7 @@ class TaskService {
   async delegation(username, data, id) {
     try {
       const cm = process.env.URL_CAMUNDA;
-      const task = await axios.get(`${cm}/task/${id}`); // Ditambahkan await jika gettask async
+      const task = await axios.get(`${cm}/task/${id}`);
 
       const projek = await axios.get(
         `${cm}/process-instance/${task.data.processInstanceId}`
@@ -288,7 +295,6 @@ class TaskService {
       throw new Error("Process instance ID tidak ditemukan.");
     }
 
-    // Step 2: Dapatkan businessKey dari process instance
     const processResponse = await axios.get(
       `${process.env.URL_CAMUNDA}/process-instance/${processInstanceId}`
     );

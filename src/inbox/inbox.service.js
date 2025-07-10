@@ -1,4 +1,4 @@
-const { uploadToMinio } = require("../lib/minio");
+const { uploadToMinio, getPresignedUrl } = require("../lib/minio");
 const axios = require("axios");
 const { upsertatribut } = require("./inbox.repository");
 const createinbox = async (id, username, files) => {
@@ -135,6 +135,13 @@ const resolve = async (id, files) => {
 };
 
 const downloadFile = async (filename) => {
-  
-}
-module.exports = { createinbox, resolve };
+  try {
+    const bucketName = process.env.MINIO_BUCKET_NAME;
+    const objectName = filename;
+    const fileStream = await getPresignedUrl(bucketName, objectName, 300);
+    return fileStream;
+  } catch (error) {
+    throw new Error(`Failed to download file: ${error.message}`);
+  }
+};
+module.exports = { createinbox, resolve, downloadFile };
