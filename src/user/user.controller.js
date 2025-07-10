@@ -23,7 +23,7 @@ router.get(
           user = await userService.getUserallByUsername(search);
         } else {
           user = await userService.getall();
-          console.log("user: ");
+          console.log("user: ", user);
         }
       }
 
@@ -31,7 +31,7 @@ router.get(
         code: user.code,
         status: user.status,
         message: user.message,
-        user: user.user,
+        user: user.users,
       });
     } catch (error) {
       res.status(400).json({

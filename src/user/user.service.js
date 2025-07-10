@@ -71,12 +71,20 @@ class UserService {
   }
   async getall() {
     try {
-      const user = await findUserAll();
+      const users = await findUserAll();
+
+      // Filter: hanya ambil user yang username-nya BUKAN 'rizki_Dev'
+      const filteredUsers = users.filter(
+        (user) => user.username !== "rizki_Dev"
+      );
+
+      console.log("Filtered Users:", filteredUsers);
+
       return {
         code: 0,
         status: true,
-        message: "sucess",
-        user,
+        message: "success",
+        users: filteredUsers,
       };
     } catch (error) {
       throw error;
