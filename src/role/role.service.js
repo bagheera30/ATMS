@@ -40,7 +40,7 @@ class WorkgroupService {
       const user = await getAll();
       const role = user.map((item) => ({
         ...item,
-        member: item.member.toNumber(), 
+        member: item.member.toNumber(),
       }));
       return {
         code: 0,
@@ -88,9 +88,10 @@ class WorkgroupService {
     }
   }
   async adduserToWorkgroup(idUser, id) {
+    console.log(id);
     try {
-      const lw = idUser.toLowerCase();
-      const user = await addmember(lw, id);
+      const lw = id.toLowerCase();
+      const user = await addmember(idUser, lw);
       return user;
     } catch (error) {
       throw error;

@@ -125,11 +125,11 @@ const addmember = async (username, RoleName) => {
   const result = await session.run(
     `
       MATCH (u:User {uuid: $username})
-      MATCH (u)-[r:HAS_ROLE]->()
+      OPTIONAL MATCH (u)-[r:HAS_ROLE]->()
       DELETE r
       WITH u
       MATCH (n:Role)
-      WHERE toLower(n.RoleName) CONTAINS toLower($RoleName)
+      WHERE Lower(n.RoleName) CONTAINS Lower($RoleName)
       WITH u, n LIMIT 1
       CREATE (u)-[:HAS_ROLE]->(n)
       RETURN {
