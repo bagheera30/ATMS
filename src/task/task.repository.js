@@ -83,6 +83,7 @@ const getcommen = async (taskname) => {
     const result = await session.run(
       `match(c:Comment)-[:HAS_COMMENT]->(u:Projek)where u.businessKey = $taskname
       return{
+        taskname: c.task_name,
         deskripsi: c.deskripsi,
         username:c.createdBy
       } as result`,

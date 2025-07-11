@@ -285,6 +285,7 @@ class TaskService {
   }
   async gettask(id) {
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
+    console.log(response.data.name);
     const processInstanceId = response.data.processInstanceId;
 
     if (!processInstanceId) {
@@ -296,13 +297,18 @@ class TaskService {
     );
     const businessKey = processResponse.data.businessKey;
     const bpm = await getDetailDefinition(response.data.processDefinitionId);
-    let transformedComments = []; // Default empty array
+    let transformedComments = []; 
     try {
       const comment = await getcommen(businessKey);
-      transformedComments = comment
-        ? comment.map((item) => ({
+      const filteredComments = comment?.filter(
+        (item) => item.taskname === response.data.name
+      );
+
+
+      transformedComments = filteredComments
+        ? filteredComments.map((item) => ({
             user: item.username,
-            description: item.deskripsi, // Mengambil elemen pertama dari array deskripsi
+            description: item.deskripsi, 
           }))
         : [];
     } catch (error) {
@@ -325,7 +331,6 @@ class TaskService {
         extractedVariables[key] = JSON.parse(variable.value);
       }
     }
-    console.log(response.data);
 
     const data = {
       id: response.data.id,
