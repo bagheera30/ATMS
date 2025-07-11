@@ -5,38 +5,21 @@ const authMiddleware = require("../middlewares/autentication");
 const { createinbox, resolve, downloadFile } = require("./inbox.service");
 const upload = require("../lib/fileupload");
 
-router.post(
-  "/:id",
-  authMiddleware(["manager", "staff"]),
-  upload.any(),
-  async (req, res) => {
-    try {
-      if (!req.files || req.files.length === 0) {
-        return res.status(400).json({
-          success: false,
-          error: "Harus mengirim minimal satu file",
-        });
-      }
+router.get("/:id/complete", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const response = await createinbox(id, req.user.username);
 
-      const id = req.params.id;
-      const files = {};
-
-      req.files.forEach((file) => {
-        files[file.fieldname] = file;
-      });
-
-      const response = await createinbox(id, req.user.username, files);
-
-      res.status(201).json(response);
-    } catch (error) {
-      console.error("Error completing task:", error);
-      res.status(500).json({
-        success: false,
-        error: error.response?.data?.message || error.message,
-      });
-    }
+    res.status(201).json(response);
+  } catch (error) {
+    console.error("Error completing task:", error);
+    res.status(500).json({
+      success: false,
+      error: error.response?.data?.message || error.message,
+    });
   }
-);
+});
 
 router.post(
   "/:id/resolve",
@@ -52,7 +35,7 @@ router.post(
       }
 
       const id = req.params.id;
-      const files = {}; 
+      const files = {};
 
       req.files.forEach((file) => {
         files[file.fieldname] = file;

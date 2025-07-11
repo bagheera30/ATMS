@@ -12,6 +12,7 @@ const createinbox = async (id, username, files) => {
 
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
+    console.log(formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`
@@ -22,9 +23,6 @@ const createinbox = async (id, username, files) => {
       throw new Error("No businessKey found in the task");
     }
 
-    if (!files || Object.keys(files).length === 0) {
-      throw new Error("No files were uploaded");
-    }
     const camundaVariables = {};
 
     let previousKey = null;
@@ -34,20 +32,15 @@ const createinbox = async (id, username, files) => {
         camundaVariables[key] = variable;
         continue;
       }
-
-      const file = files[key];
-      const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
-      const objectName = `${businessKey}/${file.originalname}`;
-      await uploadToMinio(file.buffer, bucketName, objectName);
+      const nama = `${key}_${businessKey}`;
       await upsertatribut(
-        { name: key },
-        "",
-        objectName,
+        { name: nama },
+        nama,
+        variable.value,
         task.name,
         username,
         businessKey
       );
-      variable.value = objectName;
       camundaVariables[key] = variable;
       previousKey = key;
     }

@@ -15,7 +15,7 @@ const upsertatribut = async (
     const result = await session.run(
       `
       MATCH (p:Projek) WHERE p.businessKey=$businessKey
-      MERGE (n:Atribut{uuid:$uuid})
+      MERGE (n:Atribut{name:$uuid})
       ON CREATE SET
           n.uuid=randomUUID(),
           n.name=$data.name,
