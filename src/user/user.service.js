@@ -63,6 +63,27 @@ class UserService {
     try {
       const lower = username.toLowerCase();
       const data = await finuserbyWG(lower);
+      console.log(data);
+      if (Array.isArray(data) && data.length > 0) {
+        // Check if any item in the array has status "inactive"
+        const inactiveItems = data.filter((item) => item.status === "inactive");
+
+        if (inactiveItems.length > 0) {
+          // Get the usernames of inactive members for the error message
+          const inactiveUsers = inactiveItems
+            .flatMap(
+              (item) =>
+                item.username_workgroup?.map((user) => user.username) || []
+            )
+            .join(", ");
+
+          return {
+            code: 1,
+            status: false,
+            message: "Workgroup not active"
+          };
+        }
+      }
       const filteredData = data.map((group) => {
         return {
           ...group,

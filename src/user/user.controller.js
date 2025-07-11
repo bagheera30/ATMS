@@ -46,6 +46,13 @@ router.get(
 
     try {
       const data = await userService.finduserbyWG(username);
+      if(data.status === false){
+        return res.status(400).json({
+          code: 2,
+          status: false,
+          message: data.message,
+        });
+      }
       res.status(200).json({
         data,
       });
