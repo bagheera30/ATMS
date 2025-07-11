@@ -115,6 +115,14 @@ class TaskService {
     try {
       const cm = process.env.URL_CAMUNDA;
       const task = await axios.get(`${cm}/task/${id}`);
+      console.log(task.data);
+      const updatePayload = { ...task.data };
+
+      updatePayload.owner = username;
+      const responseSetOwner = await axios.put(
+        `${cm}/task/${id}`,
+        updatePayload
+      );
 
       const projek = await axios.get(
         `${cm}/process-instance/${task.data.processInstanceId}`
@@ -129,35 +137,15 @@ class TaskService {
         projek.data.businessKey,
         data
       );
-      const taskid = id;
 
-      const responseCamundaComment = await axios.post(
-        `${cm}/task/${taskid}/comment/create`,
-        {
-          userId: cmnd.username,
-          message: data.deskripsi,
-        }
-      );
-      console.log(responseCamundaComment.data);
-
-      if (
-        !responseCamundaComment.data ||
-        responseCamundaComment.status !== 200
-      ) {
-        throw new Error("Failed to create comment in Camunda");
-      }
-      const responseSetOwner = await axios.post(`${cm}/task/${id}/assignee`, {
-        owner: username,
-      });
+    
 
       console.log(responseSetOwner);
 
       if (responseSetOwner.status !== 204) {
         throw new Error("Failed to set owner in Camunda");
       }
-      const variablesRes = await axios.get(
-        `${cm}/task/${id}/variables`
-      );
+      const variablesRes = await axios.get(`${cm}/task/${id}/variables`);
       const variables = variablesRes.data;
       const requireDocument = variables.requireDocument?.value;
 
@@ -337,6 +325,7 @@ class TaskService {
         extractedVariables[key] = JSON.parse(variable.value);
       }
     }
+    console.log(response.data);
 
     const data = {
       id: response.data.id,
@@ -344,6 +333,7 @@ class TaskService {
       assignee: response.data.assignee,
       created: response.data.owner,
       due_date: response.data.due,
+      delegition: response.data.delegationState,
       bpm,
       active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
