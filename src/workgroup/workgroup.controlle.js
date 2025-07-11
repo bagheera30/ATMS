@@ -64,13 +64,16 @@ router.get(
   authMiddleware(["manager", "admin", "staff", "system"]),
   async (req, res) => {
     try {
+      console.log(req.user);
       let workgroup;
       const wg = req.query.search;
       if (req.user.roles === "system") {
         workgroup = await getManeger(wg);
       } else {
         if (!wg) {
+          console.log("masuk", req.user.roles);
           workgroup = await getallwg();
+          console.log(workgroup);
           if (workgroup.length === 0) {
             res.status(404).json({
               code: 1,
@@ -140,26 +143,22 @@ router.delete("/:uuid", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
-router.post(
-  "/addUser/:id",
-  authMiddleware(["manager", "admin"]),
-  async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
-    try {
-      const user = await adduserToWorkgroup(data.uuid, id);
-      res.status(201).json({
-        user,
-      });
-    } catch (error) {
-      res.status(400).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
+router.post("/addUser/:id", authMiddleware(["manager"]), async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  try {
+    const user = await adduserToWorkgroup(data.uuid, id);
+    res.status(201).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
   }
-);
+});
 
 router.delete(
   "/removeUser/:id",
