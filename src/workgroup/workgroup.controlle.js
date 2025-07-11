@@ -61,7 +61,7 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
 
 router.get(
   "/",
-  authMiddleware(["manager", "admin", "staff"]),
+  authMiddleware(["manager", "admin", "staff", "system"]),
   async (req, res) => {
     try {
       let workgroup;
