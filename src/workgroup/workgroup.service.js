@@ -11,32 +11,44 @@ const {
   addMember,
 } = require("./workgroup.repository");
 
+const { findUserById } = require("../user/user.repository");
+const{ getAllProjek } = require("../projek/projek.repository");
+
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, data) {
     try {
-      let user;
       if (!username) {
         throw new Error("username is required");
-      } else if (!data.name) {
+      }
+      if (!data?.name) {
         throw new Error("please complete the form");
       }
 
-      if (uuid == "") {
-        const get = await getAllWorkgroups(data.name);
-        if (get.length > 0) {
+      if (uuid === "") {
+        // Creating a new workgroup
+        const getManager = await findUserById(data.uuid);
+        const projek = await getAllProjek(data.businessKey);
+
+        // Fixed typo: createBy -> createdBy
+        if (getManager.username !== projek[0].createdBy) {
+          return {
+            status: false,
+            message: "Only manager can create workgroup",
+          };
+        }
+
+        const existingWorkgroups = await getAllWorkgroups(data.name);
+        if (existingWorkgroups.length > 0) {
           return {
             status: false,
             message: "Workgroup already exists",
           };
-        } else {
-          user = await upsertWorkgroup(uuid, username, data);
         }
-      } else {
-        user = await upsertWorkgroup(uuid, username, data);
       }
-
-      return user;
+      const result = await upsertWorkgroup(uuuid, username, data);
+      return result;
     } catch (error) {
+      console.error("Error in upsertWorkgroup:", error);
       throw error;
     }
   }
