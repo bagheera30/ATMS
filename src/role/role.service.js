@@ -97,8 +97,11 @@ class WorkgroupService {
       throw error;
     }
   }
-  async deleteuserWorkgroup(idUser, id) {
+  async deleteuserWorkgroup(idUser, id,role) {
     try {
+      if (role === "manager" && id === "admin") {
+        throw new Error("Manager tidak dapat menghapus admin");
+      }
       const user = await removemember(idUser, id);
       return user;
     } catch (error) {

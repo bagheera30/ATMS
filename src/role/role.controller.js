@@ -17,7 +17,7 @@ router.delete(
     const id = req.query.RoleName;
     const data = req.body;
     try {
-      const user = await deleteuserWorkgroup(data.uuid, id);
+      const user = await deleteuserWorkgroup(data.uuid, id, req.user.roles);
       res.status(201).json({
         user,
       });
