@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({
         code: 1,
         status: false,
-        message: "User  not unlock please contack manager or admin",
+        message: "User  not unlock please contact manager or admin",
       });
     } else if (user.message === "Incorrect password") {
       return res.status(401).json({
