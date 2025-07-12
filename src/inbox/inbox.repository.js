@@ -4,7 +4,6 @@ const neo = db.getInstance();
 
 const upsertatribut = async (
   data,
-  uuid,
   value,
   taskname,
   username,
@@ -15,7 +14,7 @@ const upsertatribut = async (
     const result = await session.run(
       `
       MATCH (p:Projek) WHERE p.businessKey=$businessKey
-      MERGE (n:Atribut{name:$uuid})
+      MERGE (n:Atribut{name:$data.name})
       ON CREATE SET
           n.uuid=randomUUID(),
           n.name=$data.name,
@@ -35,7 +34,6 @@ const upsertatribut = async (
           projek:p.businessKey
       } AS result`,
       {
-        uuid: uuid || "",
         data: data || {},
         value: value || null,
         username: username || "anonymous",

@@ -1,70 +1,8 @@
 const { uploadToMinio, getPresignedUrl, preview } = require("../lib/minio");
 const axios = require("axios");
 const { upsertatribut } = require("./inbox.repository");
-// const createinbox = async (id, username, files) => {
-//   const camundaURL = process.env.URL_CAMUNDA;
-
-//   try {
-//     const [taskResponse, formVarsResponse] = await Promise.all([
-//       axios.get(`${camundaURL}/task/${id}`),
-//       axios.get(`${camundaURL}/task/${id}/form-variables`),
-//     ]);
-
-//     const task = taskResponse.data;
-//     const formVariables = formVarsResponse.data;
-//     console.log(formVariables);
-
-//     const responprojek = await axios.get(
-//       `${camundaURL}/process-instance/${task.processInstanceId}`
-//     );
-//     const businessKey = responprojek.data.businessKey;
-
-//     if (!businessKey) {
-//       throw new Error("No businessKey found in the task");
-//     }
-
-//     const camundaVariables = {};
-
-//     let previousKey = null;
-
-//     for (const [key, variable] of Object.entries(formVariables)) {
-//       if (previousKey !== null && previousKey === previousKey) {
-//         camundaVariables[key] = variable;
-//         continue;
-//       }
-//       const nama = `${key}_${businessKey}`;
-//       await upsertatribut(
-//         { name: nama },
-//         nama,
-//         variable.value,
-//         task.name,
-//         username,
-//         businessKey
-//       );
-//       camundaVariables[key] = variable;
-//       previousKey = key;
-//     }
-
-//     await axios.post(`${camundaURL}/task/${id}/complete`, {
-//       variables: camundaVariables,
-//     });
-
-//     return {
-//       success: true,
-//       message: "File uploads processed and task completed successfully",
-//     };
-//   } catch (error) {
-//     console.error("File upload processing failed:", error);
-//     throw new Error(`Task completion failed: ${error.message}`);
-//   }
-// };
-
-
-
-
+const camundaURL = process.env.URL_CAMUNDA;
 const createinbox = async (id, username, files, bodyVariables) => {
-  const camundaURL = process.env.URL_CAMUNDA;
-
   try {
     const [taskResponse, formVarsResponse] = await Promise.all([
       axios.get(`${camundaURL}/task/${id}`),
@@ -95,16 +33,15 @@ const createinbox = async (id, username, files, bodyVariables) => {
       // Check if this key has a corresponding file upload
       if (files[key]) {
         const file = files[key];
-        console.log("gagal",file);
+        console.log("gagal", file);
         const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
         const objectName = `${businessKey}/${file.originalname}`;
         console.log(objectName);
         await uploadToMinio(file.buffer, bucketName, objectName);
-        value= objectName;
-        console.log("gatau ",value);
+        value = objectName;
+        console.log("gatau ", value);
         camundaVariables[key] = variable;
-      }
-      else if (bodyVariables[key] !== undefined) {
+      } else if (bodyVariables[key] !== undefined) {
         value = bodyVariables[key].value;
         console.log("masuk3 ", value);
       }
@@ -112,7 +49,6 @@ const createinbox = async (id, username, files, bodyVariables) => {
       // Update the attribute with file info if available
       await upsertatribut(
         { name: nama },
-        nama,
         value,
         task.name,
         username,
@@ -126,7 +62,7 @@ const createinbox = async (id, username, files, bodyVariables) => {
       };
     }
 
-    console.log("cmd ",camundaVariables);
+    console.log("cmd ", camundaVariables);
 
     // Complete the task in Camunda
     await axios.post(`${camundaURL}/task/${id}/complete`, {
@@ -138,6 +74,54 @@ const createinbox = async (id, username, files, bodyVariables) => {
       message: "Task completed successfully",
       processedFiles: Object.keys(files).length,
       processedVariables: Object.keys(camundaVariables).length,
+    };
+  } catch (error) {
+    console.error("Task completion failed:", error);
+    throw new Error(`Task completion failed: ${error.message}`);
+  }
+};
+
+const complate = async (id, username) => {
+  try {
+    const [taskResponse, formVarsResponse] = await Promise.all([
+      axios.get(`${camundaURL}/task/${id}`),
+      axios.get(`${camundaURL}/task/${id}/form-variables`),
+    ]);
+    const task = taskResponse.data;
+    const formVariables = formVarsResponse.data;
+    console.log("Form Variables:", formVariables);
+
+    const responprojek = await axios.get(
+      `${camundaURL}/process-instance/${task.processInstanceId}`
+    );
+    const businessKey = responprojek.data.businessKey;
+
+    if (!businessKey) {
+      throw new Error("No businessKey found in the task");
+    }
+
+    const camundaVariables = {};
+    for (const [key, variable] of Object.entries(formVariables)) {
+      const nama = `${key}_${businessKey}`;
+      if (key === "requireDocument") {
+        camundaVariables[key] = variable;
+        continue;
+      }
+      await upsertatribut(
+        { name: nama },
+        variable.value,
+        task.name,
+        username,
+        businessKey
+      );
+      camundaVariables[key] = variable;
+    }
+    await axios.post(`${camundaURL}/task/${id}/complete`, {
+      variables: camundaVariables,
+    })
+    return {
+      success: true,
+      message: "success",
     };
   } catch (error) {
     console.error("Task completion failed:", error);
@@ -211,4 +195,4 @@ const downloadFile = async (filename) => {
     throw new Error(`Failed to download file: ${error.message}`);
   }
 };
-module.exports = { createinbox, resolve, downloadFile };
+module.exports = { createinbox, resolve, downloadFile, complate };

@@ -2,14 +2,19 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/autentication");
 
-const { createinbox, resolve, downloadFile } = require("./inbox.service");
+const {
+  createinbox,
+  resolve,
+  downloadFile,
+  complate,
+} = require("./inbox.service");
 const upload = require("../lib/fileupload");
 
 router.get("/:id/complete", authMiddleware(["manager"]), async (req, res) => {
   try {
     const id = req.params.id;
     console.log(id);
-    const response = await createinbox(id, req.user.username);
+    const response = await complate(id, req.user.username);
 
     res.status(201).json(response);
   } catch (error) {
