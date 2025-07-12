@@ -131,7 +131,7 @@ const findUserById = async (id) => {
             TanggalLahir:u.dateOfBirth,
             \`No.Hp\`:u.phoneNumber,
             posisi:u.jabatan,
-            Role:[(u)-[:HAS_ROLE]->(n:Role)|n.RoleName],
+            Role:[(u)-[:HAS_ROLE]->(n:Role)|n.RoleName][0],
             password:u.password
             }as result`,
       {

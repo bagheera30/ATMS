@@ -57,12 +57,12 @@ const getWorkgroup = async (uuid) => {
            uuid: n.uuid,
            name: n.name,
            project: [(n)-[:HAS_PROJECT]->(p:Projek)|{name: p.nama, businessKey: p.businessKey}],
-           user: [(n)-[:HAS_WORKGROUP]->(us:User)|{username: us.username, id: us.uuid, role: [(us)-[:HAS_ROLE]->(r:Role)|r.RoleName]}],
+           user: [(n)-[:HAS_WORKGROUP]->(us:User)|{username: us.username, id: us.uuid, role: [(us)-[:HAS_ROLE]->(r:Role)|r.RoleName][0]}],
            status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
        } AS result`,
       { uuid }
     );
-    return result.records.map((record) => record.get("result"));
+    return result.records[0].get("result");
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);

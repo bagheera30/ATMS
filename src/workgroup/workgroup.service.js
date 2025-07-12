@@ -12,7 +12,7 @@ const {
 } = require("./workgroup.repository");
 
 const { findUserById } = require("../user/user.repository");
-const{ getAllProjek } = require("../projek/projek.repository");
+const { getAllProjek } = require("../projek/projek.repository");
 
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, data) {
@@ -109,6 +109,11 @@ class WorkgroupService {
   }
   async adduserToWorkgroup(idUser, id) {
     try {
+      const getwg = await getWorkgroup(id);
+      const beyonceId = getwg.user.find((user) => user.id === idUser)?.id;
+      if (beyonceId) {
+        throw new Error("User already in workgroup");
+      }
       const user = await addMember(idUser, id);
       return user;
     } catch (error) {
@@ -117,8 +122,14 @@ class WorkgroupService {
   }
   async deleteuserWorkgroup(idUser, id) {
     try {
-      const user = await removeMember(idUser, id);
-      return user;
+      const getwg = await getWorkgroup(id);
+      const beyonceId = getwg.user.find((user) => user.id === idUser)?.role;
+      if (beyonceId === "manager") {
+        throw new Error("Manager tidak dapat di remove");
+      }
+
+      const data = await removeMember(idUser, id);
+      return data;
     } catch (error) {
       throw error;
     }
