@@ -169,12 +169,12 @@ router.post("/addUser/:id", authMiddleware(["manager"]), async (req, res) => {
 
 router.delete(
   "/removeUser/:id",
-  authMiddleware(["manager"]),
+  authMiddleware(["manager", "admin"]),
   async (req, res) => {
     const id = req.params.id;
     const data = req.body;
     try {
-      const user = await deleteuserWorkgroup(data.uuid, id);
+      const user = await deleteuserWorkgroup(data.uuid, id, req.user.roles);
       res.status(201).json({
         user,
       });

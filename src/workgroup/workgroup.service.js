@@ -2,7 +2,6 @@ const {
   upsertWorkgroup,
   searchWorkgroup,
   deleteWorkgroup,
-  removemember,
   getAllWorkgroups,
   getAllWorkgroupsWithMembers,
   getManager,
@@ -120,15 +119,21 @@ class WorkgroupService {
       throw error;
     }
   }
-  async deleteuserWorkgroup(idUser, id) {
+  async deleteuserWorkgroup(idUser, id, role) {
     try {
       const getwg = await getWorkgroup(id);
       const beyonceId = getwg.user.find((user) => user.id === idUser)?.role;
-      if (beyonceId === "manager") {
+      if (beyonceId === "manager" && role !== "admin") {
         throw new Error("Manager tidak dapat di remove");
       }
 
-      const data = await removeMember(idUser, id);
+      if(beyonceId !== "manager" && role === "admin") {
+        throw new Error(`Admin tidak dapat remove ${beyonceId}`);
+      }
+
+      console.log(beyonceId);
+      // const data = await removeMember(idUser, id);
+
       return data;
     } catch (error) {
       throw error;

@@ -62,7 +62,7 @@ const getWorkgroup = async (uuid) => {
        } AS result`,
       { uuid }
     );
-    return result.records[0].get("result");
+    return result.records[0]?.get("result");
   } catch (error) {
     console.error("Error executing query:", error);
     throw new Error(`Database query failed: ${error.message}`);
