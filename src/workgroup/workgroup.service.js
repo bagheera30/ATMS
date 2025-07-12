@@ -132,7 +132,7 @@ class WorkgroupService {
       }
 
       console.log(beyonceId);
-      // const data = await removeMember(idUser, id);
+      const data = await removeMember(idUser, id);
 
       return data;
     } catch (error) {
