@@ -45,7 +45,7 @@ class WorkgroupService {
           };
         }
       }
-      const result = await upsertWorkgroup(uuuid, username, data);
+      const result = await upsertWorkgroup(uuid, username, data);
       return result;
     } catch (error) {
       console.error("Error in upsertWorkgroup:", error);
