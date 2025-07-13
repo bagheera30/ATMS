@@ -127,13 +127,10 @@ class WorkgroupService {
         throw new Error("Manager tidak dapat di remove");
       }
 
-      if(beyonceId !== "manager" && role === "admin") {
+      if (beyonceId !== "manager" && role === "admin") {
         throw new Error(`Admin tidak dapat remove ${beyonceId}`);
       }
-
-      console.log(beyonceId);
       const data = await removeMember(idUser, id);
-
       return data;
     } catch (error) {
       throw error;
