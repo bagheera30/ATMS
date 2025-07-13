@@ -4,7 +4,7 @@ dotenv.config();
 
 class Neo4jDB {
 
-  // static instance;
+  static instance;
 
   static getInstance() {
     if (!this.instance) {

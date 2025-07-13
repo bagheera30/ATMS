@@ -4,24 +4,11 @@
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "dev": "nodemon src/index.js",
     "sonar": "npx sonarqube-scanner -Dsonar.token=sqp_fc9c709897e3b3372231c5c9f573e735eaf48597 -Dsonar.host.url=http://localhost:9002"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
-    ],
-    "collectCoverageFrom": [
-      "**/*.js",
-      "!**/node_modules/**",
-      "!**/test/**",
-      "!**/coverage/**",
-      "!jest.config.js"
-    ]
   },
   "author": "rizki & shielda",
   "license": "ISC",
@@ -52,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
+    "@jest/globals": "^30.0.4",
     "eslint": "^9.31.0",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^16.0.0",
