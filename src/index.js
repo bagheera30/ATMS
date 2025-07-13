@@ -1,10 +1,4 @@
-const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
-const YAML = require("yaml");
-const path = require("path");
-const chokidar = require("chokidar");
 const express = require("express");
-const rateLimit = require("express-rate-limit");
 
 const cors = require("cors");
 
@@ -16,38 +10,6 @@ app.use(cors());
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
-const swaggerFilePath = path.join(__dirname, "doc/swagger.yaml");
-
-function loadSwaggerFile() {
-  try {
-    const fileContents = fs.readFileSync(swaggerFilePath, "utf8");
-    return YAML.parse(fileContents);
-  } catch (error) {
-    console.error("Error loading Swagger file:", error);
-    return null;
-  }
-}
-
-let swaggerDocument = loadSwaggerFile();
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 50,
-  message: "Too many requests from this IP, please try again later",
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(limiter);
-app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
-  swaggerUi.setup(swaggerDocument)(req, res, next);
-});
-
-chokidar.watch(swaggerFilePath).on("all", (event, path) => {
-  if (event === "change") {
-    console.log("Swagger file changed, reloading...");
-    swaggerDocument = loadSwaggerFile();
-  }
-});
 
 app.get("/", (req, res) => {
   res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");

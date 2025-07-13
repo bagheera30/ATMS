@@ -1,17 +1,11 @@
-const path = require("path");
-const fs = require("fs");
-const FormData = require("form-data"); // <-- Tambahkan ini
 const {
   getAllBycustomerId,
   getProjek,
-  createProjek,
   upsert,
   getAllProjek,
-  getfile,
   getAll,
   getbycreatedBy,
 } = require("./projek.repository");
-const uploadToMinio = require("../lib/minio");
 const { default: axios } = require("axios");
 
 class ProjekIntanceService {
@@ -102,62 +96,7 @@ class ProjekIntanceService {
       throw error;
     }
   }
-  async createProjek(data, file, username) {
-    if (!data) {
-      throw new Error("Please complete the form and upload a BPMN file.");
-    }
 
-    try {
-      const projekId = data.businesskey;
-      const bucketName = process.env.MINIO_BUCKET_NAME;
-      const objectName = `${projekId}_${file.originalname}`;
-
-      await uploadToMinio(file.buffer, bucketName, objectName);
-
-      const urlcamund = process.env.URL_CAMUNDA;
-
-      const formData = new FormData();
-      formData.append("upload", file.buffer, {
-        filename: objectName,
-        contentType: "application/xml",
-      });
-
-      formData.append("deployment-name", data.name); 
-      formData.append("deployment-source", "process application"); 
-      formData.append("deploy-changed-only", "true"); 
-
-      const camunda = await axios.post(
-        `${urlcamund}/deployment/create`,
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(), 
-          },
-        }
-      );
-
-      const deployedProcesses = camunda.data;
-      const processDefinitions = deployedProcesses.deployedProcessDefinitions;
-      const processDefinitionKeys = Object.keys(processDefinitions);
-
-      if (processDefinitionKeys.length === 0) {
-        throw new Error("No process definitions deployed");
-      }
-
-      return {
-        message: "Deployment and process instance started",
-      };
-    } catch (error) {
-      console.error("Error during deployment:", error.message);
-      const isMulterError = error.message === "Only .bpmn files are allowed";
-      return {
-        error: isMulterError ? error.message : "Deployment failed",
-        details: error.message,
-      };
-    } finally {
-      file.buffer = null;
-    }
-  }
   async getdefinition() {
     try {
       const urlcamund = process.env.URL_CAMUNDA;
@@ -196,7 +135,7 @@ class ProjekIntanceService {
 
       if (startResponse.status >= 200 && startResponse.status < 300) {
         const customer = data.customer;
-        const startdata = await upsert(data, customer, username);
+        await upsert(data, customer, username);
 
         return startResponse.data; // Optional: return response data jika diperlukan
       } else {

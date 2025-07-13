@@ -34,7 +34,6 @@ RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
         customer,
         businessKey: data.businesskey,
         namaProjek: data.name,
-        customer: data.customer,
         createdBy: username,
         status: data.status || "active",
       }

@@ -72,7 +72,6 @@ router.post(
   async (req, res) => {
     const data = req.body;
     const id = req.params.id;
-    const r = req.user.roles.split(",");
     const username = req.user.username;
     try {
       const user = await userService.updateUser(

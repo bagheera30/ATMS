@@ -1,8 +1,8 @@
 const neo4j = require("neo4j-driver");
 const dotenv = require("dotenv");
 dotenv.config();
+
 class Neo4jDB {
-  constructor() {}
 
   static instance;
 

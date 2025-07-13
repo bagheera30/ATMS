@@ -1,5 +1,5 @@
 const express = require("express");
-const { gettasklist, getalltask } = require("./task.service");
+const { getalltask } = require("./task.service");
 const authMiddleware = require("../middlewares/autentication");
 const taskService = require("./task.service");
 

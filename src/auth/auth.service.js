@@ -1,6 +1,5 @@
 const authRepository = require("./auth.repository");
 const bcrypt = require("bcrypt");
-const { randomPassword } = require("../lib/temppassword");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { updateUser } = require("../user/user.repository");
@@ -230,8 +229,8 @@ class authService {
         };
       }
       const token = jwt.sign(
-        { userId: user.uuid, username: user.username, roles: role }, 
-        process.env.JWT_SECRET || "default_secret", 
+        { userId: user.uuid, username: user.username, roles: role },
+        process.env.JWT_SECRET || "default_secret",
         { expiresIn: "1d" }
       );
 

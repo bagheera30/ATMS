@@ -1,6 +1,5 @@
 const express = require("express");
 const { getDownload } = require("./atribut.service");
-const authMiddleware = require("../middlewares/autentication");
 const router = express.Router();
 
 router.get("/:id/download", async (req, res) => {

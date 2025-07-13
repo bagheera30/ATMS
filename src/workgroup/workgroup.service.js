@@ -1,6 +1,5 @@
 const {
   upsertWorkgroup,
-  searchWorkgroup,
   deleteWorkgroup,
   getAllWorkgroups,
   getAllWorkgroupsWithMembers,

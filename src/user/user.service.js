@@ -1,7 +1,5 @@
 const {
   findUserAll,
-  updateUser,
-  userUpdateRole,
   userstatus,
   findUserById,
   deleteUser,
@@ -80,7 +78,7 @@ class UserService {
           return {
             code: 1,
             status: false,
-            message: "Workgroup not active"
+            message: "Workgroup not active",
           };
         }
       }
@@ -145,7 +143,7 @@ class UserService {
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
 
-        const user = await userstatus(uuid, fromedit, data);
+        await userstatus(uuid, fromedit, data);
         return {
           code: 0,
           status: true,
@@ -167,7 +165,7 @@ class UserService {
           data.user.password = await bcrypt.hash(data.user.password, 10);
         }
 
-        const user = await userstatus(uuid, fromedit, data);
+        await userstatus(uuid, fromedit, data);
         return {
           code: 0,
           status: true,
