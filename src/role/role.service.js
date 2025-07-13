@@ -13,8 +13,6 @@ class WorkgroupService {
       let user;
       if (!username) {
         throw new Error("username is required");
-      } else if (!name) {
-        throw new Error("please complete the form");
       }
       if (!uuid) {
         const get = await searchWorkgroup(name);
@@ -97,7 +95,7 @@ class WorkgroupService {
       throw error;
     }
   }
-  async deleteuserWorkgroup(idUser, id,role) {
+  async deleteuserWorkgroup(idUser, id, role) {
     try {
       if (role === "manager" && id === "admin") {
         throw new Error("Manager tidak dapat menghapus admin");
