@@ -37,9 +37,7 @@ const createinbox = async (id, username, files, bodyVariables) => {
         value = objectName;
         camundaVariables[key] = variable;
       } else if (bodyVariables[key]) {
-        console.log(`bodyVariables[${key}].value`, bodyVariables[key]);
         camundaVariables[key] = bodyVariables[key];
-        console.log(`value2`, camundaVariables[key]);
       } else {
         camundaVariables[key] = variable;
       }
