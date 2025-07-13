@@ -11,7 +11,6 @@ const createinbox = async (id, username, files, bodyVariables) => {
 
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
-    console.log("Form Variables:", formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`
@@ -23,15 +22,11 @@ const createinbox = async (id, username, files, bodyVariables) => {
     }
 
     const camundaVariables = {};
-    console.log("All available variables:", Object.keys(formVariables));
-    console.log("All body variables:", Object.keys(bodyVariables));
 
     // Process form variables
     for (const [key, variable] of Object.entries(formVariables)) {
       const nama = `${key}_${businessKey}`;
       let value = variable.value;
-
-      console.log(`formVariables[${key}].value`, value);
 
       // Check if this key has a corresponding file upload
       if (files[key]) {
@@ -41,9 +36,13 @@ const createinbox = async (id, username, files, bodyVariables) => {
         await uploadToMinio(file.buffer, bucketName, objectName);
         value = objectName;
         camundaVariables[key] = variable;
-      } else if (bodyVariables[key] !== undefined) {
-        console.log(`bodyVariables[${key}].value`, bodyVariables[key].value);
-        value = bodyVariables[key].value;
+      } else if (bodyVariables[key]) {
+        console.log(`bodyVariables[${key}].value`, bodyVariables[key]);
+        camundaVariables[key] = bodyVariables[key];
+        // value = bodyVariables[key].value;
+        console.log(`value2`, camundaVariables[key]);
+      } else {
+        camundaVariables[key] = variable;
       }
 
       // Update the attribute with file info if available
@@ -56,12 +55,7 @@ const createinbox = async (id, username, files, bodyVariables) => {
       );
 
       // Prepare variable for Camunda
-      camundaVariables[key] = variable;
     }
-
-    console.log("cmd ", camundaVariables);
-    console.log("id ", id);
-
     // Complete the task in Camunda
     await axios.post(`${camundaURL}/task/${id}/complete`, {
       variables: camundaVariables,
@@ -100,7 +94,6 @@ const complate = async (id, username) => {
 
     const camundaVariables = {};
     for (const [key, variable] of Object.entries(formVariables)) {
-      
       const nama = `${key}_${businessKey}`;
       if (key === "requireDocument") {
         camundaVariables[key] = variable;
