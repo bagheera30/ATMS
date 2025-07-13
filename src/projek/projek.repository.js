@@ -158,15 +158,24 @@ RETURN {
         uuid,
       }
     );
-    return result.records.length > 0 ? result.records[0].get("result") : null;
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw new Error(`Database query failed: ${error.message}`);
+
+    if (result.records.length === 0) return null;
+
+    const projectData = result.records[0].get("result");
+
+    // Konversi createAt dari Neo4j Integer ke integer biasa
+    if (projectData.task && Array.isArray(projectData.task)) {
+      projectData.task = projectData.task.map((task) => ({
+        ...task,
+        createAt: task.createAt.low + task.createAt.high * 0x100000000,
+      }));
+    }
+
+    return projectData;
   } finally {
     await session.close();
   }
 };
-
 const getfile = (uuid) => {
   const session = neo.session();
   try {
