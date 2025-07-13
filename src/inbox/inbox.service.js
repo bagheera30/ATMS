@@ -53,6 +53,8 @@ const createinbox = async (id, username, files, bodyVariables) => {
       );
     }
     console.log(camundaVariables);
+    camundaVariables["T1_Rejected"] = { value: false, type: "Boolean" };
+    camundaVariables["T2_Rejected"] = { value: false, type: "Boolean" };
     await axios.post(`${camundaURL}/task/${id}/complete`, {
       variables: camundaVariables,
     });
