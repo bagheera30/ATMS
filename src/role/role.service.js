@@ -9,102 +9,78 @@ const {
 
 class WorkgroupService {
   async upsertWorkgroup(uuid, username, name, status) {
-    try {
-      let user;
-      if (!username) {
-        throw new Error("username is required");
-      }
-      if (!uuid) {
-        const get = await searchWorkgroup(name);
-        if (get) {
-          return {
-            status: false,
-            message: "role already exists",
-          };
-        } else {
-          user = await upsertWorkgroup(uuid, username, name, status);
-        }
-      } else {
-        user = await upsertWorkgroup(uuid, username, name, status);
-      }
+    if (!username) {
+      throw new Error("username is required");
+    }
 
-      return user;
-    } catch (error) {
-      throw error;
+    if (!uuid) {
+      const get = await searchWorkgroup(name);
+      if (get) {
+        return {
+          status: false,
+          message: "role already exists",
+        };
+      }
     }
+
+    return await upsertWorkgroup(uuid, username, name, status);
   }
+
   async getAllWorkgroup() {
-    try {
-      const user = await getAll();
-      const role = user.map((item) => ({
-        ...item,
-        member: item.member.toNumber(),
-      }));
-      return {
-        code: 0,
-        status: true,
-        message: "sucess",
-        role,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const user = await getAll();
+    const role = user.map((item) => ({
+      ...item,
+      member: item.member.toNumber(),
+    }));
+    return {
+      code: 0,
+      status: true,
+      message: "success",
+      role,
+    };
   }
+
   async getByid(id) {
-    try {
-      const user = await searchWorkgroup(id);
-      if (!user) {
-        return {
-          code: 1,
-          status: false,
-          message: "user not found",
-        };
-      }
+    const user = await searchWorkgroup(id);
+    if (!user) {
       return {
-        code: 0,
-        status: true,
-        message: "sucess",
-        user,
+        code: 1,
+        status: false,
+        message: "user not found",
       };
-    } catch (error) {
-      throw error;
     }
+    return {
+      code: 0,
+      status: true,
+      message: "success",
+      user,
+    };
   }
+
   async deleteWorkgroup(id) {
-    try {
-      const user = await deleteWorkgroup(id);
-      if (user == "Failed: role has users") {
-        return {
-          code: 1,
-          status: false,
-          message: "Workgroup has users",
-        };
-      }
-      return user;
-    } catch (error) {
-      throw error;
+    const user = await deleteWorkgroup(id);
+    if (user == "Failed: role has users") {
+      return {
+        code: 1,
+        status: false,
+        message: "Workgroup has users",
+      };
     }
+    return user;
   }
+
   async adduserToWorkgroup(idUser, id) {
     console.log(id);
-    try {
-      const lw = id.toLowerCase();
-      const user = await addmember(idUser, lw);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const lw = id.toLowerCase();
+    return await addmember(idUser, lw);
   }
+
   async deleteuserWorkgroup(idUser, id, role) {
-    try {
-      if (role === "manager" && id === "admin") {
-        throw new Error("Manager tidak dapat menghapus admin");
-      }
-      const user = await removemember(idUser, id);
-      return user;
-    } catch (error) {
-      throw error;
+    if (role === "manager" && id === "admin") {
+      throw new Error("Manager tidak dapat menghapus admin");
     }
+    return await removemember(idUser, id);
   }
 }
+
 module.exports = new WorkgroupService();

@@ -18,55 +18,35 @@ class CustomerService {
       throw new Error("please complete the form");
     }
 
-    try {
-      const user = await cretaecustomer(data, username);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = await cretaecustomer(data, username);
+    return user;
   }
 
   async getAll(search) {
-    try {
-      const lower = search.toLowerCase();
-      const user = await getAll(lower);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const lower = search.toLowerCase();
+    const user = await getAll(lower);
+    return user;
   }
 
   async getByid(uiid) {
-    try {
-      const user = await getByid(uiid);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = await getByid(uiid);
+    return user;
   }
 
   async updateCustomer(uuid, data, username) {
     if (!data || !uuid) {
       throw new Error("please complete the form");
     }
-    try {
-      const user = await updateCustomer(uuid, data, username);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = await updateCustomer(uuid, data, username);
+    return user;
   }
 
   async deleteCustomer(search) {
     if (!search) {
       throw new Error("please complete the query");
     }
-    try {
-      const user = await deleteCustomer(search);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = await deleteCustomer(search);
+    return user;
   }
 }
 

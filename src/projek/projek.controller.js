@@ -2,7 +2,6 @@ const express = require("express");
 const projekIntanceService = require("./projek.service");
 
 const authMiddleware = require("../middlewares/autentication");
-const projekService = require("./projek.service");
 const router = express.Router();
 
 router.get("/Unassigned", authMiddleware(["manager"]), async (req, res) => {

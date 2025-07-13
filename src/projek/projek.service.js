@@ -10,142 +10,104 @@ const { default: axios } = require("axios");
 
 class ProjekIntanceService {
   async getbycreated(username) {
-    try {
-      const data = await getbycreatedBy(username);
-      if (!data) {
-        return {
-          code: 1,
-          status: false,
-          message: "user not found",
-        };
-      }
+    const data = await getbycreatedBy(username);
+    if (!data) {
       return {
-        code: 0,
-        status: true,
-        message: "sucess",
-        data,
+        code: 1,
+        status: false,
+        message: "user not found",
       };
-    } catch (error) {
-      throw error;
     }
+    return {
+      code: 0,
+      status: true,
+      message: "sucess",
+      data,
+    };
   }
+
   async getprojekAll() {
-    try {
-      const result = await getAll();
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    return await getAll();
   }
+
   async getAll(search) {
     try {
       const data = await getAllProjek(search);
-      const promises = data.map(async (item) => {
-        return {
+      const resultdata = await Promise.all(
+        data.map(async (item) => ({
           businessKey: item.businessKey,
           nama: item.name,
           customer: item.customer,
           status: item.status,
-        };
-      });
-
-      const resultdata = await Promise.all(promises);
-
+        }))
+      );
       return resultdata;
     } catch (error) {
       console.error("Error in getAll():", error.message);
       throw error;
     }
   }
+
   async getAllProjek(customer) {
     if (!customer) {
       throw new Error("please complete the form");
     }
-    try {
-      const user = await getAllBycustomerId(customer);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    return await getAllBycustomerId(customer);
   }
 
   async getProjek(uuid) {
     if (!uuid) {
       throw new Error("please complete the form");
     }
-    try {
-      const user = await getProjek(uuid);
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    return await getProjek(uuid);
   }
 
   async getDetailDefinition(uuid) {
     if (!uuid) {
       throw new Error("please complete the form");
     }
-    try {
-      const df = await axios.get(
-        `${process.env.URL_CAMUNDA}/process-definition/${uuid}/xml`
-      );
-      const bpmxl = df.data.bpmn20Xml;
-
-      return bpmxl;
-    } catch (error) {
-      throw error;
-    }
+    const df = await axios.get(
+      `${process.env.URL_CAMUNDA}/process-definition/${uuid}/xml`
+    );
+    return df.data.bpmn20Xml;
   }
 
   async getdefinition() {
-    try {
-      const urlcamund = process.env.URL_CAMUNDA;
-      const processDefinitionResponse = await axios.get(
-        `${urlcamund}/process-definition`,
-        {
-          params: {
-            latestVersion: true,
-          },
-        }
-      );
-
-      const filteredProcesses = processDefinitionResponse.data.filter(
-        (process) =>
-          process.key.toLowerCase().includes("software_development_lifecycle")
-      );
-
-      return filteredProcesses;
-    } catch (error) {
-      throw error;
-    }
+    const urlcamund = process.env.URL_CAMUNDA;
+    const processDefinitionResponse = await axios.get(
+      `${urlcamund}/process-definition`,
+      {
+        params: {
+          latestVersion: true,
+        },
+      }
+    );
+    return processDefinitionResponse.data.filter((process) =>
+      process.key.toLowerCase().includes("software_development_lifecycle")
+    );
   }
+
   async startIntance(data, username) {
     if (!data) {
       throw new Error("please complete the form");
     }
 
     const urlcamund = process.env.URL_CAMUNDA;
-    try {
-      const startResponse = await axios.post(
-        `${urlcamund}/process-definition/key/${data.key}/start`,
-        {
-          businessKey: data.businesskey,
-        }
-      );
-
-      if (startResponse.status >= 200 && startResponse.status < 300) {
-        const customer = data.customer;
-        await upsert(data, customer, username);
-
-        return startResponse.data; // Optional: return response data jika diperlukan
-      } else {
-        throw new Error(
-          `Failed to start process instance: ${startResponse.statusText}`
-        );
+    const startResponse = await axios.post(
+      `${urlcamund}/process-definition/key/${data.key}/start`,
+      {
+        businessKey: data.businesskey,
       }
-    } catch (error) {
-      throw error;
+    );
+
+    if (startResponse.status >= 200 && startResponse.status < 300) {
+      const customer = data.customer;
+      await upsert(data, customer, username);
+      return startResponse.data;
     }
+    throw new Error(
+      `Failed to start process instance: ${startResponse.statusText}`
+    );
   }
 }
 

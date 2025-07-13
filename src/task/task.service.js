@@ -1,5 +1,5 @@
 const { default: axios } = require("axios");
-const { upsert, upsertComment, getcommen } = require("./task.repository");
+const { upsertComment, getcommen } = require("./task.repository");
 const QueryString = require("qs");
 const { getDetailDefinition } = require("../projek/projek.service");
 const { findUserAllByUsername } = require("../user/user.repository");
@@ -137,8 +137,6 @@ class TaskService {
         data
       );
 
-    
-
       console.log(responseSetOwner);
 
       if (responseSetOwner.status !== 204) {
@@ -252,7 +250,7 @@ class TaskService {
       return duedates;
     } catch (error) {
       console.error("Error fetching overdue tasks:", error);
-      throw error; 
+      throw error;
     }
   }
   async gettasklistinbox() {
@@ -296,18 +294,17 @@ class TaskService {
     );
     const businessKey = processResponse.data.businessKey;
     const bpm = await getDetailDefinition(response.data.processDefinitionId);
-    let transformedComments = []; 
+    let transformedComments = [];
     try {
       const comment = await getcommen(businessKey);
       const filteredComments = comment?.filter(
         (item) => item.taskname === response.data.name
       );
 
-
       transformedComments = filteredComments
         ? filteredComments.map((item) => ({
             user: item.username,
-            description: item.deskripsi, 
+            description: item.deskripsi,
           }))
         : [];
     } catch (error) {

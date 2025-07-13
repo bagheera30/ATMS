@@ -5,7 +5,7 @@ export default [
   js.configs.recommended,
   {
     languageOptions: {
-      ecmaVersion: 2021,
+      ecmaVersion: 2022,
       sourceType: "commonjs", // Penting untuk mendukung 'require' dan 'module'
       globals: {
         node: true,

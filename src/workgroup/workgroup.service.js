@@ -50,90 +50,67 @@ class WorkgroupService {
       throw error;
     }
   }
-  async getallwg() {
-    try {
-      const user = await getAllWorkgroupsWithMembers();
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async getAllWorkgroup(search) {
-    try {
-      const lower = search.toLowerCase();
-      const user = await getAllWorkgroups(lower);
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async getManeger(search) {
-    try {
-      const workgroup = await getManager(search);
-      if (!workgroup) {
-        return {
-          code: 1,
-          status: false,
-          message: "manager not found",
-        };
-      }
-      return workgroup;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async getByid(id) {
-    try {
-      const user = await getWorkgroup(id);
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async deleteWorkgroup(id) {
-    try {
-      const user = await deleteWorkgroup(id);
-      if (user == "Failed: Workgroup has users") {
-        return {
-          code: 1,
-          status: false,
-          message: "Workgroup has users",
-        };
-      }
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async adduserToWorkgroup(idUser, id) {
-    try {
-      const getwg = await getWorkgroup(id);
-      const beyonceId = getwg.user.find((user) => user.id === idUser)?.id;
-      if (beyonceId) {
-        throw new Error("User already in workgroup");
-      }
-      const user = await addMember(idUser, id);
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async deleteuserWorkgroup(idUser, id, role) {
-    try {
-      const getwg = await getWorkgroup(id);
-      const beyonceId = getwg.user.find((user) => user.id === idUser)?.role;
-      if (beyonceId === "manager" && role !== "admin") {
-        throw new Error("Manager tidak dapat di remove");
-      }
 
-      if (beyonceId !== "manager" && role === "admin") {
-        throw new Error(`Admin tidak dapat remove ${beyonceId}`);
-      }
-      const data = await removeMember(idUser, id);
-      return data;
-    } catch (error) {
-      throw error;
+  async getallwg() {
+    return await getAllWorkgroupsWithMembers();
+  }
+
+  async getAllWorkgroup(search) {
+    const lower = search.toLowerCase();
+    return await getAllWorkgroups(lower);
+  }
+
+  async getManeger(search) {
+    const workgroup = await getManager(search);
+    if (!workgroup) {
+      return {
+        code: 1,
+        status: false,
+        message: "manager not found",
+      };
     }
+    return workgroup;
+  }
+
+  async getByid(id) {
+    return await getWorkgroup(id);
+  }
+
+  async deleteWorkgroup(id) {
+    const user = await deleteWorkgroup(id);
+    if (user == "Failed: Workgroup has users") {
+      return {
+        code: 1,
+        status: false,
+        message: "Workgroup has users",
+      };
+    }
+    return user;
+  }
+
+  async adduserToWorkgroup(idUser, id) {
+    const getwg = await getWorkgroup(id);
+    const beyonceId = getwg.user.find((user) => user.id === idUser)?.id;
+    if (beyonceId) {
+      throw new Error("User already in workgroup");
+    }
+    return await addMember(idUser, id);
+  }
+
+  async deleteuserWorkgroup(idUser, id, role) {
+    const getwg = await getWorkgroup(id);
+    const beyonceId = getwg.user.find((user) => user.id === idUser)?.role;
+
+    if (beyonceId === "manager" && role !== "admin") {
+      throw new Error("Manager tidak dapat di remove");
+    }
+
+    if (beyonceId !== "manager" && role === "admin") {
+      throw new Error(`Admin tidak dapat remove ${beyonceId}`);
+    }
+
+    return await removeMember(idUser, id);
   }
 }
+
 module.exports = new WorkgroupService();

@@ -1,4 +1,4 @@
-const { uploadToMinio, getPresignedUrl, preview } = require("../lib/minio");
+const { uploadToMinio, preview } = require("../lib/minio");
 const axios = require("axios");
 const { upsertatribut } = require("./inbox.repository");
 const camundaURL = process.env.URL_CAMUNDA;
@@ -54,27 +54,30 @@ const createinbox = async (id, username, files, bodyVariables) => {
     }
     console.log(camundaVariables.Check_System_Analyst_Report.value);
 
-    if (camundaVariables.Check_System_Analyst_Report.value == "approved"){
+    if (camundaVariables.Check_System_Analyst_Report.value == "approved") {
       camundaVariables["T1_Rejected"] = { value: false, type: "Boolean" };
-    }else{
+    } else {
       camundaVariables["T1_Rejected"] = { value: true, type: "Boolean" };
     }
 
-    if(camundaVariables.Check_Requirement_Specification_Report.value == "approved"){
+    if (
+      camundaVariables.Check_Requirement_Specification_Report.value ==
+      "approved"
+    ) {
       camundaVariables["T2_Rejected"] = { value: false, type: "Boolean" };
-    }else{
+    } else {
       camundaVariables["T2_Rejected"] = { value: true, type: "Boolean" };
     }
-      await axios.post(`${camundaURL}/task/${id}/complete`, {
-        variables: camundaVariables,
-      });
+    await axios.post(`${camundaURL}/task/${id}/complete`, {
+      variables: camundaVariables,
+    });
 
-      return {
-        success: true,
-        message: "Task completed successfully",
-        processedFiles: Object.keys(files).length,
-        processedVariables: Object.keys(camundaVariables).length,
-      };
+    return {
+      success: true,
+      message: "Task completed successfully",
+      processedFiles: Object.keys(files).length,
+      processedVariables: Object.keys(camundaVariables).length,
+    };
   } catch (error) {
     console.error("Task completion failed:", error);
     throw new Error(`Task completion failed: ${error.message}`);
