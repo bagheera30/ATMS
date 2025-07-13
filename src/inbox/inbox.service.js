@@ -37,7 +37,8 @@ const createinbox = async (id, username, files, bodyVariables) => {
         value = objectName;
         camundaVariables[key] = variable;
       } else if (bodyVariables[key]) {
-        camundaVariables[key] = bodyVariables[key];
+        variable.value = bodyVariables[key].value;
+        camundaVariables[key] = variable;
       } else {
         camundaVariables[key] = variable;
       }
@@ -51,6 +52,7 @@ const createinbox = async (id, username, files, bodyVariables) => {
         businessKey
       );
     }
+    console.log(camundaVariables);
     await axios.post(`${camundaURL}/task/${id}/complete`, {
       variables: camundaVariables,
     });

@@ -13,12 +13,12 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/tests/"
+      "/test/"
     ],
     "collectCoverageFrom": [
       "**/*.js",
       "!**/node_modules/**",
-      "!**/tests/**",
+      "!**/test/**",
       "!**/coverage/**",
       "!jest.config.js"
     ]
