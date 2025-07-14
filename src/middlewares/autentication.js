@@ -30,9 +30,11 @@ const authMiddleware = (allowedRoles = []) => {
       }
 
       if (decoded.iat > currentTime) {
-        return res.status(401).json({
-          message: "Token issued in the future. Please log in again.",
-        });
+        return res
+          .status(401)
+          .json({
+            message: "Token issued in the future. Please log in again.",
+          });
       }
 
       let userRoles = [];
@@ -54,21 +56,23 @@ const authMiddleware = (allowedRoles = []) => {
           .status(403)
           .json({ message: "Forbidden: Insufficient permissions." });
       }
+
       for (const role of userRoles) {
         const roleData = await searchWorkgroup(role.toLowerCase());
 
         if (!roleData) {
-          return res.status(403).json({
-            message: `Forbidden: Role ${role} not found.`,
-          });
+          return res
+            .status(403)
+            .json({ message: `Forbidden: Role ${role} not found.` });
         }
 
         if (roleData.status !== "active") {
-          return res.status(403).json({
-            message: `Forbidden: Role ${role} is not active.`,
-          });
+          return res
+            .status(403)
+            .json({ message: `Forbidden: Role ${role} is not active.` });
         }
       }
+
       req.user = decoded;
       next();
     } catch (error) {

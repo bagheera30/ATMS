@@ -4,6 +4,7 @@ const {
   deleteCustomer,
   getByid,
   updateCustomer,
+  createCustomer,
 } = require("./customer.repository");
 
 class CustomerService {
@@ -18,7 +19,7 @@ class CustomerService {
       throw new Error("please complete the form");
     }
 
-    const user = await cretaecustomer(data, username);
+    const user = await createCustomer(data, username);
     return user;
   }
 

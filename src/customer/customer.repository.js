@@ -173,7 +173,7 @@ RETURN
 };
 
 module.exports = {
-  cretaecustomer,
+  createCustomer: cretaecustomer,
   getAll,
   getByid,
   updateCustomer,

@@ -119,6 +119,7 @@ router.get(
 );
 router.get("/:id", authMiddleware(["manager", "staff"]), async (req, res) => {
   try {
+    console.log(req.params.id);
     const data = await taskService.gettask(req.params.id);
     res.status(200).json({
       code: 0,

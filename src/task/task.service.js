@@ -3,6 +3,7 @@ const { upsertComment, getcommen } = require("./task.repository");
 const QueryString = require("qs");
 const { getDetailDefinition } = require("../projek/projek.service");
 const { findUserAllByUsername } = require("../user/user.repository");
+const { getAllProjek } = require("../projek/projek.repository");
 
 class TaskService {
   async getalltask(businessKey) {
@@ -16,18 +17,34 @@ class TaskService {
           processInstanceBusinessKey: businessKey,
         },
       });
+      const projek = await getAllProjek(businessKey);
+      console.log(projek);
       const tasks = response.data;
+      console.log(tasks);
+      const filteredTasks = tasks.map((task) => {
+        // Split processDefinitionId to get the part before the version
+        const processDefinitionParts = task.processDefinitionId
+          ? task.processDefinitionId.split(":")
+          : [];
+        const processDefinitionName =
+          processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
+        const processNameParts = processDefinitionName.split("_");
+        const designPart = processNameParts[2].split(":")[0];
 
-      const filteredTasks = tasks.map((task) => ({
-        id: task.id,
-        name: task.name,
-        owner: task.owner,
-        assignee: task.assignee,
-        created: task.created,
-        followUp: task.followUp,
-        due_date: task.due,
-        delegation: task.delegationState,
-      }));
+        return {
+          id: task.id,
+          name: task.name,
+          owner: task.owner,
+          assignee: task.assignee,
+          created: task.created,
+          followUp: task.followUp,
+          due_date: task.due,
+          projek: projek[0].name,
+          customer: projek[0].customer,
+          delegation: task.delegationState,
+          tahap: designPart,
+        };
+      });
 
       return filteredTasks;
     } catch (error) {
@@ -283,6 +300,14 @@ class TaskService {
   async gettask(id) {
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
     console.log(response.data.name);
+    const task = response.data;
+    const processDefinitionParts = task.processDefinitionId
+      ? task.processDefinitionId.split(":")
+      : [];
+    const processDefinitionName =
+      processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
+    const processNameParts = processDefinitionName.split("_");
+    const designPart = processNameParts[2].split(":")[0];
     const processInstanceId = response.data.processInstanceId;
 
     if (!processInstanceId) {
@@ -317,15 +342,21 @@ class TaskService {
     const formVariables = form.data;
     const extractedVariables = {};
 
+    let count = 1;
+
     for (const [key, variable] of Object.entries(formVariables)) {
       if (key === "requireDocument") {
         continue;
       }
+      console.log(`${key}: ${count}`);
       extractedVariables[key] = variable;
+      extractedVariables[key].count = count;
 
       if (variable.type === "Json" && typeof variable.value === "string") {
         extractedVariables[key] = JSON.parse(variable.value);
+        extractedVariables[key].count = count;
       }
+      count++;
     }
 
     const data = {
@@ -343,6 +374,7 @@ class TaskService {
       description: response.data.description,
       comment: transformedComments, // Akan berupa array kosong jika tidak ada komentar
       VariablesTask: extractedVariables,
+      tahap: designPart,
     };
     return data;
   }
