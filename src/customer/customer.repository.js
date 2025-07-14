@@ -154,7 +154,7 @@ FOREACH (ignore IN CASE WHEN action = "Delete" THEN [1] ELSE [] END |
 RETURN 
     CASE 
         WHEN action = "Delete" THEN "Success" 
-        ELSE "Failed: Customer has users" 
+        ELSE "Failed: Customer has projects" 
     END AS response`,
       {
         search,
