@@ -23,9 +23,8 @@ class CustomerService {
     return user;
   }
 
-  async getAll(search) {
-    const lower = search.toLowerCase();
-    const user = await getAll(lower);
+  async getAll() {
+    const user = await getAll();
     return user;
   }
 

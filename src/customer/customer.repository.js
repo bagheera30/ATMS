@@ -48,11 +48,11 @@ RETURN { code: 0, status: true, message: 'create user success' } AS result`,
     await session.close(); 
   }
 };
-const getAll = async (search) => {
+const getAll = async () => {
   const session = neo.session();
   try {
     const result = await session.run(
-      `MATCH (c:Customer)where LOWER (c.name)+LOWER(c.address) CONTAINS $search  RETURN {
+      `MATCH (c:Customer)RETURN {
         id:c.uuid,
         name:c.name,
         address:c.address,
@@ -61,9 +61,6 @@ const getAll = async (search) => {
         category:c.category,
         status: [(c)-[:HAS_STATUS]->(s:Status)|s.status][0]
       }as result`,
-      {
-        search,
-      }
     );
 
     return result.records.length > 0
