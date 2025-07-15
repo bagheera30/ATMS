@@ -2,6 +2,7 @@ const { uploadToMinio, preview } = require("../lib/minio");
 const axios = require("axios");
 const { upsertatribut } = require("./inbox.repository");
 const camundaURL = process.env.URL_CAMUNDA;
+
 const createinbox = async (id, username, files, bodyVariables, roles) => {
   try {
     const [taskResponse, formVarsResponse] = await Promise.all([

@@ -4,7 +4,6 @@ const authMiddleware = require("../middlewares/autentication");
 
 const {
   createinbox,
-  resolve,
   downloadFile,
   complate,
 } = require("./inbox.service");
