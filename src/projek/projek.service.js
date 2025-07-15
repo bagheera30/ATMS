@@ -102,6 +102,7 @@ class ProjekIntanceService {
 
     if (startResponse.status >= 200 && startResponse.status < 300) {
       const customer = data.customer;
+      data.wgName = `${data.name}_${data.businesskey}`;
       await upsert(data, customer, username);
       return startResponse.data;
     }
