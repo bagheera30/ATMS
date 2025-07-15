@@ -62,42 +62,7 @@ router.post(
   }
 );
 
-router.post(
-  "/:id/resolve",
-  upload.any(),
-  authMiddleware(["staff"]),
-  async (req, res) => {
-    try {
-      if (!req.files || req.files.length === 0) {
-        return res.status(422).json({
-          // Changed from 400 to 422 (Unprocessable Entity)
-          success: false,
-          error: "Harus mengirim minimal satu file",
-        });
-      }
 
-      const id = req.params.id;
-      const files = {};
-
-      req.files.forEach((file) => {
-        files[file.fieldname] = file;
-      });
-
-      const user = await resolve(id, files);
-      res.status(200).json({
-        // Changed from 201 to 200 since we're not creating a new resource
-        user,
-      });
-    } catch (error) {
-      const statusCode = error.response?.status || 400;
-      res.status(statusCode).json({
-        code: 2,
-        status: false,
-        message: error.message,
-      });
-    }
-  }
-);
 
 router.get("/", async (req, res) => {
   const id = req.query.fileName;
