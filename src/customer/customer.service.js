@@ -1,5 +1,4 @@
 const {
-  cretaecustomer,
   getAll,
   deleteCustomer,
   getByid,

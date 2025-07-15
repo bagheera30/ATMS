@@ -20,16 +20,16 @@ export default [
         {
           zones: [
             {
-              target: "./src/*/*.controller.js",
+              target: "./src/*/*.service.js",
               from: "./src/*/*.repository.js",
               message:
-                "[ARCHITECTURE] Controller harus mengakses Service, bukan Repository langsung!",
+                "[ARCHITECTURE] Service harus mengakses Repository melalui interface/abstraksi!",
             },
             {
-              target: "./src/user/*.service.js",
-              from: "./src/*/*.controller.js",
+              target: "./src/*/*.controller.js",
+              from: "./src/*/*.service.js",
               message:
-                "[ARCHITECTURE] Service tidak boleh mengimpor Controller!",
+                "[ARCHITECTURE] Controller harus mengakses Service melalui interface/abstraksi!",
             },
           ],
         },

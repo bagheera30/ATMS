@@ -54,7 +54,6 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
       }
       // Update the attribute with file info if available
     }
-    console.log(camundaVariables.Check_System_Analyst_Report.value);
 
     if (camundaVariables.Check_System_Analyst_Report.value == "approved") {
       camundaVariables["T1_Rejected"] = { value: false, type: "Boolean" };

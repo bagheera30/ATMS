@@ -31,7 +31,13 @@ router.post("/addUser", authMiddleware(["manager"]), async (req, res) => {
   const data = req.body;
   try {
     const user = await adduserToWorkgroup(data.uuid, id);
-
+    if (!data.uuid) {
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: "User ID is required",
+      });
+    }
     res.status(201).json({
       user,
     });
