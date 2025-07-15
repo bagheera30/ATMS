@@ -29,7 +29,7 @@ router.get("/:id/complete", authMiddleware(["manager"]), async (req, res) => {
 router.post(
   "/:id/complete",
   upload.any(),
-  authMiddleware(["manager"]),
+  authMiddleware(["manager", "staff"]),
   async (req, res) => {
     try {
       const id = req.params.id;
@@ -46,7 +46,8 @@ router.post(
         id,
         req.user.username,
         files,
-        bodyVariables
+        bodyVariables,
+        req.user.roles
       );
 
       res.status(200).json(response); // Changed from 201 to 200 since we're not necessarily creating a new resource
