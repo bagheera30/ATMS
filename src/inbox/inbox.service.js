@@ -150,4 +150,4 @@ const downloadFile = async (filename) => {
     throw new Error(`Failed to download file: ${error.message}`);
   }
 };
-module.exports = { createinbox, resolve, downloadFile, complate };
+module.exports = { createinbox, downloadFile, complate };
