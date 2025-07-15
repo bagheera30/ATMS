@@ -18,9 +18,7 @@ class TaskService {
         },
       });
       const projek = await getAllProjek(businessKey);
-      console.log(projek);
       const tasks = response.data;
-      console.log(tasks);
       const filteredTasks = tasks.map((task) => {
         // Split processDefinitionId to get the part before the version
         const processDefinitionParts = task.processDefinitionId
@@ -67,42 +65,61 @@ class TaskService {
     try {
       const urlcamund = process.env.URL_CAMUNDA;
 
-      const responseAssignee = await axios.get(`${urlcamund}/task`, {
-        params: {
-          assignee: username,
-        },
-      });
-      const lw = username.toLowerCase();
-
-      const ow = await findUserAllByUsername(lw);
-
-      const responseOwner = await axios.get(`${urlcamund}/task`, {
-        params: {
-          owner: ow.fullName,
-        },
-      });
+      const [responseAssignee, responseOwner] = await Promise.all([
+        axios.get(`${urlcamund}/task`, { params: { assignee: username } }),
+        axios.get(`${urlcamund}/task`, {
+          params: {
+            owner: (
+              await findUserAllByUsername(username.toLowerCase())
+            ).fullName,
+          },
+        }),
+      ]);
 
       const combinedTasks = [...responseAssignee.data, ...responseOwner.data];
       const uniqueTasks = Array.from(
         new Map(combinedTasks.map((task) => [task.id, task])).values()
       );
 
-      const filteredTasks = uniqueTasks.map((task) => ({
-        id: task.id,
-        active: task.taskDefinitionKey,
-        name: task.name,
-        owner: task.owner,
-        assignee: task.assignee,
-        created: task.created,
-        followUp: task.followUp,
-        due_date: task.due,
-        delegation: task.delegationState,
-      }));
+      const tasksWithProjects = await Promise.all(
+        uniqueTasks.map(async (task) => {
+          try {
+            const processInstance = await axios.get(
+              `${urlcamund}/process-instance/${task.processInstanceId}`
+            );
+            const businessKey = processInstance.data.businessKey;
 
-      return filteredTasks;
+            const projek = businessKey ? await getAllProjek(businessKey) : null;
+
+            return {
+              id: task.id,
+              active: task.taskDefinitionKey,
+              name: task.name,
+              owner: task.owner,
+              assignee: task.assignee,
+              created: task.created,
+              followUp: task.followUp,
+              due_date: task.due,
+              delegation: task.delegationState,
+              businessKey: businessKey,
+              projek: projek[0] || null,
+            };
+          } catch (error) {
+            console.error(`Error processing task ${task.id}:`, error);
+            return {
+              ...task,
+              businessKey: null,
+              projek: null,
+              error: `Failed to load project data: ${error.message}`,
+            };
+          }
+        })
+      );
+
+      return tasksWithProjects;
     } catch (error) {
-      console.error("Error fetching tasks:", error.message);
-      throw error;
+      console.error("Error in getasbyinbox:", error);
+      throw new Error(`Failed to fetch inbox: ${error.message}`);
     }
   }
 
