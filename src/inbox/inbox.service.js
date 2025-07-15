@@ -55,19 +55,22 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
       // Update the attribute with file info if available
     }
 
-    if (camundaVariables.Check_System_Analyst_Report.value == "approved") {
-      camundaVariables["T1_Rejected"] = { value: false, type: "Boolean" };
-    } else {
-      camundaVariables["T1_Rejected"] = { value: true, type: "Boolean" };
+    // Make approval checks optional - only process if the variables exist
+    if (camundaVariables.Check_System_Analyst_Report) {
+      camundaVariables["T1_Rejected"] = {
+        value:
+          camundaVariables.Check_System_Analyst_Report.value !== "approved",
+        type: "Boolean",
+      };
     }
 
-    if (
-      camundaVariables.Check_Requirement_Specification_Report.value ==
-      "approved"
-    ) {
-      camundaVariables["T2_Rejected"] = { value: false, type: "Boolean" };
-    } else {
-      camundaVariables["T2_Rejected"] = { value: true, type: "Boolean" };
+    if (camundaVariables.Check_Requirement_Specification_Report) {
+      camundaVariables["T2_Rejected"] = {
+        value:
+          camundaVariables.Check_Requirement_Specification_Report.value !==
+          "approved",
+        type: "Boolean",
+      };
     }
     if (roles == "manager") {
       await axios.post(`${camundaURL}/task/${id}/complete`, {
