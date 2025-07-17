@@ -23,6 +23,10 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
     }
 
     const camundaVariables = {};
+    const inputKeys = new Set([
+      ...Object.keys(files),
+      ...Object.keys(bodyVariables),
+    ]);
 
     // Process form variables
     for (const [key, variable] of Object.entries(formVariables)) {
@@ -43,7 +47,9 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
       } else {
         camundaVariables[key] = variable;
       }
-      if (roles == "manager") {
+
+      // Only upsert if the key exists in input (files or bodyVariables) and user is manager
+      if (roles == "manager" && inputKeys.has(key)) {
         await upsertatribut(
           { name: nama },
           value,
@@ -52,7 +58,6 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
           businessKey
         );
       }
-      // Update the attribute with file info if available
     }
 
     // Make approval checks optional - only process if the variables exist
@@ -72,6 +77,7 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
         type: "Boolean",
       };
     }
+
     if (roles == "manager") {
       await axios.post(`${camundaURL}/task/${id}/complete`, {
         variables: camundaVariables,
@@ -120,6 +126,7 @@ const complate = async (id, username) => {
         camundaVariables[key] = variable;
         continue;
       }
+
       await upsertatribut(
         { name: nama },
         variable.value,
