@@ -39,7 +39,7 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
         const bucketName = `${process.env.MINIO_BUCKET_NAME}`;
         const objectName = `${businessKey}/${file.originalname}`;
         await uploadToMinio(file.buffer, bucketName, objectName);
-        value = objectName;
+        variable.value = objectName;
         camundaVariables[key] = variable;
       } else if (bodyVariables[key]) {
         variable.value = bodyVariables[key].value;
@@ -59,7 +59,7 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
         );
       }
     }
-
+    console.log(camundaVariables);
     // Make approval checks optional - only process if the variables exist
     if (camundaVariables.Check_System_Analyst_Report) {
       camundaVariables["T1_Rejected"] = {

@@ -20,7 +20,6 @@ class TaskService {
       const projek = await getAllProjek(businessKey);
       const tasks = response.data;
       const filteredTasks = tasks.map((task) => {
-        // Split processDefinitionId to get the part before the version
         const processDefinitionParts = task.processDefinitionId
           ? task.processDefinitionId.split(":")
           : [];
@@ -28,7 +27,7 @@ class TaskService {
           processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
         const processNameParts = processDefinitionName.split("_");
         const designPart = processNameParts[2].split(":")[0];
-
+        console.log(task.delegationState);
         return {
           id: task.id,
           name: task.name,
