@@ -1,10 +1,8 @@
 const { default: axios } = require("axios");
 const { upsertComment, getcommen } = require("./task.repository");
 const QueryString = require("qs");
-const { getDetailDefinition } = require("../projek/projek.service");
 const { findUserAllByUsername } = require("../user/user.repository");
 const { getAllProjek } = require("../projek/projek.repository");
-const { resolve } = require("path");
 
 class TaskService {
   async getalltask(businessKey) {
@@ -319,6 +317,14 @@ class TaskService {
       }
     }
   }
+  async bpm(id) {
+    if (!id) throw new Error("UUID is required");
+    const df = await axios.get(
+      `${process.env.URL_CAMUNDA}/process-definition/${id}/xml`
+    );
+    return df.data.bpmn20Xml;
+  }
+
   async gettask(id) {
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
     console.log(response.data.name);
@@ -340,7 +346,8 @@ class TaskService {
       `${process.env.URL_CAMUNDA}/process-instance/${processInstanceId}`
     );
     const businessKey = processResponse.data.businessKey;
-    const bpm = await getDetailDefinition(response.data.processDefinitionId);
+    console.log("hasil");
+    const bpmn = await this.bpm(response.data.processDefinitionId);
     let transformedComments = [];
     try {
       const comment = await getcommen(businessKey);
@@ -388,7 +395,7 @@ class TaskService {
       created: response.data.owner,
       due_date: response.data.due,
       delegition: response.data.delegationState,
-      bpm,
+      bpmn,
       active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
       InstanceId: response.data.processInstanceId,

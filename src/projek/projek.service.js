@@ -116,9 +116,7 @@ class ProjekIntanceService {
   }
 
   async getDetailDefinition(uuid) {
-    if (!uuid) {
-      throw new Error("please complete the form");
-    }
+    if (!uuid) throw new Error("UUID is required");
     const df = await axios.get(
       `${process.env.URL_CAMUNDA}/process-definition/${uuid}/xml`
     );
