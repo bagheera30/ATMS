@@ -133,6 +133,7 @@ const getAllProjek = async (search) => {
       name:p.nama,
       businessKey:p.businessKey,
       createdBy:p.createdBy,
+      
       customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
       status:[(p)-[:HAS_STATUS]->(s:Status)|s.status][0]
     }as result`,

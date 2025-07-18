@@ -42,11 +42,12 @@ router.get(
   "/workgroup",
   authMiddleware(["manager", "staff", "admin"]),
   async (req, res) => {
+    const intance = req.query.intanceid;
     const username = req.user.username;
 
     try {
-      const data = await userService.finduserbyWG(username);
-      if(data.status === false){
+      const data = await userService.finduserbyWG(username, intance);
+      if (data.status === false) {
         return res.status(400).json({
           code: 2,
           status: false,

@@ -39,9 +39,9 @@ const finuserbyWG = async (username) => {
   try {
     const result = await session.run(
       `
-      MATCH (u:User)
-      WHERE LOWER(u.username) CONTAINS $username
-      optional match (w:Workgroup)-[:HAS_WORKGROUP]->(u)
+      MATCH (p:Projek)
+      WHERE LOWER(p.businessKey) CONTAINS $username
+      optional match (p)-[:HAS_WORKGROUP]->(w:Workgroup)
       RETURN {
         name_worgroup: w.name,
         username_workgroup: [(w)-[:HAS_WORKGROUP]->(u2:User)|{id: u2.uuid, username: u2.username,fullName: u2.namaLengkap}],

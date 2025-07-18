@@ -64,14 +64,12 @@ router.get(
   authMiddleware(["manager", "admin", "staff", "system"]),
   async (req, res) => {
     try {
-      console.log(req.user);
       let workgroup;
       const wg = req.query.search;
       if (req.user.roles === "system") {
         workgroup = await getManeger(wg);
       } else {
         if (!wg) {
-          console.log("masuk", req.user.roles);
           workgroup = await getallwg();
           console.log(workgroup);
           if (workgroup.length === 0) {
