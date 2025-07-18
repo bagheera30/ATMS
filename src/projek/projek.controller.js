@@ -27,28 +27,32 @@ router.get("/Unassigned", authMiddleware(["manager"]), async (req, res) => {
   }
 });
 
-router.get("/assigned", authMiddleware(["manager"]), async (req, res) => {
-  try {
-    const data = await projekIntanceService.getwg(req.user.username);
-    if (data.status == false) {
-      return res.status(400).json({
+router.get(
+  "/assigned",
+  authMiddleware(["manager", "staff"]),
+  async (req, res) => {
+    try {
+      const data = await projekIntanceService.getwg(req.user.username);
+      if (data.status == false) {
+        return res.status(400).json({
+          code: 2,
+          status: false,
+          message: data.message,
+        });
+      }
+      res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
         code: 2,
         status: false,
-        message: data.message,
+        message: error.message,
       });
     }
-    res.status(200).json({
-      data,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
   }
-});
+);
 
 router.post("/start", authMiddleware(["manager"]), async (req, res) => {
   try {
