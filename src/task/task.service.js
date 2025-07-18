@@ -317,7 +317,7 @@ class TaskService {
       }
     }
   }
-  async bpm(id) {
+  async bpmn(id) {
     if (!id) throw new Error("UUID is required");
     const df = await axios.get(
       `${process.env.URL_CAMUNDA}/process-definition/${id}/xml`
@@ -347,7 +347,7 @@ class TaskService {
     );
     const businessKey = processResponse.data.businessKey;
     console.log("hasil");
-    const bpmn = await this.bpm(response.data.processDefinitionId);
+    const bpm = await this.bpmn(response.data.processDefinitionId);
     let transformedComments = [];
     try {
       const comment = await getcommen(businessKey);
@@ -395,7 +395,7 @@ class TaskService {
       created: response.data.owner,
       due_date: response.data.due,
       delegition: response.data.delegationState,
-      bpmn,
+      bpm,
       active: response.data.taskDefinitionKey,
       DefinitionId: response.data.processDefinitionId,
       InstanceId: response.data.processInstanceId,
