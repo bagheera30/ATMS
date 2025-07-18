@@ -40,7 +40,7 @@ const upsert = async (data, customer, username) => {
            ws.createdAt = timestamp()
        MERGE (p)-[:HAS_WORKGROUP]->(wg)
        MERGE (c)-[:HAS_CUSTOMER]->(p)
-       MERGE (u:User { username: $username })
+       MERGE (u:User { username: $createdBy })
        MERGE (wg)-[:HAS_WORKGROUP]->(u)
        RETURN { code: 0, status: true, message: 'upsert projek success' } AS result`,
       {
