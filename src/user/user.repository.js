@@ -16,6 +16,7 @@ const findUserAllByUsername = async (username) => {
         posisi: u.jabatan,
         role: [(u)-[:HAS_ROLE]->(r:Role)|r.RoleName],
         status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
+        workgroup: [(w:Workgroup)-[:HAS_WORKGROUP]->(u)|w.name],
         TanggalLahir: u.dateOfBirth,
         phoneNumber: u.phoneNumber
       } AS result

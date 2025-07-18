@@ -61,7 +61,28 @@ const upsert = async (data, customer, username) => {
     await session.close();
   }
 };
-
+const getwgprojek = async (wg) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (p:Projek)-[:HAS_WORKGROUP]->(wg:Workgroup {name:$wg}) RETURN {
+        businessKey:p.businessKey,
+        nama:p.nama,
+        customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
+        status:[(p)-[:HAS_STATUS]->(s:Status)|s.status][0]
+      } AS result`,
+      {
+        wg: wg,
+      }
+    );
+    return result.records.map((record) => record.get("result"));
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
 const getbycreatedBy = async (createdBy) => {
   const session = neo.session();
   try {
@@ -255,5 +276,6 @@ module.exports = {
   getAllProjek,
   deleteProject,
   getfile,
+  getwgprojek,
   getbycreatedBy,
 };

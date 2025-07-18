@@ -1,3 +1,5 @@
+const { getalltask } = require("../task/task.service");
+const { findUserAllByUsername } = require("../user/user.repository");
 const {
   getAllBycustomerId,
   getProjek,
@@ -5,6 +7,7 @@ const {
   getAllProjek,
   getAll,
   getbycreatedBy,
+  getwgprojek,
 } = require("./projek.repository");
 const { default: axios } = require("axios");
 
@@ -18,6 +21,56 @@ class ProjekIntanceService {
         message: "user not found",
       };
     }
+    return {
+      code: 0,
+      status: true,
+      message: "sucess",
+      data,
+    };
+  }
+  async getwg(username) {
+    const user = await findUserAllByUsername(username);
+    if (!user) {
+      return {
+        code: 1,
+        status: false,
+        message: "user not found",
+      };
+    }
+
+    if (!user) {
+      return {
+        code: 1,
+        status: false,
+        message: "user not found",
+      };
+    }
+
+    // Ambil workgroup dan proses dengan map
+    const workgroups = user.workgroup.map(async (wg) => {
+      const wgp = await getwgprojek(wg);
+      console.log(wgp.length);
+      if (wgp.length > 0) {
+        const tasks = await getalltask(wgp[0].businessKey);
+
+        // 1. Filter task yang resolve > 0, lalu jumlahkan nilainya
+        const Resolve = tasks
+          .filter((task) => task.resolve > 0)
+          .reduce((sum, task) => sum + task.resolve, 0);
+
+        return {
+          businessKey: wgp[0].businessKey,
+          nama: wgp[0].nama,
+          customer: wgp[0].customer,
+          status: wgp[0].status,
+          Resolve,
+        };
+      }
+      return null;
+    });
+
+    const data = (await Promise.all(workgroups)).filter(Boolean);
+
     return {
       code: 0,
       status: true,
