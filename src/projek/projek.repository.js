@@ -35,7 +35,6 @@ const upsert = async (data, customer, username) => {
            wg.createdAt = timestamp(),
            wg.createdBy = $createdBy
        MERGE (wg)-[wr:HAS_STATUS]->(ws:Status)
-     
        ON CREATE SET
            ws.status = 'active',
            ws.createdAt = timestamp()
