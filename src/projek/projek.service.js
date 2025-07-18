@@ -29,7 +29,9 @@ class ProjekIntanceService {
     };
   }
   async getwg(username) {
-    const user = await findUserAllByUsername(username);
+    const lower = username.toLowerCase();
+    const user = await findUserAllByUsername(lower);
+    console.log(user)
     if (!user) {
       return {
         code: 1,
