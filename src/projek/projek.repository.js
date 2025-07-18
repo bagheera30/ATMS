@@ -35,6 +35,8 @@ const upsert = async (data, customer, username) => {
            wg.createdAt = timestamp(),
            wg.createdBy = $createdBy
        MERGE (wg)-[wr:HAS_STATUS]->(ws:Status)
+       MATCH(u:User { username: $username })
+       MERGE (wg)-[:HAS_WORKGROUP]->(u)
        ON CREATE SET
            ws.status = 'active',
            ws.createdAt = timestamp()
@@ -205,7 +207,26 @@ const getfile = (uuid) => {
     session.close();
   }
 };
-
+const getprojekwg = async (username) => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `match (wg:Workgroup {name:$username})-[:HAS_WORKGROUP]->(p:Projek)
+    return{
+      
+    }`,
+      {
+        username,
+      }
+    );
+    return result.records.length > 0 ? result.records[0].get("result") : null;
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    session.close();
+  }
+};
 const deleteProject = async (uuid) => {
   const session = neo.session();
   try {
