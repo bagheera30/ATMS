@@ -7,8 +7,16 @@ const router = express.Router();
 
 router.get("/", authMiddleware(["manager", "staff"]), async (req, res) => {
   const bs = req.query.businessKey;
+  console.log(req.user);
   try {
-    const data = await getalltask(bs);
+    const data = await getalltask(bs, req.user);
+    if (data.length === 0) {
+      return res.status(400).json({
+        code: 2,
+        status: false,
+        message: "data not found",
+      });
+    }
     res.status(200).json({
       code: 0,
       status: true,

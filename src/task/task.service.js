@@ -5,17 +5,28 @@ const { findUserAllByUsername } = require("../user/user.repository");
 const { getAllProjek } = require("../projek/projek.repository");
 
 class TaskService {
-  async getalltask(businessKey) {
+  async getalltask(businessKey, user) {
     if (!businessKey) {
-      throw new Error("please complete the querry");
+      throw new Error("Please complete the query");
     }
     try {
       const urlCamunda = process.env.URL_CAMUNDA;
+
+      // Siapkan parameter dasar
+      const params = {
+        processInstanceBusinessKey: businessKey,
+      };
+      console.log(user.roles);
+      // Jika role adalah 'staf' dan ada userId, tambahkan assignee
+      if (user.roles === "staff" && user.username) {
+        params.assignee = user.username;
+      }
+      // Untuk 'manager' tidak perlu tambahan parameter (hanya businessKey)
+
       const response = await axios.get(`${urlCamunda}/task`, {
-        params: {
-          processInstanceBusinessKey: businessKey,
-        },
+        params: params,
       });
+
       const projek = await getAllProjek(businessKey);
       const tasks = response.data;
       let count = 0;
