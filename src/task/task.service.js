@@ -16,7 +16,7 @@ class TaskService {
       const params = {
         processInstanceBusinessKey: businessKey,
       };
-      console.log(user.roles);
+
       // Jika role adalah 'staf' dan ada userId, tambahkan assignee
       if (user.roles === "staff" && user.username) {
         params.assignee = user.username;

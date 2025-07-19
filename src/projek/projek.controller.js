@@ -32,7 +32,7 @@ router.get(
   authMiddleware(["manager", "staff"]),
   async (req, res) => {
     try {
-      const data = await projekIntanceService.getwg(req.user.username);
+      const data = await projekIntanceService.getwg(req.user);
       if (data.status == false) {
         return res.status(400).json({
           code: 2,

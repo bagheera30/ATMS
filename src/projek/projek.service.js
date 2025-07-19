@@ -28,19 +28,13 @@ class ProjekIntanceService {
       data,
     };
   }
-  async getwg(username) {
-    const lower = username.toLowerCase();
-    const user = await findUserAllByUsername(lower);
-    console.log(user)
-    if (!user) {
-      return {
-        code: 1,
-        status: false,
-        message: "user not found",
-      };
-    }
+  async getwg(user) {
+    console.log(user);
+    const lower = user.username.toLowerCase();
+    const userdata = await findUserAllByUsername(lower);
+    console.log(userdata);
 
-    if (!user) {
+    if (!userdata) {
       return {
         code: 1,
         status: false,
@@ -49,11 +43,11 @@ class ProjekIntanceService {
     }
 
     // Ambil workgroup dan proses dengan map
-    const workgroups = user.workgroup.map(async (wg) => {
+    const workgroups = userdata.workgroup.map(async (wg) => {
       const wgp = await getwgprojek(wg);
       console.log(wgp.length);
       if (wgp.length > 0) {
-        const tasks = await getalltask(wgp[0].businessKey);
+        const tasks = await getalltask(wgp[0].businessKey, user.roles);
 
         // 1. Filter task yang resolve > 0, lalu jumlahkan nilainya
         const Resolve = tasks
