@@ -56,7 +56,8 @@ const getWorkgroup = async (uuid) => {
        RETURN {
            uuid: n.uuid,
            name: n.name,
-           project: [(n)-[:HAS_PROJECT]->(p:Projek)|{name: p.nama, businessKey: p.businessKey}],
+           project: [(p:Projek)-[:HAS_WORKGROUP]->(n)|p.nama][0],
+           customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
            user: [(n)-[:HAS_WORKGROUP]->(us:User)|{username: us.username, id: us.uuid, role: [(us)-[:HAS_ROLE]->(r:Role)|r.RoleName][0]}],
            status: [(n)-[:HAS_STATUS]->(s:Status)|s.status][0]
        } AS result`,
@@ -123,11 +124,14 @@ const getAllWorkgroupsWithMembers = async () => {
     const result = await session.run(
       `MATCH (n:Workgroup)
        OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
+       OPTIONAL MATCH (p:Projek)-[:HAS_WORKGROUP]->(n)
        OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
        WITH n, count(DISTINCT r) AS memberCount, collect(s.status)[0] AS status
        RETURN {
            uuid: n.uuid,
            name: n.name,
+           projek: [(p:Projek)-[:HAS_WORKGROUP]->(n)|{name: p.nama, businessKey: p.businessKey}][0],
+           customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
            member: memberCount,
            status: status
        } AS result`

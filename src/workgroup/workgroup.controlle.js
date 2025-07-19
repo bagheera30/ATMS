@@ -71,7 +71,6 @@ router.get(
       } else {
         if (!wg) {
           workgroup = await getallwg();
-          console.log(workgroup);
           if (workgroup.length === 0) {
             res.status(404).json({
               code: 1,
