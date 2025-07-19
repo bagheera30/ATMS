@@ -75,6 +75,66 @@ class TaskService {
     }
   }
 
+  async getalltaskWG(businessKey) {
+    if (!businessKey) {
+      throw new Error("Please complete the query");
+    }
+    try {
+      const urlCamunda = process.env.URL_CAMUNDA;
+
+      // Siapkan parameter dasar
+      const response = await axios.get(`${urlCamunda}/task`, {
+        processInstanceBusinessKey: businessKey,
+      });
+
+      const projek = await getAllProjek(businessKey);
+      const tasks = response.data;
+      let count = 0;
+      const filteredTasks = tasks.map((task) => {
+        const processDefinitionParts = task.processDefinitionId
+          ? task.processDefinitionId.split(":")
+          : [];
+        const processDefinitionName =
+          processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
+        const processNameParts = processDefinitionName.split("_");
+        const designPart = processNameParts[2].split(":")[0];
+        console.log(task.delegationState);
+        if (task.delegationState === "RESOLVED") {
+          count++;
+        }
+        return {
+          id: task.id,
+          name: task.name,
+          owner: task.owner,
+          assignee: task.assignee,
+          created: task.created,
+          followUp: task.followUp,
+          due_date: task.due,
+          projek: projek[0].name,
+          customer: projek[0].customer,
+          delegation: task.delegationState,
+          resolve: count,
+          tahap: designPart,
+        };
+      });
+
+      return filteredTasks;
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      if (error.response) {
+        return {
+          status: error.response.status,
+          error: `Failed to fetch tasks from Camunda. Status: ${error.response.status}`,
+        };
+      } else {
+        return {
+          status: 500,
+          error: "Failed to fetch tasks from Camunda. Status: 500",
+        };
+      }
+    }
+  }
+
   async getasbyinbox(username) {
     try {
       const urlcamund = process.env.URL_CAMUNDA;
