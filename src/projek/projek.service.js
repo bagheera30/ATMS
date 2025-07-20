@@ -45,8 +45,8 @@ class ProjekIntanceService {
       const wgp = await getwgprojek(wg);
       if (wgp.length > 0) {
         const tasks = await getalltask(wgp[0].businessKey, user);
+        console.log("tasks2", tasks);
 
-        // Hanya return data jika ada tasks
         if (tasks.length > 0) {
           const Resolve = tasks
             .filter((task) => task.resolve > 0)
@@ -65,6 +65,12 @@ class ProjekIntanceService {
     });
 
     const data = (await Promise.all(workgroups)).filter(Boolean);
+
+    // Jika tidak ada data sama sekali (array kosong), lempar error
+    if (data.length === 0) {
+      throw new Error("No tasks found for any workgroup");
+    }
+
     return {
       code: 0,
       status: true,
