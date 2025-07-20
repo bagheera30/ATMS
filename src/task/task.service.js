@@ -439,38 +439,29 @@ class TaskService {
     const varb = await axios.get(
       `${process.env.URL_CAMUNDA}/task/${id}/variables`
     );
-    console.log(varb.data);
     const formVariables = form.data;
     const extractedVariables = {};
 
-    let count = 1;
-    for(const [key, variable] of Object.entries(varb.data)) {
+    for (const [key, variable] of Object.entries(varb.data)) {
       if (key === "requireDocument") {
         continue;
       }
       extractedVariables[key] = variable;
-      extractedVariables[key].count = count;
     }
 
     // Process form variables first
     for (const [key, variable] of Object.entries(formVariables)) {
-      console.log("form ", key, variable);
       if (key === "requireDocument") {
         continue;
       }
-      console.log("form2 ",extractedVariables);
-      if(extractedVariables[key]===key){
-        continue
+      if (extractedVariables[key] === key) {
+        continue;
       }
-      console.log("form3 ", extractedVariables[key]);
       extractedVariables[key] = variable;
-      extractedVariables[key].count = count;
 
       if (variable.type === "Json" && typeof variable.value === "string") {
         extractedVariables[key] = JSON.parse(variable.value);
-        extractedVariables[key].count = count;
       }
-      count++;
     }
 
     // Now add task variables that aren't in the form variables at the end
@@ -480,17 +471,14 @@ class TaskService {
         key !== "requireDocument"
       ) {
         extractedVariables[key] = variable;
-        extractedVariables[key].count = count;
 
         if (variable.type === "Json" && typeof variable.value === "string") {
           try {
             extractedVariables[key] = JSON.parse(variable.value);
-            extractedVariables[key].count = count;
           } catch (e) {
-            // Keep original if JSON parsing fails
+            throw e;
           }
         }
-        count++;
       }
     }
 
