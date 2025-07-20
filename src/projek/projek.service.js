@@ -45,21 +45,21 @@ class ProjekIntanceService {
       const wgp = await getwgprojek(wg);
       if (wgp.length > 0) {
         const tasks = await getalltask(wgp[0].businessKey, user);
-        console.log(tasks);
-        if (tasks.length === 0) {
-          throw new Error("task not found");
-        }
-        const Resolve = tasks
-          .filter((task) => task.resolve > 0)
-          .reduce((sum, task) => sum + task.resolve, 0);
 
-        return {
-          businessKey: wgp[0].businessKey,
-          nama: wgp[0].nama,
-          customer: wgp[0].customer,
-          status: wgp[0].status,
-          Resolve,
-        };
+        // Hanya return data jika ada tasks
+        if (tasks.length > 0) {
+          const Resolve = tasks
+            .filter((task) => task.resolve > 0)
+            .reduce((sum, task) => sum + task.resolve, 0);
+
+          return {
+            businessKey: wgp[0].businessKey,
+            nama: wgp[0].nama,
+            customer: wgp[0].customer,
+            status: wgp[0].status,
+            Resolve,
+          };
+        }
       }
       return null;
     });
@@ -68,7 +68,7 @@ class ProjekIntanceService {
     return {
       code: 0,
       status: true,
-      message: "sucess",
+      message: "success",
       data,
     };
   }

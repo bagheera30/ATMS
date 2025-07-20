@@ -21,11 +21,11 @@ class TaskService {
       if (user.roles === "staff" && user.username) {
         params.assignee = user.username;
       }
-      // Untuk 'manager' tidak perlu tambahan parameter (hanya businessKey)
-
+      console.log(params);
       const response = await axios.get(`${urlCamunda}/task`, {
         params: params,
       });
+      console.log("hasil task", response.data);
 
       const projek = await getAllProjek(businessKey);
       const tasks = response.data;
