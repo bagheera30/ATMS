@@ -29,7 +29,6 @@ class ProjekIntanceService {
     };
   }
   async getwg(user) {
-    console.log(user);
     const lower = user.username.toLowerCase();
     const userdata = await findUserAllByUsername(lower);
     console.log(userdata);
@@ -42,14 +41,14 @@ class ProjekIntanceService {
       };
     }
 
-    // Ambil workgroup dan proses dengan map
     const workgroups = userdata.workgroup.map(async (wg) => {
       const wgp = await getwgprojek(wg);
-      console.log(wgp.length);
       if (wgp.length > 0) {
         const tasks = await getalltask(wgp[0].businessKey, user);
-
-        // 1. Filter task yang resolve > 0, lalu jumlahkan nilainya
+        console.log(tasks);
+        if (tasks.length === 0) {
+          throw new Error("task not found");
+        }
         const Resolve = tasks
           .filter((task) => task.resolve > 0)
           .reduce((sum, task) => sum + task.resolve, 0);
@@ -66,7 +65,6 @@ class ProjekIntanceService {
     });
 
     const data = (await Promise.all(workgroups)).filter(Boolean);
-
     return {
       code: 0,
       status: true,

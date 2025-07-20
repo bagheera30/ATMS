@@ -38,7 +38,6 @@ class TaskService {
           processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
         const processNameParts = processDefinitionName.split("_");
         const designPart = processNameParts[2].split(":")[0];
-        console.log(task.delegationState);
         if (task.delegationState === "RESOLVED") {
           count++;
         }
@@ -398,7 +397,6 @@ class TaskService {
 
   async gettask(id) {
     const response = await axios.get(`${process.env.URL_CAMUNDA}/task/${id}`);
-    console.log(response.data.name);
     const task = response.data;
     const processDefinitionParts = task.processDefinitionId
       ? task.processDefinitionId.split(":")
@@ -417,7 +415,6 @@ class TaskService {
       `${process.env.URL_CAMUNDA}/process-instance/${processInstanceId}`
     );
     const businessKey = processResponse.data.businessKey;
-    console.log("hasil");
     const bpm = await this.bpmn(response.data.processDefinitionId);
     let transformedComments = [];
     try {
@@ -433,7 +430,7 @@ class TaskService {
           }))
         : [];
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      throw error;
     }
 
     const form = await axios.get(
@@ -448,7 +445,6 @@ class TaskService {
       if (key === "requireDocument") {
         continue;
       }
-      console.log(`${key}: ${count}`);
       extractedVariables[key] = variable;
       extractedVariables[key].count = count;
 
