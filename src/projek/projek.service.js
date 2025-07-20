@@ -66,7 +66,6 @@ class ProjekIntanceService {
 
     const data = (await Promise.all(workgroups)).filter(Boolean);
 
-    // Jika tidak ada data sama sekali (array kosong), lempar error
     if (data.length === 0) {
       throw new Error("No tasks found for any workgroup");
     }
