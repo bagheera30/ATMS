@@ -47,7 +47,7 @@ class ProjekIntanceService {
       const wgp = await getwgprojek(wg);
       console.log(wgp.length);
       if (wgp.length > 0) {
-        const tasks = await getalltaskWG(wgp[0].businessKey);
+        const tasks = await getalltask(wgp[0].businessKey, user);
 
         // 1. Filter task yang resolve > 0, lalu jumlahkan nilainya
         const Resolve = tasks
