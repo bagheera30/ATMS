@@ -105,7 +105,9 @@ const updateCustomer = async (uuid, data, username) => {
       `
      MATCH (c:Customer {uuid: $uuid})-[rel:HAS_STATUS]->(s:Status)
     FOREACH (ignoreMe IN CASE WHEN 'status' IN keys($data) THEN [1] ELSE [] END | 
-      SET s.status = $data.status
+      SET s.status = $data.status,
+      s.modifiedAt = timestamp(),
+      s.modifiedBy = $username
     )
     FOREACH (key IN [k IN keys($data) WHERE k <> 'status'] | 
       SET c[key] = $data[key]
