@@ -29,8 +29,10 @@ class CustomerService {
 
   async getprocessintance() {
     const user = await getAll();
+
     const data = user.filter((item) => item.status === "active");
-    if (data.length >= 0) {
+    console.log(user);
+    if (data.length ===0) {
       throw new Error("no data found");
     }
     return data;
