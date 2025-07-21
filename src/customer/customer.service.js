@@ -27,6 +27,13 @@ class CustomerService {
     return user;
   }
 
+  async getprocessintance() {
+    const user = await getAll();
+    const data = user.filter((item) => item.status === "active");
+    console.log(user);
+    return data;
+  }
+
   async getByid(uiid) {
     const user = await getByid(uiid);
     return user;

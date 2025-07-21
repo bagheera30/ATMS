@@ -5,6 +5,7 @@ const {
   updateCustomer,
   create,
   deleteCustomer,
+  getprocessintance,
 } = require("./customer.service");
 const authMiddleware = require("../middlewares/autentication");
 const router = express.Router();
@@ -14,6 +15,21 @@ router.get("/", authMiddleware(["manager"]), async (req, res) => {
     const user = await getAll();
     res.status(200).json({
       user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 2,
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+router.get("/process", authMiddleware(["manager"]), async (req, res) => {
+  try {
+    const data = await getprocessintance();
+    res.status(200).json({
+      data,
     });
   } catch (error) {
     res.status(400).json({
