@@ -103,21 +103,27 @@ const updateCustomer = async (uuid, data, username) => {
   try {
     const result = await session.run(
       `
-     MATCH (c:Customer {uuid: $uuid})-[rel:HAS_STATUS]->(s:Status)
-    FOREACH (ignoreMe IN CASE WHEN 'status' IN keys($data) THEN [1] ELSE [] END | 
-      SET s.status = $data.status,
-      s.modifiedAt = timestamp(),
-      s.modifiedBy = $username
-    )
-    FOREACH (key IN [k IN keys($data) WHERE k <> 'status'] | 
-      SET c[key] = $data[key]
-    )
-    SET c.modifiedAt = timestamp(),
-        c.modifiedBy = $username
-    RETURN CASE WHEN c IS NOT NULL 
-      THEN {code: 0, status: true, message: 'Object Successfully Updated'}  
-      ELSE {code: -1, status: false, message: 'No object found'} 
-    END as result`,
+     MATCH (c:Customer {uuid: $uuid})
+      OPTIONAL MATCH (c)-[rel:HAS_STATUS]->(s:Status)
+
+      FOREACH (ignoreMe IN CASE WHEN s IS NOT NULL AND 'status' IN keys($data) THEN [1] ELSE [] END | 
+        SET s.status = $data.status,
+            s.modifiedAt = timestamp(),
+            s.modifiedBy = $username
+      )
+
+      FOREACH (key IN CASE WHEN size(keys($data)) > 0 THEN [k IN keys($data) WHERE k <> 'status'] ELSE [] END | 
+        SET c[key] = $data[key]
+      )
+
+      SET c.modifiedAt = timestamp(),
+          c.modifiedBy = $username
+
+      RETURN CASE WHEN c IS NOT NULL 
+        THEN {code: 0, status: true, message: 'Object Successfully Updated'}  
+        ELSE {code: -1, status: false, message: 'No object found'} 
+      END as result
+    `,
       {
         uuid,
         data,
