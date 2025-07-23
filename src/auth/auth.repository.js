@@ -225,8 +225,7 @@ RETURN CASE
         code: 0,
         status: true,
         message: 'success',
-        user: u,
-        roles: roles
+        user: u
     }
     ELSE {
         code: 1,

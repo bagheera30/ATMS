@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { searchWorkgroup } = require("../role/role.repository");
+const { findUserAllByUsername } = require("../user/user.repository");
 
 const authMiddleware = (allowedRoles = []) => {
   return async (req, res, next) => {
@@ -16,7 +17,7 @@ const authMiddleware = (allowedRoles = []) => {
 
     try {
       if (token === adminToken) {
-        req.user = { roles: "system" };
+        req.user = { roles: ["system"] };
         return next();
       }
 
@@ -30,34 +31,46 @@ const authMiddleware = (allowedRoles = []) => {
       }
 
       if (decoded.iat > currentTime) {
-        return res
-          .status(401)
-          .json({
-            message: "Token issued in the future. Please log in again.",
-          });
+        return res.status(401).json({
+          message: "Token issued in the future. Please log in again.",
+        });
       }
 
-      let userRoles = [];
-      if (typeof decoded.roles === "string") {
-        userRoles = decoded.roles.split(",").map((r) => r.trim());
-      } else if (Array.isArray(decoded.roles)) {
-        userRoles = decoded.roles.map((r) => r.toString().trim());
-      } else {
-        return res
-          .status(403)
-          .json({ message: "Forbidden: Invalid role format." });
-      }
+      const lw = decoded.username.toLowerCase();
+      const user = await findUserAllByUsername(lw);
 
-      if (
-        allowedRoles.length > 0 &&
-        !userRoles.some((role) => allowedRoles.includes(role))
-      ) {
+      if (!user) {
+        return res.status(403).json({ message: "Forbidden: User not found." });
+      }
+      if (user.status !== "unlocked") {
         return res
           .status(403)
-          .json({ message: "Forbidden: Insufficient permissions." });
+          .json({ message: "Forbidden: User account is not unlocked." });
       }
 
-      for (const role of userRoles) {
+      // Perbaikan di sini - pastikan userRoles selalu berupa array
+      const userRoles =
+        typeof user.role === "string"
+          ? [user.role]
+          : Array.isArray(user.role)
+          ? user.role
+          : [];
+
+      const allUserPermissions = userRoles.map((role) => role.toLowerCase());
+
+      if (allowedRoles.length > 0) {
+        const hasPermission = allUserPermissions.some((permission) =>
+          allowedRoles.includes(permission)
+        );
+
+        if (!hasPermission) {
+          return res
+            .status(403)
+            .json({ message: "Forbidden: Insufficient permissions." });
+        }
+      }
+
+      for (const role of allUserPermissions) {
         const roleData = await searchWorkgroup(role.toLowerCase());
 
         if (!roleData) {
@@ -73,7 +86,11 @@ const authMiddleware = (allowedRoles = []) => {
         }
       }
 
-      req.user = decoded;
+      req.user = {
+        ...decoded,
+        roles: user.role,
+      };
+
       next();
     } catch (error) {
       if (error.name === "TokenExpiredError") {
@@ -86,6 +103,7 @@ const authMiddleware = (allowedRoles = []) => {
           .status(401)
           .json({ message: "Invalid token. Please log in again." });
       }
+      console.error("Authentication error:", error);
       return res
         .status(500)
         .json({ message: "Internal server error.", error: error.message });

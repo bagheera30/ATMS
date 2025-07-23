@@ -217,8 +217,7 @@ class authService {
         return message;
       }
 
-      const rolename = authResult.roles.map((node) => node.properties.RoleName);
-      const role = rolename.toString();
+      
       const user = authResult.user.properties;
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -231,7 +230,7 @@ class authService {
         };
       }
       const token = jwt.sign(
-        { userId: user.uuid, username: user.username, roles: role },
+        { userId: user.uuid, username: user.username},
         process.env.JWT_SECRET || "default_secret",
         { expiresIn: "1d" }
       );

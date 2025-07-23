@@ -14,7 +14,7 @@ const findUserAllByUsername = async (username) => {
         fullName: u.namaLengkap,
         email: u.email,
         posisi: u.jabatan,
-        role: [(u)-[:HAS_ROLE]->(r:Role)|r.RoleName],
+        role: [(u)-[:HAS_ROLE]->(r:Role)|r.RoleName][0],
         status: [(u)-[:HAS_STATUS]->(s:Status)|s.status][0],
         workgroup: [(w:Workgroup)-[:HAS_WORKGROUP]->(u)|w.name],
         TanggalLahir: u.dateOfBirth,
