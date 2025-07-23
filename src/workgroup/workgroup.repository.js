@@ -117,7 +117,39 @@ const getAllWorkgroups = async (search) => {
     await session.close();
   }
 };
+const getAllWorkgroupsWithMembersAdmin = async () => {
+  const session = neo.session();
+  try {
+    const result = await session.run(
+      `MATCH (n:Workgroup)
+       OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u2:User)
+       OPTIONAL MATCH (p:Projek)-[:HAS_WORKGROUP]->(n)
+       OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
+       WITH n, count(DISTINCT r) AS memberCount, collect(s.status)[0] AS status
+       RETURN {
+           uuid: n.uuid,
+           name: n.name,
+           projek: [(p:Projek)-[:HAS_WORKGROUP]->(n)|{name: p.nama, businessKey: p.businessKey}][0],
+           customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
+           member: memberCount,
+           status: status
+       } AS result`
+    );
 
+    return result.records.map((record) => {
+      const result = record.get("result");
+      if (result.member && typeof result.member.toNumber === "function") {
+        result.member = result.member.toNumber();
+      }
+      return result;
+    });
+  } catch (error) {
+    console.error("Error executing query:", error);
+    throw new Error(`Database query failed: ${error.message}`);
+  } finally {
+    await session.close();
+  }
+};
 const getAllWorkgroupsWithMembers = async (username) => {
   const session = neo.session();
   console.log(username);
@@ -266,4 +298,5 @@ module.exports = {
   deleteWorkgroup,
   addMember,
   removeMember,
+  getAllWorkgroupsWithMembersAdmin,
 };

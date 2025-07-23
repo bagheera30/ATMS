@@ -7,6 +7,7 @@ const {
   removeMember,
   getWorkgroup,
   addMember,
+  getAllWorkgroupsWithMembersAdmin,
 } = require("./workgroup.repository");
 
 const { findUserById } = require("../user/user.repository");
@@ -51,7 +52,11 @@ class WorkgroupService {
     }
   }
 
-  async getallwg(username) {
+  async getallwg(username, role) {
+    console.log(role === "admin");
+    if (role === "admin") {
+      return await getAllWorkgroupsWithMembersAdmin();
+    }
     return await getAllWorkgroupsWithMembers(username);
   }
 

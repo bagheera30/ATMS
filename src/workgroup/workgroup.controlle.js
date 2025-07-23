@@ -70,7 +70,7 @@ router.get(
         workgroup = await getManeger(wg);
       } else {
         if (!wg) {
-          workgroup = await getallwg(req.user.username);
+          workgroup = await getallwg(req.user.username, req.user.roles);
           if (workgroup.length === 0) {
             res.status(404).json({
               code: 1,
