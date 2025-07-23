@@ -51,8 +51,8 @@ class WorkgroupService {
     }
   }
 
-  async getallwg() {
-    return await getAllWorkgroupsWithMembers();
+  async getallwg(username) {
+    return await getAllWorkgroupsWithMembers(username);
   }
 
   async getAllWorkgroup(search) {

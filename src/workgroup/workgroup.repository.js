@@ -118,12 +118,13 @@ const getAllWorkgroups = async (search) => {
   }
 };
 
-const getAllWorkgroupsWithMembers = async () => {
+const getAllWorkgroupsWithMembers = async (username) => {
   const session = neo.session();
+  console.log(username);
   try {
     const result = await session.run(
-      `MATCH (n:Workgroup)
-       OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u:User)
+      `MATCH (n:Workgroup)-[:HAS_WORKGROUP]->(u:User) where u.username = $username
+       OPTIONAL MATCH (n)-[r:HAS_WORKGROUP]->(u2:User)
        OPTIONAL MATCH (p:Projek)-[:HAS_WORKGROUP]->(n)
        OPTIONAL MATCH (n)-[:HAS_STATUS]->(s:Status)
        WITH n, count(DISTINCT r) AS memberCount, collect(s.status)[0] AS status
@@ -134,7 +135,10 @@ const getAllWorkgroupsWithMembers = async () => {
            customer:[(c:Customer)-[:HAS_CUSTOMER]->(p)|c.name][0],
            member: memberCount,
            status: status
-       } AS result`
+       } AS result`,
+      {
+        username,
+      }
     );
 
     return result.records.map((record) => {
