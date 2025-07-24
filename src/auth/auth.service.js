@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { updateUser } = require("../user/user.repository");
 const sendEmail = require("../lib/sendemail");
+const { randomPassword } = require("../lib/temppassword");
 
 class authService {
   async createUser(data) {
@@ -77,8 +78,7 @@ class authService {
           message: "email not found",
         };
       }
-      // const pw = randomPassword();
-      const pw = "P@ssword";
+      const pw = randomPassword();
       const hashedPassword = await bcrypt.hash(pw, 10);
       const d = {
         password: hashedPassword,
@@ -217,7 +217,6 @@ class authService {
         return message;
       }
 
-      
       const user = authResult.user.properties;
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -230,7 +229,7 @@ class authService {
         };
       }
       const token = jwt.sign(
-        { userId: user.uuid, username: user.username},
+        { userId: user.uuid, username: user.username },
         process.env.JWT_SECRET || "default_secret",
         { expiresIn: "1d" }
       );

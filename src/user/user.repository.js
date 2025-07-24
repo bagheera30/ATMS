@@ -95,7 +95,7 @@ const findUserAll = async () => {
       MATCH (u:User)
 OPTIONAL MATCH (u)-[:HAS_STATUS]->(s:Status)
 OPTIONAL MATCH (u)-[:HAS_ROLE]->(r:Role)
-WITH u, s.status AS status, COLLECT(r.RoleName) AS roles
+WITH u, s.status AS status, r.RoleName AS roles
 RETURN {
   id: u.uuid,
   username: u.username,

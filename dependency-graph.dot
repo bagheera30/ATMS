@@ -1,0 +1,58 @@
+strict digraph "dependency-cruiser output"{
+    rankdir="LR" splines="ortho" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/atribut" {label="atribut" "src/atribut/atribut.controller.js" [label=<atribut.controller.js> tooltip="atribut.controller.js" URL="src/atribut/atribut.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/atribut/atribut.controller.js" -> "src/atribut/atribut.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/atribut" {label="atribut" "src/atribut/atribut.repository.js" [label=<atribut.repository.js> tooltip="atribut.repository.js" URL="src/atribut/atribut.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/atribut" {label="atribut" "src/atribut/atribut.service.js" [label=<atribut.service.js> tooltip="atribut.service.js" URL="src/atribut/atribut.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/atribut/atribut.service.js" -> "src/atribut/atribut.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/auth" {label="auth" "src/auth/auth.controller.js" [label=<auth.controller.js> tooltip="auth.controller.js" URL="src/auth/auth.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/auth/auth.controller.js" -> "src/auth/auth.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/workgroup" {label="workgroup" "src/workgroup/workgroup.controller.js" [label=<workgroup.controller.js> tooltip="workgroup.controller.js" URL="src/workgroup/workgroup.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/workgroup/workgroup.controller.js" -> "src/workgroup/workgroup.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/task" {label="task" "src/task/task.controller.js" [label=<task.controller.js> tooltip="task.controller.js" URL="src/task/task.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/task/task.controller.js" -> "src/task/task.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/auth" {label="auth" "src/auth/auth.repository.js" [label=<auth.repository.js> tooltip="auth.repository.js" URL="src/auth/auth.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/auth" {label="auth" "src/auth/auth.service.js" [label=<auth.service.js> tooltip="auth.service.js" URL="src/auth/auth.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/auth/auth.service.js" -> "src/user/user.repository.js"
+    "src/auth/auth.service.js" -> "src/auth/auth.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/customer" {label="customer" "src/customer/customer.controller.js" [label=<customer.controller.js> tooltip="customer.controller.js" URL="src/customer/customer.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/customer/customer.controller.js" -> "src/customer/customer.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/customer" {label="customer" "src/customer/customer.repository.js" [label=<customer.repository.js> tooltip="customer.repository.js" URL="src/customer/customer.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/customer" {label="customer" "src/customer/customer.service.js" [label=<customer.service.js> tooltip="customer.service.js" URL="src/customer/customer.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/customer/customer.service.js" -> "src/customer/customer.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/inbox" {label="inbox" "src/inbox/inbox.controller.js" [label=<inbox.controller.js> tooltip="inbox.controller.js" URL="src/inbox/inbox.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/inbox/inbox.controller.js" -> "src/inbox/inbox.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/inbox" {label="inbox" "src/inbox/inbox.repository.js" [label=<inbox.repository.js> tooltip="inbox.repository.js" URL="src/inbox/inbox.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/inbox" {label="inbox" "src/inbox/inbox.service.js" [label=<inbox.service.js> tooltip="inbox.service.js" URL="src/inbox/inbox.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/inbox/inbox.service.js" -> "src/inbox/inbox.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/projek" {label="projek" "src/projek/projek.controller.js" [label=<projek.controller.js> tooltip="projek.controller.js" URL="src/projek/projek.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/projek/projek.controller.js" -> "src/projek/projek.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/projek" {label="projek" "src/projek/projek.repository.js" [label=<projek.repository.js> tooltip="projek.repository.js" URL="src/projek/projek.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/projek" {label="projek" "src/projek/projek.service.js" [label=<projek.service.js> tooltip="projek.service.js" URL="src/projek/projek.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/projek/projek.service.js" -> "src/task/task.service.js"
+    "src/projek/projek.service.js" -> "src/user/user.repository.js"
+    "src/projek/projek.service.js" -> "src/projek/projek.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/role" {label="role" "src/role/role.controller.js" [label=<role.controller.js> tooltip="role.controller.js" URL="src/role/role.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/role/role.controller.js" -> "src/role/role.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/role" {label="role" "src/role/role.repository.js" [label=<role.repository.js> tooltip="role.repository.js" URL="src/role/role.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/role" {label="role" "src/role/role.service.js" [label=<role.service.js> tooltip="role.service.js" URL="src/role/role.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/role/role.service.js" -> "src/role/role.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/task" {label="task" "src/task/task.repository.js" [label=<task.repository.js> tooltip="task.repository.js" URL="src/task/task.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/task" {label="task" "src/task/task.service.js" [label=<task.service.js> tooltip="task.service.js" URL="src/task/task.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/task/task.service.js" -> "src/projek/projek.repository.js"
+    "src/task/task.service.js" -> "src/user/user.repository.js"
+    "src/task/task.service.js" -> "src/task/task.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/user" {label="user" "src/user/user.controller.js" [label=<user.controller.js> tooltip="user.controller.js" URL="src/user/user.controller.js" fillcolor="#f9c3c3" color="#ff0000"] } }
+    "src/user/user.controller.js" -> "src/user/user.service.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/user" {label="user" "src/user/user.repository.js" [label=<user.repository.js> tooltip="user.repository.js" URL="src/user/user.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/user" {label="user" "src/user/user.service.js" [label=<user.service.js> tooltip="user.service.js" URL="src/user/user.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/user/user.service.js" -> "src/user/user.repository.js"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/workgroup" {label="workgroup" "src/workgroup/workgroup.repository.js" [label=<workgroup.repository.js> tooltip="workgroup.repository.js" URL="src/workgroup/workgroup.repository.js" fillcolor="#c3c3f9" color="#0000ff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/workgroup" {label="workgroup" "src/workgroup/workgroup.service.js" [label=<workgroup.service.js> tooltip="workgroup.service.js" URL="src/workgroup/workgroup.service.js" fillcolor="#c3f9c3" color="#00aa00"] } }
+    "src/workgroup/workgroup.service.js" -> "src/projek/projek.repository.js"
+    "src/workgroup/workgroup.service.js" -> "src/user/user.repository.js"
+    "src/workgroup/workgroup.service.js" -> "src/workgroup/workgroup.repository.js"
+}
