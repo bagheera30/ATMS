@@ -45,10 +45,12 @@ class UserService {
     return await findUserById(id, username);
   }
 
-  async finduserbyWG(username,id) {
+  async finduserbyWG(username, id) {
     const lower = username.toLowerCase();
     console.log(id);
-    const idintance=await axios.get(`${process.env.URL_CAMUNDA}/process-instance/${id}`);
+    const idintance = await axios.get(
+      `${process.env.URL_CAMUNDA}/process-instance/${id}`
+    );
     console.log(idintance.data);
     const data = await finuserbyWG(idintance.data.businessKey);
     console.log(data);
@@ -150,8 +152,67 @@ class UserService {
     }
   }
 
-  async deleteUser(uuid) {
-    return await deleteUser(uuid);
+  async deleteUser(uuid, role) {
+    const user = await findUserById(uuid);
+    if (!user) {
+      return {
+        code: 1,
+        status: false,
+        message: "User not found",
+      };
+    }
+
+    // Check if user is active
+    if (user.isActive) {
+      return {
+        code: 2,
+        status: false,
+        message: "Cannot delete active user",
+      };
+    }
+
+    // Role-based permission check
+    if (role === "admin") {
+      if (user.role === "admin") {
+        return {
+          code: 3,
+          status: false,
+          message: "Admin cannot delete other admins",
+        };
+      }
+    } else if (role === "manager") {
+      if (user.role !== "staff") {
+        return {
+          code: 4,
+          status: false,
+          message: "Manager can only delete staff members",
+        };
+      }
+    } else {
+      // Staff cannot delete anyone
+      return {
+        code: 5,
+        status: false,
+        message: "You don't have permission to delete users",
+      };
+    }
+
+    // If all checks pass, proceed with deletion
+    try {
+      await deleteUser(uuid);
+      return {
+        code: 0,
+        status: true,
+        message: "User deleted successfully",
+      };
+    } catch (error) {
+      return {
+        code: 6,
+        status: false,
+        message: "Error deleting user",
+        error: error.message,
+      };
+    }
   }
 }
 
