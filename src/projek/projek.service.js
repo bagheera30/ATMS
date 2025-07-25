@@ -31,7 +31,6 @@ class ProjekIntanceService {
   async getwg(user) {
     const lower = user.username.toLowerCase();
     const userdata = await findUserAllByUsername(lower);
-    console.log(userdata);
 
     if (!userdata) {
       return {
@@ -45,13 +44,17 @@ class ProjekIntanceService {
       const wgp = await getwgprojek(wg);
       if (wgp.length > 0) {
         const tasks = await getalltask(wgp[0].businessKey, user);
-        console.log("tasks2", tasks);
+        tasks.map((task) => {
+          console.log("hasil resolve", wgp[0].businessKey);
+          console.log("hasil resolve", task.name);
+          console.log("hasil resolve", task.resolve);
+        });
 
         if (tasks.length > 0) {
           const Resolve = tasks
             .filter((task) => task.resolve > 0)
             .reduce((sum, task) => sum + task.resolve, 0);
-
+          console.log(Resolve);
           return {
             businessKey: wgp[0].businessKey,
             nama: wgp[0].nama,

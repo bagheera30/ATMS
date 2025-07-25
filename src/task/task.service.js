@@ -12,7 +12,6 @@ class TaskService {
     try {
       const urlCamunda = process.env.URL_CAMUNDA;
 
-      // Siapkan parameter dasar
       const params = {
         processInstanceBusinessKey: businessKey,
       };
@@ -21,11 +20,9 @@ class TaskService {
       if (user.roles === "staff" && user.username) {
         params.assignee = user.username;
       }
-      console.log(params);
       const response = await axios.get(`${urlCamunda}/task`, {
         params: params,
       });
-      console.log("hasil task", response.data);
 
       const projek = await getAllProjek(businessKey);
       const tasks = response.data;
@@ -40,6 +37,8 @@ class TaskService {
         const designPart = processNameParts[2].split(":")[0];
         if (task.delegationState === "RESOLVED") {
           count++;
+        } else {
+          count = 0;
         }
         return {
           id: task.id,
