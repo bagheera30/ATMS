@@ -146,6 +146,10 @@ class ProjekIntanceService {
     }
 
     const urlcamund = process.env.URL_CAMUNDA;
+    const projek = await getProjek(data.businesskey);
+    if (projek) {
+      throw new Error("Projek is already exist");
+    }
     const startResponse = await axios.post(
       `${urlcamund}/process-definition/key/${data.key}/start`,
       {
