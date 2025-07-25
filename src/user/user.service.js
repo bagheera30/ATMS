@@ -173,7 +173,7 @@ class UserService {
 
     // Role-based permission check
     if (role === "admin") {
-      if (user.role === "admin") {
+      if (user.role !== "manager") {
         return {
           code: 3,
           status: false,
