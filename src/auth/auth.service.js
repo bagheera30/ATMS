@@ -41,10 +41,10 @@ class authService {
       }
       const temp = `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
     <img src="https://www.digiserve.co.id/microsoft/images/s.png" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
-    <h2 style="color: #4CAF50; text-align: center;">Welcome!</h2>
+    <h2 style="color:  #ed1e28; text-align: center;">Welcome!</h2>
     <p style="text-align: center;">Thank you for registering with our service. To complete your registration, please enter the following OTP code:</p>
     <div style="text-align: center; margin: 20px 0;">
-      <h1 style="background-color: #4CAF50; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
+      <h1 style="background-color:  #ed1e28; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
         ${otp} <!-- OTP will be inserted here -->
       </h1>
     </div>
@@ -86,10 +86,10 @@ class authService {
 
       const temp = `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
             <img src="https://www.digiserve.co.id/microsoft/images/s.png" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
-            <h2 style="color: #4CAF50; text-align: center;">Your Temporary Password</h2>
+            <h2 style="color:  #ed1e28; text-align: center;">Your Temporary Password</h2>
             <p style="text-align: center;">Below is your temporary account password. Please change it immediately after logging in to secure your account.</p>
             <div style="text-align: center; margin: 20px 0;">
-              <h1 style="background-color: #4CAF50; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
+              <h1 style="background-color:  #ed1e28; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
                 ${pw}
               </h1>
             </div>
@@ -152,10 +152,10 @@ class authService {
         subject: "Verification OTP Code",
         html: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
             <img src="https://www.digiserve.co.id/microsoft/images/s.png" alt="Logo" style="width: 100px; height: auto; display: block; margin: 0 auto;">
-            <h2 style="color: #4CAF50; text-align: center;">Reset Your OTP</h2>
+            <h2 style="color:  #ed1e28; text-align: center;">Reset Your OTP</h2>
             <p style="text-align: center;">You have requested a new One-Time Password (OTP). Use the following code to verify your identity:</p>
             <div style="text-align: center; margin: 20px 0;">
-              <h1 style="background-color: #4CAF50; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
+              <h1 style="background-color:  #ed1e28; color: #fff; display: inline-block; padding: 10px 20px; border-radius: 5px; font-size: 24px;">
                 ${otp} 
               </h1>
             </div>
