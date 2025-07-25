@@ -9,6 +9,7 @@ const {
   finuserbyWG,
 } = require("./user.repository");
 const bcrypt = require("bcrypt");
+const { error } = require("neo4j-driver");
 
 class UserService {
   async getUserallByUsername(search) {
@@ -170,26 +171,15 @@ class UserService {
         message: "Cannot delete active user",
       };
     }
-
-    // Role-based permission check
     if (role === "admin") {
-      if (user.role !== "manager") {
-        return {
-          code: 3,
-          status: false,
-          message: "Admin cannot delete other admins",
-        };
+      if (user.Role !== "manager") {
+        throw error("Admin can only delete managers");
       }
     } else if (role === "manager") {
-      if (user.role !== "staff") {
-        return {
-          code: 4,
-          status: false,
-          message: "Manager can only delete staff members",
-        };
+      if (user.Role !== "staff") {
+        throw error("Manager can only delete staff members");
       }
     } else {
-      // Staff cannot delete anyone
       return {
         code: 5,
         status: false,
@@ -197,7 +187,6 @@ class UserService {
       };
     }
 
-    // If all checks pass, proceed with deletion
     try {
       await deleteUser(uuid);
       return {
