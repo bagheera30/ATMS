@@ -27,6 +27,7 @@ class TaskService {
       const projek = await getAllProjek(businessKey);
       const tasks = response.data;
       let count = 0;
+      let cp = 0;
       const filteredTasks = tasks.map((task) => {
         const processDefinitionParts = task.processDefinitionId
           ? task.processDefinitionId.split(":")
@@ -35,11 +36,16 @@ class TaskService {
           processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
         const processNameParts = processDefinitionName.split("_");
         const designPart = processNameParts[2].split(":")[0];
+        console.log(task);
         if (task.delegationState === "RESOLVED") {
           count++;
+        } else if (task.delegationState === "PENDING") {
+          cp++;
         } else {
           count = 0;
+          cp = 0;
         }
+        console.log("count ", count, "cp ", cp);
         return {
           id: task.id,
           name: task.name,
@@ -52,6 +58,7 @@ class TaskService {
           customer: projek[0].customer,
           delegation: task.delegationState,
           resolve: count,
+          pending: cp,
           tahap: designPart,
         };
       });

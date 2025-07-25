@@ -54,13 +54,16 @@ class ProjekIntanceService {
           const Resolve = tasks
             .filter((task) => task.resolve > 0)
             .reduce((sum, task) => sum + task.resolve, 0);
-          console.log(Resolve);
+          const pending = tasks
+            .filter((task) => task.pending > 0)
+            .reduce((sum, task) => sum + task.pending, 0);
           return {
             businessKey: wgp[0].businessKey,
             nama: wgp[0].nama,
             customer: wgp[0].customer,
             status: wgp[0].status,
             Resolve,
+            pending,
           };
         }
       }
