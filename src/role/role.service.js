@@ -71,14 +71,7 @@ class WorkgroupService {
   }
 
   async adduserToWorkgroup(idUser, id, role) {
-    console.log(id);
     const lw = id.toLowerCase();
-    console.log(lw);
-    if (lw === "admin" && role === "manager") {
-      throw new Error("Manager tidak dapat ubah admin");
-    } else if (lw === "staff" && role === "admin") {
-      throw new Error("Admin tidak dapat ubah staff");
-    }
     return await addmember(idUser, lw);
   }
 

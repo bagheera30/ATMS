@@ -59,8 +59,6 @@ const createinbox = async (id, username, files, bodyVariables, roles) => {
         );
       }
     }
-    console.log(camundaVariables);
-    // Make approval checks optional - only process if the variables exist
     if (camundaVariables.Check_System_Analyst_Report) {
       camundaVariables["T1_Rejected"] = {
         value:
@@ -108,7 +106,6 @@ const complate = async (id, username) => {
     ]);
     const task = taskResponse.data;
     const formVariables = formVarsResponse.data;
-    console.log("Form Variables:", formVariables);
 
     const responprojek = await axios.get(
       `${camundaURL}/process-instance/${task.processInstanceId}`

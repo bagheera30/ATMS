@@ -152,7 +152,6 @@ const getAllWorkgroupsWithMembersAdmin = async () => {
 };
 const getAllWorkgroupsWithMembers = async (username) => {
   const session = neo.session();
-  console.log(username);
   try {
     const result = await session.run(
       `MATCH (n:Workgroup)-[:HAS_WORKGROUP]->(u:User) where u.username = $username

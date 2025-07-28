@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.get("/", authMiddleware(["manager", "staff"]), async (req, res) => {
   const bs = req.query.businessKey;
-  console.log(req.user);
   try {
     const data = await getalltask(bs, req.user);
     if (data.length === 0) {
@@ -127,7 +126,6 @@ router.get(
 );
 router.get("/:id", authMiddleware(["manager", "staff"]), async (req, res) => {
   try {
-    console.log(req.params.id);
     const data = await taskService.gettask(req.params.id);
     res.status(200).json({
       code: 0,

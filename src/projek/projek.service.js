@@ -44,12 +44,6 @@ class ProjekIntanceService {
       const wgp = await getwgprojek(wg);
       if (wgp.length > 0) {
         const tasks = await getalltask(wgp[0].businessKey, user);
-        tasks.map((task) => {
-          console.log("hasil resolve", wgp[0].businessKey);
-          console.log("hasil resolve", task.name);
-          console.log("hasil resolve", task.resolve);
-        });
-
         if (tasks.length > 0) {
           const Resolve = tasks
             .filter((task) => task.resolve > 0)

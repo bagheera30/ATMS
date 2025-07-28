@@ -48,13 +48,10 @@ class UserService {
 
   async finduserbyWG(username, id) {
     const lower = username.toLowerCase();
-    console.log(id);
     const idintance = await axios.get(
       `${process.env.URL_CAMUNDA}/process-instance/${id}`
     );
-    console.log(idintance.data);
     const data = await finuserbyWG(idintance.data.businessKey);
-    console.log(data);
 
     if (Array.isArray(data) && data.length > 0) {
       const inactiveItems = data.filter((item) => item.status === "inactive");

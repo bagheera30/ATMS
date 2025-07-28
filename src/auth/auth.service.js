@@ -184,8 +184,6 @@ class authService {
         throw new Error("OTP harus berupa angka");
       }
       const time = Math.floor(Date.now() / 1000);
-      console.log(time);
-      console.log(time);
 
       const verificationResult = await authRepository.findToken(intotp, time);
       if (verificationResult.status == false) {

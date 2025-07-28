@@ -53,7 +53,6 @@ class WorkgroupService {
   }
 
   async getallwg(username, role) {
-    console.log(role);
     if (role === "admin") {
       return await getAllWorkgroupsWithMembersAdmin();
     }

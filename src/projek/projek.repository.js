@@ -3,7 +3,6 @@ const neo = db.getInstance();
 
 const upsert = async (data, customer, username) => {
   const session = neo.session();
-  console.log(data);
   try {
     const result = await session.run(
       `MATCH (c:Customer { uuid: $customer })

@@ -36,7 +36,6 @@ class TaskService {
           processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
         const processNameParts = processDefinitionName.split("_");
         const designPart = processNameParts[2].split(":")[0];
-        console.log(task);
         if (task.delegationState === "RESOLVED") {
           count++;
         } else if (task.delegationState === "PENDING") {
@@ -45,7 +44,6 @@ class TaskService {
           count = 0;
           cp = 0;
         }
-        console.log("count ", count, "cp ", cp);
         return {
           id: task.id,
           name: task.name,
@@ -103,7 +101,6 @@ class TaskService {
           processDefinitionParts.length > 0 ? processDefinitionParts[0] : null;
         const processNameParts = processDefinitionName.split("_");
         const designPart = processNameParts[2].split(":")[0];
-        console.log(task.delegationState);
         if (task.delegationState === "RESOLVED") {
           count++;
         }
@@ -227,7 +224,6 @@ class TaskService {
     try {
       const cm = process.env.URL_CAMUNDA;
       const task = await axios.get(`${cm}/task/${id}`);
-      console.log(task.data);
       const updatePayload = { ...task.data };
 
       updatePayload.owner = username;
@@ -250,7 +246,6 @@ class TaskService {
         data
       );
 
-      console.log(responseSetOwner);
 
       if (responseSetOwner.status !== 204) {
         throw new Error("Failed to set owner in Camunda");
@@ -260,8 +255,7 @@ class TaskService {
       const requireDocument = variables.requireDocument?.value;
 
       if (!requireDocument) {
-        console.log("requireDocument tidak ditemukan");
-        return;
+        throw new Error("requireDocument tidak ditemukan");
       }
 
       // 2. Get current form variables
@@ -271,11 +265,8 @@ class TaskService {
       for (const docKey in formVariables) {
         if (docKey === requireDocument || docKey === requireDocument[docKey]) {
           requiredFormData[docKey] = formVariables[docKey];
-          console.log("Matched form variable:", docKey, formVariables[docKey]);
         }
       }
-      console.log("Required form data:", requiredFormData);
-      // 3. Prepare variables to set (with test values)
       const variablesToSet = {};
       for (const key in requiredFormData) {
         variablesToSet[key] = {
