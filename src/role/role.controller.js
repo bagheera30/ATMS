@@ -26,29 +26,34 @@ router.delete("/removeUser", authMiddleware(["manager"]), async (req, res) => {
     });
   }
 });
-router.post("/addUser", authMiddleware(["manager"]), async (req, res) => {
-  const id = req.query.RoleName;
-  const data = req.body;
-  try {
-    const user = await adduserToWorkgroup(data.uuid, id);
-    if (!data.uuid) {
-      return res.status(400).json({
+router.post(
+  "/addUser",
+  authMiddleware(["manager", "admin"]),
+  async (req, res) => {
+    const id = req.query.RoleName;
+    const data = req.body;
+    console.log(data);
+    try {
+      const user = await adduserToWorkgroup(data.uuid, id, req.user.roles);
+      if (!data.uuid) {
+        return res.status(400).json({
+          code: 2,
+          status: false,
+          message: "User ID is required",
+        });
+      }
+      res.status(201).json({
+        user,
+      });
+    } catch (error) {
+      res.status(400).json({
         code: 2,
         status: false,
-        message: "User ID is required",
+        message: error.message,
       });
     }
-    res.status(201).json({
-      user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      code: 2,
-      status: false,
-      message: error.message,
-    });
   }
-});
+);
 router.post("/:RoleName", authMiddleware(["admin"]), async (req, res) => {
   const data = req.body;
   const uuid = req.params.RoleName;

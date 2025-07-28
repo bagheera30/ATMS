@@ -35,6 +35,7 @@ const authMiddleware = (allowedRoles = []) => {
           message: "Token issued in the future. Please log in again.",
         });
       }
+      console.log(decoded.username);
 
       const lw = decoded.username.toLowerCase();
       const user = await findUserAllByUsername(lw);
@@ -47,7 +48,7 @@ const authMiddleware = (allowedRoles = []) => {
           .status(403)
           .json({ message: "Forbidden: User account is not unlocked." });
       }
-
+      console.log(user.role);
       // Perbaikan di sini - pastikan userRoles selalu berupa array
       const userRoles =
         typeof user.role === "string"
@@ -62,6 +63,7 @@ const authMiddleware = (allowedRoles = []) => {
         const hasPermission = allUserPermissions.some((permission) =>
           allowedRoles.includes(permission)
         );
+        console.log(hasPermission);
 
         if (!hasPermission) {
           return res
