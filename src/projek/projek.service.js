@@ -132,8 +132,10 @@ class ProjekIntanceService {
         },
       }
     );
-    return processDefinitionResponse.data.filter((process) =>
-      process.key.toLowerCase().includes("software_development_lifecycle")
+    return processDefinitionResponse.data.filter(
+      (process) =>
+        process.key.toLowerCase().includes("software_development_lifecycle") ||
+        process.key.toUpperCase().includes("SDLC_AGILE")
     );
   }
 
