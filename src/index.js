@@ -12,6 +12,9 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
+  res.redirect(
+    "https://telkomuniversityofficial-my.sharepoint.com/:w:/g/personal/mrizkialfian_student_telkomuniversity_ac_id/EdxASoAFw0hIokWCrdwNUVEB_90X7kc9BcxxnfAVaAShog?e=bF9jdu"
+  );
   res.send("Hello, untuk menggunakan api jika mencari produk maka harus /auth");
 });
 
